@@ -4,12 +4,13 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "YOUR_API_KEY",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "YOUR_PROJECT_ID",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "YOUR_SENDER_ID",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "YOUR_APP_ID",
+  apiKey: "AIzaSyDEwCF0QDLKrGKFsxoCss_SXa8z8-vmoyE",
+  authDomain: "bloom-1d779.firebaseapp.com",
+  projectId: "bloom-1d779",
+  storageBucket: "bloom-1d779.firebasestorage.app",
+  messagingSenderId: "1003281001106",
+  appId: "1:1003281001106:web:c3bccc2de16e49497c144b",
+  measurementId: "G-RJLVEZ2MEF",
 };
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
