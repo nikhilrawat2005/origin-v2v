@@ -4,10 +4,10 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { mockOpportunities, Opportunity } from "@/lib/mockData";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { useOpportunities, formatDeadline } from "@/hooks/useOpportunities";
 import {
   Search,
   Filter,
@@ -26,6 +26,7 @@ function ExploreContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { currentUser, profile } = useAuth();
+  const { opportunities, loading: oppsLoading } = useOpportunities();
 
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
@@ -76,7 +77,7 @@ function ExploreContent() {
   };
 
   // Filter logic
-  const filteredOpportunities = mockOpportunities.filter((opp) => {
+  const filteredOpportunities = opportunities.filter((opp) => {
     // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -254,7 +255,9 @@ function ExploreContent() {
 
           {/* Results Summary */}
           <div className="text-slate-500 text-xs font-medium">
-            Showing {filteredOpportunities.length} opportunities matching your criteria.
+            {oppsLoading
+              ? "Loading opportunities..."
+              : `Showing ${filteredOpportunities.length} opportunities matching your criteria.`}
           </div>
 
           {/* Cards Grid */}
@@ -305,10 +308,7 @@ function ExploreContent() {
                       </span>
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                        {new Date(opp.deadline).toLocaleDateString(undefined, {
-                          month: "short",
-                          day: "numeric",
-                        })}
+                        {formatDeadline(opp.deadline)}
                       </span>
                     </div>
 

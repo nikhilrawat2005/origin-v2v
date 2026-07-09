@@ -8,7 +8,8 @@ import Footer from "@/components/Footer";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, arrayRemove } from "firebase/firestore";
-import { mockOpportunities, Opportunity } from "@/lib/mockData";
+import { Opportunity } from "@/lib/mockData";
+import { useOpportunities, formatDeadline } from "@/hooks/useOpportunities";
 import {
   Bookmark,
   BookmarkCheck,
@@ -24,6 +25,7 @@ import {
 export default function SavedOpportunities() {
   const { currentUser, loading: authLoading } = useAuth();
   const router = useRouter();
+  const { opportunities } = useOpportunities();
   const [savedOpps, setSavedOpps] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,7 +43,7 @@ export default function SavedOpportunities() {
         const snap = await getDoc(doc(db, "bookmarks", currentUser.uid));
         if (snap.exists()) {
           const savedIds: string[] = snap.data().opportunityIds || [];
-          const matches = mockOpportunities.filter((o) => savedIds.includes(o.id));
+          const matches = opportunities.filter((o) => savedIds.includes(o.id));
           setSavedOpps(matches);
         }
       } catch (err) {
@@ -52,7 +54,7 @@ export default function SavedOpportunities() {
     };
 
     fetchSaved();
-  }, [currentUser]);
+  }, [currentUser, opportunities]);
 
   const removeBookmark = async (oppId: string) => {
     if (!currentUser) return;
@@ -139,11 +141,7 @@ export default function SavedOpportunities() {
                       </span>
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                        {new Date(opp.deadline).toLocaleDateString(undefined, {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
+                        {formatDeadline(opp.deadline)}
                       </span>
                     </div>
 

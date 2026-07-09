@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, getDocs, collection, query, where, deleteDoc } from "firebase/firestore";
-import { mockOpportunities, Opportunity } from "@/lib/mockData";
+import { Opportunity } from "@/lib/mockData";
+import { useOpportunities, formatDeadline } from "@/hooks/useOpportunities";
 import {
   Sparkles,
   Bookmark,
@@ -33,6 +34,7 @@ interface Reminder {
 export default function Dashboard() {
   const { currentUser, profile, loading: authLoading } = useAuth();
   const router = useRouter();
+  const { opportunities } = useOpportunities();
 
   const [savedOpps, setSavedOpps] = useState<Opportunity[]>([]);
   const [reminders, setReminders] = useState<Reminder[]>([]);
@@ -53,7 +55,7 @@ export default function Dashboard() {
         const bookmarkSnap = await getDoc(doc(db, "bookmarks", currentUser.uid));
         if (bookmarkSnap.exists()) {
           const savedIds: string[] = bookmarkSnap.data().opportunityIds || [];
-          const matches = mockOpportunities.filter((o) => savedIds.includes(o.id));
+          const matches = opportunities.filter((o) => savedIds.includes(o.id));
           setSavedOpps(matches);
         }
 
@@ -80,7 +82,7 @@ export default function Dashboard() {
     };
 
     fetchDashboardData();
-  }, [currentUser]);
+  }, [currentUser, opportunities]);
 
   const deleteReminder = async (reminderId: string) => {
     try {
@@ -238,7 +240,7 @@ export default function Dashboard() {
 
                 <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-start">
                   <span className="text-xs font-medium text-slate-500">
-                    Deadline: {new Date(opp.deadline).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                    Deadline: {formatDeadline(opp.deadline)}
                   </span>
                   <Link
                     href={`/opportunity/${opp.id}`}

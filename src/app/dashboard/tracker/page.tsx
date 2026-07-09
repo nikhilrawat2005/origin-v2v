@@ -17,10 +17,11 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import type { ApplicationEntry, ApplicationStatus } from "@/lib/types";
-import { mockOpportunities } from "@/lib/mockData";
+import { useOpportunities } from "@/hooks/useOpportunities";
 
 export default function TrackerPage() {
   const { currentUser } = useAuth();
+  const { opportunities } = useOpportunities();
   const [applications, setApplications] = useState<ApplicationEntry[]>([]);
   const [bookmarks, setBookmarks] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -98,7 +99,7 @@ export default function TrackerPage() {
 
   const addFromBookmark = async (oppId: string) => {
     if (!currentUser) return;
-    const opp = mockOpportunities.find((o) => o.id === oppId);
+    const opp = opportunities.find((o) => o.id === oppId);
     if (!opp) return;
 
     try {
@@ -186,7 +187,7 @@ export default function TrackerPage() {
         <div className="bg-white border border-slate-100 p-4 rounded-3xl space-y-2.5">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Quick Import From Bookmarks</span>
           <div className="flex gap-2 overflow-x-auto pb-1">
-            {mockOpportunities
+            {opportunities
               .filter((opp) => bookmarks.includes(opp.id))
               .map((opp) => {
                 const alreadyAdded = applications.some((app) => app.opportunityTitle === opp.title);

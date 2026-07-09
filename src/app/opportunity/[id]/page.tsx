@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { mockOpportunities, Opportunity } from "@/lib/mockData";
+import { Opportunity } from "@/lib/mockData";
+import { useOpportunities, formatDeadline } from "@/hooks/useOpportunities";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import {
@@ -37,6 +38,7 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
   const router = useRouter();
   const { id } = use(params);
   const { currentUser } = useAuth();
+  const { opportunities, loading: oppsLoading } = useOpportunities();
   
   const [opp, setOpp] = useState<Opportunity | null>(null);
   const [isSaved, setIsSaved] = useState(false);
@@ -48,7 +50,7 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
   // Load opportunity & bookmark status
   useEffect(() => {
     const fetchOpp = async () => {
-      const match = mockOpportunities.find((o) => o.id === id);
+      const match = opportunities.find((o) => o.id === id);
       if (!match) {
         setLoading(false);
         return;
@@ -72,7 +74,7 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
       setLoading(false);
     };
     fetchOpp();
-  }, [id, currentUser]);
+  }, [id, currentUser, opportunities]);
 
   const toggleBookmark = async () => {
     if (!currentUser) {
@@ -236,11 +238,7 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
                 </span>
                 <span className="flex items-center gap-1 text-xs font-bold text-slate-700">
                   <Calendar className="w-4 h-4 text-slate-400" />
-                  {new Date(opp.deadline).toLocaleDateString(undefined, {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric"
-                  })}
+                  {formatDeadline(opp.deadline)}
                 </span>
               </div>
               <div className="col-span-2 sm:col-span-1">
