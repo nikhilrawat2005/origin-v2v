@@ -78,8 +78,6 @@ export default function WalletPage() {
       // Reset
       setDocName("");
       setSelectedFile(null);
-      // Trigger welcome notifications or automated matching
-      const { seedOpportunityNotification } = await import("@/lib/automationEngine");
     } catch (err) {
       console.error("Upload error:", err);
     } finally {
