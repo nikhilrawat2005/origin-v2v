@@ -8,7 +8,8 @@
 // 4. Run: npm install firebase-admin
 // 5. Run: node scripts/seed-opportunities.mjs
 
-import admin from "firebase-admin";
+import { initializeApp, cert } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -18,11 +19,11 @@ const serviceAccount = JSON.parse(
   readFileSync(join(__dirname, "serviceAccountKey.json"), "utf-8")
 );
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+initializeApp({
+  credential: cert(serviceAccount),
 });
 
-const db = admin.firestore();
+const db = getFirestore();
 
 const seedOpportunities = [
   // ── SCHOLARSHIP PLATFORMS ──────────────────────────────────────────────
