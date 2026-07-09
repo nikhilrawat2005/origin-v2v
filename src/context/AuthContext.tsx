@@ -18,6 +18,7 @@ import { auth, db } from "@/lib/firebase";
 interface UserProfile {
   name: string;
   email: string;
+  role?: "user" | "organization" | "admin";
   bio?: string;
   education?: string;
   skills?: string[];
@@ -77,6 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initialProfile: UserProfile = {
       name,
       email,
+      role: "user",
       bio: "",
       education: "",
       skills: [],
@@ -106,6 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const initialProfile: UserProfile = {
         name: cred.user.displayName || "User",
         email: cred.user.email || "",
+        role: "user",
         bio: "",
         education: "",
         skills: [],
