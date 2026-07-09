@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { LogOut, User, Menu, X, Sparkles, Bookmarks } from "lucide-react";
+import { LogOut, Menu, X, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 export default function Navbar() {
