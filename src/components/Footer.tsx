@@ -26,6 +26,7 @@ export default function Footer() {
               <li><Link href="/explore" className="hover:text-white transition-colors">Explore Opps</Link></li>
               <li><Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link></li>
               <li><Link href="/saved" className="hover:text-white transition-colors">Saved Opps</Link></li>
+              <li><Link href="/ai-hub" className="hover:text-white transition-colors">AI Hub</Link></li>
               <li><Link href="/profile" className="hover:text-white transition-colors">Profile Setup</Link></li>
             </ul>
           </div>

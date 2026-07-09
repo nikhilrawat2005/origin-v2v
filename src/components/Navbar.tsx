@@ -15,6 +15,7 @@ export default function Navbar() {
     { name: "Explore", href: "/explore" },
     { name: "Saved", href: "/saved" },
     { name: "Dashboard", href: "/dashboard" },
+    { name: "AI Hub", href: "/ai-hub" },
     { name: "Profile", href: "/profile" },
   ];
 
