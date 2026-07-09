@@ -12,7 +12,7 @@ export default function Footer() {
               <span className="p-1.5 bg-brand-purple text-white rounded-lg">
                 <Sparkles className="w-5 h-5" />
               </span>
-              <span>Aura</span>
+              <span>Bloom</span>
             </Link>
             <p className="text-sm max-w-sm">
               Empowering women worldwide to access funded academic scholarship schemes, professional fellowships, hackathons, and STEM programs in one unified environment.
@@ -42,7 +42,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-slate-850 mt-12 pt-6 text-center text-xs flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© 2026 Aura Platform. All rights reserved.</p>
+          <p>© 2026 Bloom Platform. All rights reserved.</p>
           <p className="flex items-center gap-1">
             Made with <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" /> for women in technology
           </p>

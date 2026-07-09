@@ -85,7 +85,7 @@ export default function Home() {
               transition={{ delay: 0.2 }}
               className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed"
             >
-              Aura connects women to global scholarships, fellowships, internships, hackathons, and STEM programs. Zero clutter. Just verified paths to advance your career.
+              Bloom connects women to global scholarships, fellowships, internships, hackathons, and STEM programs. Zero clutter. Just verified paths to advance your career.
             </motion.p>
 
             {/* Search Bar */}
@@ -174,7 +174,7 @@ export default function Home() {
         <section className="py-20 bg-slate-50/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-extrabold text-brand-navy">Why Join Aura?</h2>
+              <h2 className="text-3xl font-extrabold text-brand-navy">Why Join Bloom?</h2>
               <p className="mt-3 text-slate-500 max-w-xl mx-auto">
                 Built specifically to solve accessibility barriers and bridge the gender gap in technical fields.
               </p>
@@ -225,7 +225,7 @@ export default function Home() {
                   ))}
                 </div>
                 <p className="text-slate-700 italic text-sm leading-relaxed mb-6">
-                  "I had struggled to find international fellowships for research. Aura simplified my search. I got bookmarked notifications for Grace Hopper and got selected."
+                  "I had struggled to find international fellowships for research. Bloom simplified my search. I got bookmarked notifications for Grace Hopper and got selected."
                 </p>
                 <div>
                   <h5 className="font-bold text-slate-800 text-sm">Jessica Miller</h5>

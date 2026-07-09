@@ -105,7 +105,7 @@ export default function Profile() {
             </span>
             <h1 className="text-3xl font-extrabold text-brand-navy mt-2">Personalize Your Space</h1>
             <p className="text-sm text-slate-500 mt-1">
-              Provide your background details so Aura can match you with relevant scholarships and reminders.
+              Provide your background details so Bloom can match you with relevant scholarships and reminders.
             </p>
           </div>
 

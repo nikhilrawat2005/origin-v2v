@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Aura — Women's Opportunity Platform",
+  title: "Bloom — Women's Opportunity Platform",
   description: "Discover scholarships, internships, fellowships, hackathons, and STEM programs tailored for women in one place.",
 };
 

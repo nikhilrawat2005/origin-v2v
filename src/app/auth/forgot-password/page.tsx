@@ -40,7 +40,7 @@ export default function ForgotPassword() {
           <span className="p-1.5 bg-brand-purple text-white rounded-lg shadow-sm">
             <Sparkles className="w-5 h-5" />
           </span>
-          <span>Aura</span>
+          <span>Bloom</span>
         </Link>
         <h2 className="text-center text-3xl font-extrabold text-brand-navy">Reset Password</h2>
         <p className="mt-2 text-center text-sm text-slate-500">

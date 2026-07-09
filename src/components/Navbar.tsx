@@ -28,7 +28,7 @@ export default function Navbar() {
               <span className="p-1.5 bg-brand-purple text-white rounded-lg shadow-sm">
                 <Sparkles className="w-5 h-5" />
               </span>
-              <span>Aura</span>
+              <span>Bloom</span>
             </Link>
           </div>
 
@@ -81,7 +81,7 @@ export default function Navbar() {
                   href="/auth/signup"
                   className="text-sm font-semibold bg-brand-purple text-white hover:bg-brand-indigo px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-all"
                 >
-                  Join Aura
+                  Join Bloom
                 </Link>
               </div>
             )}
@@ -154,7 +154,7 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-center text-sm font-semibold bg-brand-purple text-white py-2.5 rounded-full"
               >
-                Join Aura
+                Join Bloom
               </Link>
             </div>
           )}

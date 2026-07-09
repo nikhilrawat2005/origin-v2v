@@ -327,7 +327,7 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
             {/* Official Apply Footer */}
             <div className="border-t border-slate-100 mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-xs text-slate-500 max-w-sm text-center sm:text-left">
-                Ensure you have all required documents updated on your Aura profile before applying.
+                Ensure you have all required documents updated on your Bloom profile before applying.
               </p>
               <a
                 href={opp.applyLink}

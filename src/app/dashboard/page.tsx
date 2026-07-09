@@ -121,10 +121,10 @@ export default function Dashboard() {
                 <Sparkles className="w-3.5 h-3.5" /> Workspace Dashboard
               </span>
               <h1 className="text-3xl font-extrabold text-brand-navy mt-1">
-                Hello, <span className="text-brand-purple italic">{profile?.name || currentUser?.displayName || "Aura Member"}</span>
+                Hello, <span className="text-brand-purple italic">{profile?.name || currentUser?.displayName || "Bloom Member"}</span>
               </h1>
               <p className="text-slate-500 text-xs mt-1">
-                {profile?.education ? `${profile.education} • ` : ""}{profile?.location || "Aura Platform"}
+                {profile?.education ? `${profile.education} • ` : ""}{profile?.location || "Bloom Platform"}
               </p>
             </div>
 
