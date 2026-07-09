@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #fdf8f9; /* Soft pale blush white */
   --foreground: #2d1e2f; /* Deep plum/navy */
