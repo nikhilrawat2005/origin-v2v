@@ -218,9 +218,6 @@ export default function TrackerPage() {
         status: nextStatus,
         updatedAt: new Date().toISOString(),
       });
-
-      const { notifyApplicationUpdate } = await import("@/lib/automationEngine");
-      await notifyApplicationUpdate(currentUser.uid, title, nextStatus);
     } catch (err) {
       console.error("Error shifting status:", err);
     }
