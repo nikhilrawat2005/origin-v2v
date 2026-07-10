@@ -3,7 +3,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs, addDoc, onSnapshot, getDoc, doc } from "firebase/firestore";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Calendar,
   Plus,
@@ -15,12 +15,14 @@ import {
   CalendarDays,
   Compass,
 } from "lucide-react";
-import { mockOpportunities } from "@/lib/mockData";
+import { useOpportunities } from "@/hooks/useOpportunities";
 import type { CalendarEvent, CalendarEventType } from "@/lib/types";
 
 export default function CalendarPage() {
   const { currentUser } = useAuth();
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const { opportunities } = useOpportunities();
+  const [customEvents, setCustomEvents] = useState<CalendarEvent[]>([]);
+  const [savedIds, setSavedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
 
@@ -43,7 +45,6 @@ export default function CalendarPage() {
   useEffect(() => {
     if (!currentUser) return;
 
-    // Load custom events + bookmarks as deadlines
     const loadEventsAndDeadlines = async () => {
       try {
         const list: CalendarEvent[] = [];
@@ -54,28 +55,16 @@ export default function CalendarPage() {
         customSnap.forEach((d) => {
           list.push({ id: d.id, ...d.data() } as CalendarEvent);
         });
+        setCustomEvents(list);
 
-        // 2. Fetch bookmarks, turn into "deadline" type calendar events
+        // 2. Fetch bookmarks
         const bookSnap = await getDoc(doc(db, "bookmarks", currentUser.uid));
         if (bookSnap.exists()) {
-          const savedIds: string[] = bookSnap.data().opportunityIds || [];
-          savedIds.forEach((id) => {
-            const opp = mockOpportunities.find((o) => o.id === id);
-            if (opp) {
-              list.push({
-                id: `deadline_${opp.id}`,
-                uid: currentUser.uid,
-                title: `${opp.title} (Deadline)`,
-                date: opp.deadline,
-                type: "deadline",
-                description: `Deadline to apply for ${opp.organization}`,
-                createdAt: new Date().toISOString(),
-              });
-            }
-          });
+          const ids: string[] = bookSnap.data().opportunityIds || [];
+          setSavedIds(ids);
+        } else {
+          setSavedIds([]);
         }
-
-        setEvents(list);
       } catch (err) {
         console.error(err);
       } finally {
@@ -85,6 +74,26 @@ export default function CalendarPage() {
 
     loadEventsAndDeadlines();
   }, [currentUser, syncing]);
+
+  // Compute combined events list reactively when opportunities or bookmarks change
+  const events = useMemo(() => {
+    const list = [...customEvents];
+    savedIds.forEach((id) => {
+      const opp = opportunities.find((o) => o.id === id);
+      if (opp) {
+        list.push({
+          id: `deadline_${opp.id}`,
+          uid: currentUser?.uid || "",
+          title: `${opp.title} (Deadline)`,
+          date: opp.deadline,
+          type: "deadline",
+          description: `Deadline to apply for ${opp.organization}`,
+          createdAt: new Date().toISOString(),
+        });
+      }
+    });
+    return list;
+  }, [customEvents, savedIds, opportunities, currentUser]);
 
   const handleAddEvent = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -23,6 +23,8 @@ export default function AdminPage() {
   const [stats, setStats] = useState<AdminStats>({
     totalUsers: 0,
     totalOpportunities: 0,
+    orgPostedCount: 0,
+    seededCount: 0,
     totalApplications: 0,
     totalCommunityPosts: 0,
   });
@@ -61,9 +63,14 @@ export default function AdminPage() {
           });
           setOrgOpps(items);
 
+          const seededCount = items.filter((o: OrgOpportunity) => (o as any).source === "seed-india-2026").length;
+          const orgPostedCount = items.length - seededCount;
+
           setStats({
             totalUsers: users.length,
-            totalOpportunities: items.length + 32, // Org + seed mock opportunities
+            totalOpportunities: items.length,
+            orgPostedCount,
+            seededCount,
             totalApplications: appCount,
             totalCommunityPosts: postCount,
           });
@@ -140,7 +147,10 @@ export default function AdminPage() {
         <div className="bg-surface border border-border p-5 rounded-3xl shadow-sm text-center hover:shadow-[0_0_0_1px_rgba(255,92,134,0.15),0_4px_16px_rgba(255,60,110,0.1)] transition-shadow">
           <FileText className="w-6 h-6 text-blue-500 mx-auto mb-2" />
           <span className="block text-[9px] font-bold text-foreground-muted uppercase tracking-wider">Opportunities</span>
-          <span className="text-lg font-extrabold text-foreground">{stats.totalOpportunities} active</span>
+          <span className="text-lg font-extrabold text-foreground">{stats.totalOpportunities} total</span>
+          <span className="block text-[9px] text-foreground-muted mt-0.5">
+            {stats.orgPostedCount} org-posted · {stats.seededCount} seeded
+          </span>
         </div>
         <div className="bg-surface border border-border p-5 rounded-3xl shadow-sm text-center hover:shadow-[0_0_0_1px_rgba(255,92,134,0.15),0_4px_16px_rgba(255,60,110,0.1)] transition-shadow">
           <FileSpreadsheet className="w-6 h-6 text-emerald-500 mx-auto mb-2" />

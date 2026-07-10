@@ -168,6 +168,8 @@ export interface OrgOpportunity {
 export interface AdminStats {
   totalUsers: number;
   totalOpportunities: number;
+  orgPostedCount: number;
+  seededCount: number;
   totalApplications: number;
   totalCommunityPosts: number;
 }

@@ -142,10 +142,11 @@ export async function refreshDeadlineAlerts(uid: string): Promise<void> {
     if (!bookmarkSnap.exists()) return;
 
     const savedIds: string[] = bookmarkSnap.data().opportunityIds || [];
-    const { mockOpportunities } = await import("@/lib/mockData");
+    const { getAllOpportunitiesOnce } = await import("@/lib/opportunitiesData");
+    const allOpportunities = await getAllOpportunitiesOnce();
 
     for (const oppId of savedIds) {
-      const opp = mockOpportunities.find((o) => o.id === oppId);
+      const opp = allOpportunities.find((o) => o.id === oppId);
       if (!opp) continue;
 
       const days = daysUntil(opp.deadline);

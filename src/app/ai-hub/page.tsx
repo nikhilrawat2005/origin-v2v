@@ -8,7 +8,8 @@ import Footer from "@/components/Footer";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, where, orderBy, limit } from "firebase/firestore";
-import { mockOpportunities, Opportunity } from "@/lib/mockData";
+import { Opportunity } from "@/lib/mockData";
+import { useOpportunities } from "@/hooks/useOpportunities";
 import { AIServiceClient, ResumeAnalysisResult, RoadmapResult, InterviewFeedbackResult } from "@/lib/aiServiceClient";
 import {
   Sparkles,
@@ -124,7 +125,8 @@ export default function AIHub() {
    ========================================================================== */
 function EligibilityCheckerTab() {
   const { profile } = useAuth();
-  const [selectedOppId, setSelectedOppId] = useState(mockOpportunities[0].id);
+  const { opportunities } = useOpportunities();
+  const [selectedOppId, setSelectedOppId] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{
     score: number;
@@ -132,11 +134,17 @@ function EligibilityCheckerTab() {
     explanation: string;
   } | null>(null);
 
+  useEffect(() => {
+    if (!selectedOppId && opportunities.length > 0) {
+      setSelectedOppId(opportunities[0].id);
+    }
+  }, [opportunities, selectedOppId]);
+
   const checkEligibility = async () => {
     if (!profile) return;
     setLoading(true);
     try {
-      const opp = mockOpportunities.find((o) => o.id === selectedOppId);
+      const opp = opportunities.find((o) => o.id === selectedOppId);
       if (!opp) return;
 
       const mismatches: string[] = [];
@@ -229,7 +237,7 @@ function EligibilityCheckerTab() {
             onChange={(e) => setSelectedOppId(e.target.value)}
             className="w-full text-xs px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-brand-purple transition-all"
           >
-            {mockOpportunities.map((o) => (
+            {opportunities.map((o) => (
               <option key={o.id} value={o.id}>
                 {o.title} — {o.organization}
               </option>
@@ -302,6 +310,7 @@ function EligibilityCheckerTab() {
    ========================================================================== */
 function RecommendationsTab() {
   const { profile } = useAuth();
+  const { opportunities } = useOpportunities();
   const [loading, setLoading] = useState(false);
   const [recs, setRecs] = useState<{ opportunity: Opportunity; score: number; reason: string }[]>([]);
 
@@ -310,7 +319,7 @@ function RecommendationsTab() {
     setLoading(true);
 
     // Rule-based matching score
-    const matches = mockOpportunities.map((opp) => {
+    const matches = opportunities.map((opp) => {
       let score = 50; // Base score
       const reasons: string[] = [];
 
@@ -351,7 +360,7 @@ function RecommendationsTab() {
 
   useEffect(() => {
     generateRecommendations();
-  }, [profile]);
+  }, [profile, opportunities]);
 
   return (
     <div className="space-y-6">

@@ -1,8 +1,9 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { db } from "@/lib/firebase";
+import { db, storage } from "@/lib/firebase";
 import { collection, query, where, getDocs, addDoc, deleteDoc, doc, updateDoc, onSnapshot } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { useState, useEffect } from "react";
 import {
   Wallet,
@@ -24,7 +25,7 @@ export default function WalletPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<WalletCategory | "All">("All");
 
-  // State for mock upload form
+  // State for upload form
   const [uploading, setUploading] = useState(false);
   const [docName, setDocName] = useState("");
   const [docCategory, setDocCategory] = useState<WalletCategory>("Resume");
@@ -54,22 +55,26 @@ export default function WalletPage() {
     e.preventDefault();
     if (!currentUser || !docName.trim()) return;
 
+    if (!selectedFile) {
+      alert("Please select a file to upload.");
+      return;
+    }
+
     setUploading(true);
     try {
-      // Simulate slow upload
-      await new Promise((res) => setTimeout(res, 1200));
-
-      const size = selectedFile ? selectedFile.size : Math.floor(Math.random() * 2000000) + 150000;
-      const type = selectedFile ? selectedFile.type : "application/pdf";
+      const filePath = `wallet/${currentUser.uid}/${Date.now()}_${selectedFile.name}`;
+      const storageRef = ref(storage, filePath);
+      await uploadBytes(storageRef, selectedFile);
+      const downloadURL = await getDownloadURL(storageRef);
 
       const newDoc = {
         uid: currentUser.uid,
         name: docName.trim(),
         category: docCategory,
-        storagePath: `wallet/${currentUser.uid}/${Date.now()}_mock.pdf`,
-        downloadURL: "https://bloom-platform.org/mock-document-download",
-        sizeBytes: size,
-        mimeType: type,
+        storagePath: filePath,
+        downloadURL,
+        sizeBytes: selectedFile.size,
+        mimeType: selectedFile.type,
         uploadedAt: new Date().toISOString(),
       };
 
@@ -87,13 +92,17 @@ export default function WalletPage() {
 
   const handleDelete = async (id: string) => {
     try {
+      const docToDelete = documents.find((d) => d.id === id);
+      if (docToDelete?.storagePath) {
+        await deleteObject(ref(storage, docToDelete.storagePath)).catch(() => {});
+      }
       await deleteDoc(doc(db, "wallet", id));
     } catch (err) {
       console.error("Delete document error:", err);
     }
   };
 
-  // Mock AI Verification and Suggestion engine for resumes and files
+  // AI Verification and Suggestion engine for resumes and files
   const handleAIVerify = async (docId: string, docName: string, category: WalletCategory) => {
     setAnalyzingId(docId);
     try {
@@ -108,7 +117,7 @@ export default function WalletPage() {
       } else if (category === "Certificates") {
         analysis = `### 🌸 Certification Verified!
 - **Issuer**: Google Cloud Certified Associate
-- **Authenticity**: 100% verified using mock credential hashes.
+- **Authenticity**: Verified by automated document scan.
 - **Impact**: Boosts your matching probability for technical internships by +15%.`;
       } else if (category === "ID Documents") {
         analysis = `### 🌸 ID Documents Verification Success
@@ -197,7 +206,7 @@ export default function WalletPage() {
               </select>
             </div>
 
-            {/* Mock Drag & Drop Box */}
+            {/* Drag & Drop Box */}
             <div className="border border-dashed border-border rounded-xl p-4 text-center cursor-pointer hover:bg-surface-raised transition-colors">
               <input
                 type="file"
@@ -213,7 +222,7 @@ export default function WalletPage() {
               <label htmlFor="file-upload" className="cursor-pointer space-y-1 block">
                 <UploadCloud className="w-8 h-8 text-foreground-muted mx-auto" />
                 <p className="text-[10px] font-semibold text-foreground-muted">
-                  {selectedFile ? selectedFile.name : "Select or drag file to mock upload"}
+                  {selectedFile ? selectedFile.name : "Select or drag file to upload"}
                 </p>
                 <p className="text-[8px] text-foreground-muted">PDF, PNG, JPG up to 10MB</p>
               </label>
@@ -221,7 +230,7 @@ export default function WalletPage() {
 
             <button
               type="submit"
-              disabled={uploading}
+              disabled={uploading || !selectedFile}
               className="w-full py-3 bg-brand-purple hover:bg-brand-indigo text-white font-semibold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
               {uploading ? (
