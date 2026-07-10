@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
-import { collection, query, where, onSnapshot, doc, updateDoc, addDoc, getDoc } from "firebase/firestore";
+import { collection, query, where, onSnapshot, doc, updateDoc, addDoc, getDoc, deleteDoc } from "firebase/firestore";
 import { useState, useEffect, useRef, useMemo } from "react";
 import {
   Layers,
@@ -15,6 +15,7 @@ import {
   X,
   FileText,
   ExternalLink,
+  Trash2,
 } from "lucide-react";
 import type { ApplicationEntry, ApplicationType } from "@/lib/types";
 import { TRACKER_TYPES, TRACKER_TYPE_CONFIG, getStagesForType } from "@/lib/trackerTypes";
@@ -249,6 +250,23 @@ export default function TrackerPage() {
       });
     } catch (err) {
       console.error("Error shifting status:", err);
+    }
+  };
+
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  const handleDeleteApplication = async (appId: string) => {
+    if (!currentUser) return;
+    setDeletingId(appId);
+    try {
+      await deleteDoc(doc(db, "applications", appId));
+      setSelectedApp(null);
+      setConfirmDeleteId(null);
+    } catch (err) {
+      console.error("Error deleting application:", err);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -634,7 +652,45 @@ export default function TrackerPage() {
                               >
                                 <ChevronLeft className="w-3.5 h-3.5" />
                               </motion.button>
-                              <span className="text-[8px] text-foreground-muted font-medium">tap card for details</span>
+
+                              {confirmDeleteId === app.id ? (
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDeleteApplication(app.id);
+                                    }}
+                                    disabled={deletingId === app.id}
+                                    className="text-[8px] font-bold text-danger px-1.5 py-0.5 rounded bg-danger-surface hover:opacity-80 transition-all"
+                                  >
+                                    {deletingId === app.id ? "…" : "Confirm"}
+                                  </button>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setConfirmDeleteId(null);
+                                    }}
+                                    className="text-[8px] font-bold text-foreground-muted px-1.5 py-0.5 rounded hover:bg-surface-raised transition-all"
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              ) : (
+                                <motion.button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setConfirmDeleteId(app.id);
+                                  }}
+                                  whileHover={{ scale: 1.15 }}
+                                  whileTap={{ scale: 0.85 }}
+                                  transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                                  className="p-1 hover:bg-danger-surface rounded text-foreground-muted hover:text-danger transition-all"
+                                  title="Delete card"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </motion.button>
+                              )}
+
                               <motion.button
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -796,6 +852,35 @@ export default function TrackerPage() {
                 >
                   Close
                 </button>
+              </div>
+
+              {/* Delete — separate row, confirm-to-delete */}
+              <div className="pt-1">
+                {confirmDeleteId === selectedApp.id ? (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleDeleteApplication(selectedApp.id)}
+                      disabled={deletingId === selectedApp.id}
+                      className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-danger hover:opacity-90 text-white font-semibold text-xs rounded-2xl transition-all"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      {deletingId === selectedApp.id ? "Deleting…" : "Yes, Delete Permanently"}
+                    </button>
+                    <button
+                      onClick={() => setConfirmDeleteId(null)}
+                      className="px-4 py-2.5 border border-border text-foreground-muted hover:bg-surface-raised font-semibold text-xs rounded-2xl transition-all"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setConfirmDeleteId(selectedApp.id)}
+                    className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 text-danger hover:bg-danger-surface font-semibold text-xs rounded-2xl transition-all"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Delete Card
+                  </button>
+                )}
               </div>
             </motion.div>
           </motion.div>
