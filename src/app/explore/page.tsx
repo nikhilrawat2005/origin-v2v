@@ -83,8 +83,32 @@ function ExploreContent() {
   const [selectedDegree, setSelectedDegree] = useState("");
   const [selectedField, setSelectedField] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
-  const [incomeLimit, setIncomeLimit] = useState("");
   const [savedIds, setSavedIds] = useState<string[]>([]);
+
+  // Dynamic filter options from real data
+  const uniqueCountries = Array.from(
+    new Set(
+      opportunities
+        .map((o) => o.country?.trim())
+        .filter((c): c is string => !!c && c.length > 0)
+    )
+  ).sort();
+
+  const uniqueFields = Array.from(
+    new Set(
+      opportunities
+        .map((o) => o.field?.trim())
+        .filter((f): f is string => !!f && f.length > 0)
+    )
+  ).sort();
+
+  const uniqueDegreeLevels = Array.from(
+    new Set(
+      opportunities
+        .map((o) => o.degreeLevel?.trim())
+        .filter((d): d is string => !!d && d.length > 0)
+    )
+  ).sort();
 
   // Fetch bookmarks
   useEffect(() => {
@@ -137,13 +161,8 @@ function ExploreContent() {
 
     if (selectedCategory && opp.category !== selectedCategory) return false;
     if (selectedDegree && opp.degreeLevel && opp.degreeLevel !== selectedDegree) return false;
-    if (selectedField && opp.field.toLowerCase() !== selectedField.toLowerCase()) return false;
-    if (selectedCountry && opp.country.toLowerCase() !== selectedCountry.toLowerCase()) return false;
-
-    if (incomeLimit && opp.incomeLimit) {
-      const limit = parseInt(incomeLimit);
-      if (opp.incomeLimit < limit) return false;
-    }
+    if (selectedField && opp.field?.toLowerCase() !== selectedField.toLowerCase()) return false;
+    if (selectedCountry && opp.country?.toLowerCase() !== selectedCountry.toLowerCase()) return false;
 
     return true;
   });
@@ -197,80 +216,69 @@ function ExploreContent() {
                 <option value="Conferences">Conferences</option>
                 <option value="Hackathons">Hackathons</option>
                 <option value="STEM Programs">STEM Programs</option>
+                <option value="Research Programs">Research Programs</option>
+                <option value="Exchange Programs">Exchange Programs</option>
               </select>
             </motion.div>
 
-            {/* Degree Select */}
-            <motion.div variants={filterFieldVariants}>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
-                Degree Level
-              </label>
-              <select
-                value={selectedDegree}
-                onChange={(e) => setSelectedDegree(e.target.value)}
-                className={selectClass}
-              >
-                <option value="">All Levels</option>
-                <option value="Bachelor">Bachelor</option>
-                <option value="Master">Master</option>
-                <option value="PhD">PhD</option>
-              </select>
-            </motion.div>
+            {/* Degree Level — dynamic from data */}
+            {uniqueDegreeLevels.length > 0 && (
+              <motion.div variants={filterFieldVariants}>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
+                  Degree Level
+                </label>
+                <select
+                  value={selectedDegree}
+                  onChange={(e) => setSelectedDegree(e.target.value)}
+                  className={selectClass}
+                >
+                  <option value="">All Levels</option>
+                  {uniqueDegreeLevels.map((d) => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+              </motion.div>
+            )}
 
-            {/* Field Select */}
-            <motion.div variants={filterFieldVariants}>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
-                Field of Study
-              </label>
-              <select
-                value={selectedField}
-                onChange={(e) => setSelectedField(e.target.value)}
-                className={selectClass}
-              >
-                <option value="">All Fields</option>
-                <option value="Computer Science">Computer Science</option>
-                <option value="STEM">STEM / Science</option>
-                <option value="Software Engineering">Software Engineering</option>
-                <option value="Cybersecurity">Cybersecurity</option>
-              </select>
-            </motion.div>
+            {/* Field of Study — dynamic from data */}
+            {uniqueFields.length > 0 && (
+              <motion.div variants={filterFieldVariants}>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
+                  Field of Study
+                </label>
+                <select
+                  value={selectedField}
+                  onChange={(e) => setSelectedField(e.target.value)}
+                  className={selectClass}
+                >
+                  <option value="">All Fields</option>
+                  {uniqueFields.map((f) => (
+                    <option key={f} value={f}>{f}</option>
+                  ))}
+                </select>
+              </motion.div>
+            )}
 
-            {/* Country Select */}
-            <motion.div variants={filterFieldVariants}>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
-                Country
-              </label>
-              <select
-                value={selectedCountry}
-                onChange={(e) => setSelectedCountry(e.target.value)}
-                className={selectClass}
-              >
-                <option value="">Global / All Countries</option>
-                <option value="United States">United States</option>
-                <option value="Canada">Canada</option>
-                <option value="France">France</option>
-                <option value="Global">Global</option>
-              </select>
-            </motion.div>
+            {/* Country — dynamic from data */}
+            {uniqueCountries.length > 0 && (
+              <motion.div variants={filterFieldVariants}>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
+                  Country / Region
+                </label>
+                <select
+                  value={selectedCountry}
+                  onChange={(e) => setSelectedCountry(e.target.value)}
+                  className={selectClass}
+                >
+                  <option value="">All Countries</option>
+                  {uniqueCountries.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </motion.div>
+            )}
 
-            {/* Income Bracket Limit */}
-            <motion.div variants={filterFieldVariants}>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
-                Family Income Bracket ($)
-              </label>
-              <select
-                value={incomeLimit}
-                onChange={(e) => setIncomeLimit(e.target.value)}
-                className={selectClass}
-              >
-                <option value="">No Income Restriction</option>
-                <option value="50000">Under $50,000</option>
-                <option value="90000">Under $90,000</option>
-                <option value="120000">Under $120,000</option>
-              </select>
-            </motion.div>
-
-            {/* Clear Filters Button */}
+            {/* Reset Filters */}
             <motion.button
               variants={filterFieldVariants}
               whileHover={{ scale: 1.02 }}
@@ -281,7 +289,6 @@ function ExploreContent() {
                 setSelectedDegree("");
                 setSelectedField("");
                 setSelectedCountry("");
-                setIncomeLimit("");
               }}
               className="w-full text-xs text-center border border-border hover:border-primary hover:text-primary py-2.5 rounded-xl transition-all font-semibold text-foreground-muted hover:bg-primary/5"
             >
