@@ -114,8 +114,23 @@ export default function WalletPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      // In unsigned client-side uploads, deleting assets directly from the client is restricted by design to prevent security issues.
-      // We safely delete the reference document from Firestore.
+      const docToDelete = documents.find((d) => d.id === id);
+
+      if (docToDelete?.storagePath) {
+        const res = await fetch("/api/wallet/delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ publicId: docToDelete.storagePath }),
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          console.error("Cloudinary delete failed:", errData.error);
+          // Continue to delete the Firestore record anyway so the UI doesn't
+          // get stuck with an undeletable entry — but log this for manual cleanup.
+        }
+      }
+
       await deleteDoc(doc(db, "wallet", id));
     } catch (err) {
       console.error("Delete document error:", err);
