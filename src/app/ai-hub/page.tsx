@@ -179,7 +179,7 @@ function EligibilityCheckerTab() {
       if (opp.incomeLimit && profile.income) {
         const userIncome = parseInt(profile.income);
         if (userIncome > opp.incomeLimit) {
-          mismatches.push(`Opportunity has a family income limit of $${opp.incomeLimit.toLocaleString()} (Your Selection: $${userIncome.toLocaleString()})`);
+          mismatches.push(`Opportunity has a family income limit of ₹${opp.incomeLimit.toLocaleString()} (Your Selection: ₹${userIncome.toLocaleString()})`);
           matchPoints--;
         }
       }

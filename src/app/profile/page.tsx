@@ -226,7 +226,7 @@ export default function Profile() {
                 {/* Annual Income */}
                 <motion.div variants={itemVariants}>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
-                    Annual Family Income ($)
+                    Annual Family Income (₹)
                   </label>
                   <select
                     {...register("income")}
@@ -235,11 +235,11 @@ export default function Profile() {
                     }`}
                   >
                     <option value="">Select Bracket</option>
-                    <option value="30000">Under $30,000</option>
-                    <option value="60000">Under $60,000</option>
-                    <option value="100000">Under $100,000</option>
-                    <option value="150000">Under $150,000</option>
-                    <option value="999999">No Limit / Above $150,000</option>
+                    <option value="250000">Under ₹2.5 Lakhs</option>
+                    <option value="500000">Under ₹5 Lakhs</option>
+                    <option value="800000">Under ₹8 Lakhs</option>
+                    <option value="1200000">Under ₹12 Lakhs</option>
+                    <option value="99999999">No Limit / Above ₹12 Lakhs</option>
                   </select>
                   {errors.income && (
                     <p className="mt-1 text-xs text-danger">{errors.income.message}</p>
