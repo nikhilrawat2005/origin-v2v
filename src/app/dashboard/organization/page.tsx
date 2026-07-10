@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs, addDoc, doc, updateDoc, onSnapshot } from "firebase/firestore";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Building2,
   Plus,
@@ -20,10 +21,18 @@ import {
 import type { OrgOpportunity, OrgOpportunityStatus } from "@/lib/types";
 
 export default function OrgDashboardPage() {
-  const { currentUser, profile } = useAuth();
+  const { currentUser, profile, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [opportunities, setOpportunities] = useState<OrgOpportunity[]>([]);
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (!currentUser || (profile?.role !== "organization" && profile?.role !== "admin")) {
+      router.push("/dashboard");
+    }
+  }, [currentUser, profile, authLoading, router]);
 
   // Form states
   const [showAddForm, setShowAddForm] = useState(false);
@@ -118,7 +127,7 @@ export default function OrgDashboardPage() {
     }
   };
 
-  if (loading) {
+  if (loading || authLoading || !currentUser || (profile?.role !== "organization" && profile?.role !== "admin")) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />

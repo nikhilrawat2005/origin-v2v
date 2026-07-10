@@ -14,6 +14,7 @@ import {
 } from "firebase/auth";
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
+import { isAllowedAdminEmail } from "@/lib/adminConfig";
 
 interface UserProfile {
   name: string;
@@ -64,7 +65,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const snap = await getDoc(doc(db, "users", activeUid));
       if (snap.exists()) {
-        setProfile(snap.data() as UserProfile);
+        const data = snap.data() as UserProfile;
+
+        // Self-heal: if this email is on the hardcoded admin allowlist but
+        // the stored role doesn't say "admin" yet (e.g. they signed up
+        // before being whitelisted), promote them now. Firestore rules are
+        // the real enforcement layer — this just keeps the UI in sync.
+        if (isAllowedAdminEmail(data.email) && data.role !== "admin") {
+          await updateDoc(doc(db, "users", activeUid), { role: "admin" });
+          data.role = "admin";
+        }
+
+        setProfile(data);
       }
     } catch (error) {
       console.error("Error loading user profile:", error);
@@ -78,7 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initialProfile: UserProfile = {
       name,
       email,
-      role: "user",
+      role: isAllowedAdminEmail(email) ? "admin" : "user",
       bio: "",
       education: "",
       skills: [],
@@ -108,7 +120,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const initialProfile: UserProfile = {
         name: cred.user.displayName || "User",
         email: cred.user.email || "",
-        role: "user",
+        role: isAllowedAdminEmail(cred.user.email) ? "admin" : "user",
         bio: "",
         education: "",
         skills: [],
@@ -121,7 +133,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await setDoc(doc(db, "users", cred.user.uid), initialProfile);
       setProfile(initialProfile);
     } else {
-      setProfile(snap.data() as UserProfile);
+      const data = snap.data() as UserProfile;
+      if (isAllowedAdminEmail(data.email) && data.role !== "admin") {
+        await updateDoc(doc(db, "users", cred.user.uid), { role: "admin" });
+        data.role = "admin";
+      }
+      setProfile(data);
     }
     return cred;
   }

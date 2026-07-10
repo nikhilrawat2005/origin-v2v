@@ -4,6 +4,8 @@ import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import { collection, query, getDocs, updateDoc, doc, getDoc, onSnapshot } from "firebase/firestore";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { isAllowedAdminEmail } from "@/lib/adminConfig";
 import {
   ShieldCheck,
   Building,
@@ -19,7 +21,8 @@ import {
 import type { OrgOpportunity, AdminStats } from "@/lib/types";
 
 export default function AdminPage() {
-  const { currentUser } = useAuth();
+  const { currentUser, profile, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [stats, setStats] = useState<AdminStats>({
     totalUsers: 0,
     totalOpportunities: 0,
@@ -33,7 +36,15 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return;
+    if (!currentUser || !isAllowedAdminEmail(currentUser.email)) {
+      router.push("/dashboard");
+    }
+  }, [currentUser, authLoading, router]);
+
+  useEffect(() => {
     if (!currentUser) return;
+    if (!isAllowedAdminEmail(currentUser.email)) return;
 
     // Load admin panel dashboard data
     const loadAdminData = async () => {
@@ -116,7 +127,7 @@ export default function AdminPage() {
     }
   };
 
-  if (loading) {
+  if (loading || authLoading || !currentUser || !isAllowedAdminEmail(currentUser.email)) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
@@ -253,11 +264,12 @@ export default function AdminPage() {
                   <select
                     value={usr.role || "user"}
                     onChange={(e) => handleRoleChange(usr.id, e.target.value as any)}
-                    className="text-[10px] font-bold p-1.5 bg-background border border-border rounded-lg outline-none text-foreground focus:border-brand-purple"
+                    disabled={isAllowedAdminEmail(usr.email)}
+                    className="text-[10px] font-bold p-1.5 bg-background border border-border rounded-lg outline-none text-foreground focus:border-brand-purple disabled:opacity-50"
                   >
                     <option value="user">User</option>
                     <option value="organization">Organization</option>
-                    <option value="admin">Admin</option>
+                    {usr.role === "admin" && <option value="admin">Admin</option>}
                   </select>
                 </div>
               </div>

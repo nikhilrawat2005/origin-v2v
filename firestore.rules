@@ -1,0 +1,175 @@
+// firestore.rules
+//
+// HOW TO DEPLOY THIS:
+// Option A (no CLI needed): Firebase Console → your project → Firestore
+// Database → Rules tab → paste this entire file → Publish.
+// Option B (CLI): `firebase deploy --only firestore:rules` (needs
+// firebase-tools installed + `firebase init firestore` run once).
+//
+// IMPORTANT: The admin email list below MUST be kept in sync with
+// src/lib/adminConfig.ts (ALLOWED_ADMIN_EMAILS). This is the layer that
+// actually matters for security — the UI checks in adminConfig.ts /
+// admin page are just UX, this is what actually stops someone editing
+// Firestore directly (e.g. via browser devtools) from making themselves
+// admin.
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ──────────────────────────────────────────────────────────
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // Keep this list identical to ALLOWED_ADMIN_EMAILS in
+    // src/lib/adminConfig.ts.
+    function isAdminEmail() {
+      return isSignedIn() && request.auth.token.email in [
+        "bhatt.yogesh0814@gmail.com",
+        "ypranjalt@gmail.com",
+        "nikhil2005114@gmail.com"
+      ];
+    }
+
+    // ── Users ────────────────────────────────────────────────────────────
+    // Anyone signed in can read their own profile. Admins can read any
+    // profile (needed for the admin panel's user list).
+    // On write: a user can update their own doc, but can NEVER change their
+    // own `role` field unless they're on the hardcoded admin allowlist.
+    // Only allowlisted admins can change ANYONE's role (via the admin panel).
+
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdminEmail();
+      allow create: if isOwner(uid) &&
+        (request.resource.data.role == "user" || isAdminEmail());
+      allow update: if isAdminEmail() ||
+        (isOwner(uid) &&
+          request.resource.data.role == resource.data.role);
+      allow delete: if isAdminEmail();
+    }
+
+    // ── Opportunities (organization-posted + automated ingestion) ────────
+    // Public read of approved listings (explore page). Owners can read
+    // their own pending/rejected listings. Admins can read everything.
+    // Only admins (or the automated-ingestion cron, which uses the Admin
+    // SDK and bypasses rules entirely) can change `status`. Organization
+    // owners can create their own listings (always starting as "pending")
+    // and edit their own non-status fields.
+
+    match /org_opportunities/{oppId} {
+      allow read: if resource.data.status == "approved" ||
+        isAdminEmail() ||
+        (isSignedIn() && resource.data.postedByUid == request.auth.uid);
+
+      allow create: if isSignedIn() &&
+        request.resource.data.postedByUid == request.auth.uid &&
+        request.resource.data.status == "pending";
+
+      allow update: if isAdminEmail() ||
+        (isSignedIn() &&
+          resource.data.postedByUid == request.auth.uid &&
+          request.resource.data.status == resource.data.status);
+
+      allow delete: if isAdminEmail() ||
+        (isSignedIn() && resource.data.postedByUid == request.auth.uid);
+    }
+
+    // ── Ingestion logs (written only by the server via Admin SDK) ────────
+    match /ingestion_logs/{logId} {
+      allow read: if isAdminEmail();
+      allow write: if false; // Admin SDK (cron route) bypasses rules anyway
+    }
+
+    // ── Owner-only collections: wallet, applications (tracker), ──────────
+    // ── calendar_events, reminders — all keyed by a `uid` field ──────────
+
+    match /wallet/{docId} {
+      allow read, delete: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    match /applications/{docId} {
+      allow read, delete: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    match /calendar_events/{docId} {
+      allow read, delete: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    match /reminders/{docId} {
+      allow read, delete: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    match /eligibility_checks/{docId} {
+      allow read, delete: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    match /resume_analyses/{docId} {
+      allow read, delete: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    match /interviews/{docId} {
+      allow read, delete: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // Per-user notification subcollection: notifications/{uid}/items/{id}
+    match /notifications/{uid}/items/{itemId} {
+      allow read, write: if isOwner(uid);
+    }
+
+    // ── Community (forum posts, replies, mentorship requests) ────────────
+    // Readable by any signed-in user. Creation requires you to be the
+    // stated author. Updates are allowed by any signed-in user because
+    // likes/replyCount are incremented by other users, not just the author
+    // — but only the author (or an admin) can delete.
+
+    match /community_posts/{postId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.authorUid == request.auth.uid;
+      allow update: if isSignedIn();
+      allow delete: if isAdminEmail() ||
+        (isSignedIn() && resource.data.authorUid == request.auth.uid);
+    }
+
+    match /community_replies/{replyId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.authorUid == request.auth.uid;
+      allow update: if isSignedIn();
+      allow delete: if isAdminEmail() ||
+        (isSignedIn() && resource.data.authorUid == request.auth.uid);
+    }
+
+    match /mentorship_requests/{reqId} {
+      allow read: if isAdminEmail() ||
+        (isSignedIn() && resource.data.uid == request.auth.uid);
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if isAdminEmail() ||
+        (isSignedIn() && resource.data.uid == request.auth.uid);
+    }
+
+    // Default: deny everything not explicitly matched above.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
