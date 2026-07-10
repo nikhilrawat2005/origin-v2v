@@ -617,6 +617,9 @@ async function seed() {
       ...opp,
       source: "seed-india-2026",
       postedByUid: "seed-admin",
+      status: "approved", // pre-vetted real data — show immediately, skip admin review
+      applicationCount: opp.applicationCount ?? 0,
+      viewCount: opp.viewCount ?? 0,
       createdAt: new Date().toISOString(),
     }, { merge: true });
   }
