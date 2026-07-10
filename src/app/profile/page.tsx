@@ -251,14 +251,22 @@ export default function Profile() {
                   <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                     Location (Country)
                   </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. United States, Global"
+                  <select
                     {...register("location")}
                     className={`${inputBase} ${
                       errors.location ? "border-danger" : "border-border"
                     }`}
-                  />
+                  >
+                    <option value="">Select Location</option>
+                    <option value="India">India</option>
+                    <option value="Global">Global / Worldwide</option>
+                    <option value="United States">United States</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="Canada">Canada</option>
+                    <option value="Singapore">Singapore</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Germany">Germany</option>
+                  </select>
                   {errors.location && (
                     <p className="mt-1 text-xs text-danger">{errors.location.message}</p>
                   )}
