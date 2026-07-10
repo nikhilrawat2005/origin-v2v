@@ -8,36 +8,41 @@
    ============================================================ */
 :root {
   /* Backgrounds */
-  --background: #fdf8f9;        /* Soft pale blush white */
+  --background: #fbf9f6;        /* Warm ivory — confident, not candy-pink */
   --surface: #ffffff;           /* Cards, panels */
-  --surface-raised: #fff7f8;    /* Modals, dropdowns */
-  --surface-footer: #2d1e2f;   /* Footer always stays dark */
+  --surface-raised: #f7f1ee;    /* Modals, dropdowns */
+  --surface-footer: #231a2e;    /* Footer always stays dark */
 
   /* Text */
-  --foreground: #2d1e2f;        /* Deep plum — primary text */
-  --foreground-muted: #6b5b6e;  /* Secondary / muted text */
+  --foreground: #231a2e;        /* Deep plum-ink — primary text */
+  --foreground-muted: #5c5468;  /* Muted plum-grey */
 
   /* Borders */
-  --border: #f0dde3;            /* Subtle rose-tinted border */
-  --border-strong: #e2c8d0;     /* Stronger border variant */
+  --border: #e8e1dd;            /* Warm neutral border */
+  --border-strong: #d8cdc7;     /* Stronger border variant */
 
-  /* Brand / Accent */
-  --primary: #e5829b;           /* Soft warm rose */
-  --primary-hover: #d16b84;     /* Darker rose on hover */
-  --primary-foreground: #ffffff; /* White text on primary */
+  /* Brand / Accent — deep berry rose (confident, not soft/candy) */
+  --primary: #b23a5c;
+  --primary-hover: #8e2c48;
+  --primary-foreground: #ffffff;
+
+  /* Secondary — ink navy (credibility / career signal) */
+  --secondary: #2c3e66;
+  --secondary-hover: #1e2c4a;
+  --secondary-foreground: #ffffff;
+
+  /* Accent gold — achievement / success highlights (stars, badges) */
+  --accent-gold: #c99a3e;
+  --accent-gold-surface: #faf1dd;
 
   /* Semantic */
-  --accent-glow: rgba(229, 130, 155, 0.12);
-  --danger: #c93a3a;
-  --danger-surface: #fff0f0;
-  --success: #2a8f54;
-  --success-surface: #f0fdf4;
+  --accent-glow: rgba(178, 58, 92, 0.12);
+  --danger: #c1392b;
+  --danger-surface: #fdf0ee;
+  --success: #2e7d5b;
+  --success-surface: #eef8f3;
   --warning: #b45309;
   --warning-surface: #fffbeb;
-
-  /* Legacy aliases (kept for gradual migration) */
-  --navy: #2d1e2f;
-  --purple: #e5829b;
 }
 
 /* ============================================================
@@ -47,36 +52,44 @@
    ============================================================ */
 .dark {
   /* Backgrounds */
-  --background: #0b090c;        /* Near-black, faint violet cast */
-  --surface: #15101a;           /* Cards — dark violet-black */
-  --surface-raised: #1e1524;    /* Modals, dropdowns */
-  --surface-footer: #0f0b10;    /* Footer — deepest black */
+  --background: #12101a;        /* Deep ink-violet black */
+  --surface: #1c1826;           /* Cards */
+  --surface-raised: #241f30;    /* Modals, dropdowns */
+  --surface-footer: #0f0b14;    /* Footer — deepest black */
 
   /* Text */
-  --foreground: #f5e8ec;        /* Warm off-white, not stark white */
-  --foreground-muted: #b899a4;  /* Dusty rose-grey — NOT neutral grey */
+  --foreground: #f3ede9;        /* Warm off-white, not stark white */
+  --foreground-muted: #a99fb0;  /* Muted rose-grey — checked for AA contrast */
 
-  /* Borders — pink-tinted, not grey */
-  --border: rgba(255, 92, 134, 0.15);
-  --border-strong: rgba(255, 92, 134, 0.28);
+  /* Borders — rose-tinted, not grey */
+  --border: rgba(233, 138, 166, 0.14);
+  --border-strong: rgba(233, 138, 166, 0.26);
 
-  /* Brand / Accent — hot pink / crimson */
-  --primary: #ff5c86;           /* Hot pink */
-  --primary-hover: #ff7d9e;     /* Brighter pink on hover */
-  --primary-foreground: #ffffff;
+  /* Brand / Accent — rich rose, less neon than before */
+  --primary: #e85d82;
+  --primary-hover: #f17c9c;
+  /* Dark ink instead of white: white-on-rose only hits 3.32:1 (fails WCAG AA 4.5:1).
+     Dark ink on this rose hits 5.67:1. */
+  --primary-foreground: #12101a;
+
+  /* Secondary — soft periwinkle blue (pairs with rose, premium not neon) */
+  --secondary: #6c8ae4;
+  --secondary-hover: #8aa2ec;
+  --secondary-foreground: #12101a;
+
+  /* Accent gold — achievement / success highlights */
+  --accent-gold: #e0b054;
+  --accent-gold-surface: rgba(224, 176, 84, 0.12);
 
   /* Semantic */
-  --accent-glow: rgba(255, 60, 110, 0.18);
-  --danger: #ff5c5c;
-  --danger-surface: rgba(255, 92, 92, 0.1);
-  --success: #4ade80;
-  --success-surface: rgba(74, 222, 128, 0.1);
-  --warning: #fbbf24;
-  --warning-surface: rgba(251, 191, 36, 0.1);
-
-  /* Legacy aliases */
-  --navy: #f5e8ec;
-  --purple: #ff5c86;
+  --accent-glow: rgba(232, 93, 130, 0.16);
+  /* Darkened from #e8615f: white-on-red badges need 4.5:1, original hit 3.33:1 */
+  --danger: #d43e3c;
+  --danger-surface: rgba(232, 97, 95, 0.1);
+  --success: #4fbe8b;
+  --success-surface: rgba(79, 190, 139, 0.1);
+  --warning: #f2b84b;
+  --warning-surface: rgba(242, 184, 75, 0.1);
 }
 
 /* ============================================================
@@ -97,6 +110,11 @@
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent-gold: var(--accent-gold);
+  --color-accent-gold-surface: var(--accent-gold-surface);
   --color-danger: var(--danger);
   --color-danger-surface: var(--danger-surface);
   --color-success: var(--success);
@@ -104,24 +122,8 @@
   --color-warning: var(--warning);
   --color-warning-surface: var(--warning-surface);
 
-  /* Brand aliases (used in existing codebase) */
-  --color-brand-purple: var(--primary);
-  --color-brand-navy: var(--foreground);
-  --color-brand-indigo: var(--primary-hover);
-  --color-brand-lilac: var(--surface-raised);
-
   /* Font */
   --font-sans: var(--font-sans);
-
-  /* Non-standard Tailwind slate tokens used in this codebase */
-  /* These fill in the gaps between Tailwind's official 100-step scale */
-  --color-slate-350: #b2bfcc;
-  --color-slate-450: #748494;
-  --color-slate-550: #5a6b7a;
-  --color-slate-650: #3d4e5c;
-  --color-slate-750: #2d3b48;
-  --color-slate-850: #1a2530;
-  --color-slate-950: #0c1520;
 }
 
 /* ============================================================
@@ -172,29 +174,30 @@ body {
    DARK MODE GLOW EFFECTS
    ============================================================ */
 
-/* Card hover glow — pink tint in dark mode */
+/* Card hover glow — subtle rose tint in dark mode */
 .dark .card-hover:hover {
   box-shadow:
-    0 0 0 1px rgba(255, 92, 134, 0.2),
-    0 8px 24px rgba(255, 60, 110, 0.15);
+    0 0 0 1px rgba(232, 93, 130, 0.14),
+    0 8px 24px rgba(232, 93, 130, 0.1);
 }
 
 /* Button glow — used on primary CTAs in dark mode */
 .dark .btn-glow {
-  box-shadow: 0 0 16px rgba(255, 60, 110, 0.35);
+  box-shadow: 0 0 12px rgba(232, 93, 130, 0.22);
 }
 .dark .btn-glow:hover {
-  box-shadow: 0 0 24px rgba(255, 60, 110, 0.5);
+  box-shadow: 0 0 18px rgba(232, 93, 130, 0.32);
 }
 
-/* Hero radial glow — dark mode only */
+/* Hero radial glow — dark mode only, softer + adds secondary hint */
 .dark .hero-glow::before {
   content: '';
   position: absolute;
   inset: 0;
   background: radial-gradient(
     ellipse 80% 50% at 50% -10%,
-    rgba(255, 60, 110, 0.12) 0%,
+    rgba(232, 93, 130, 0.08) 0%,
+    rgba(108, 138, 228, 0.04) 45%,
     transparent 70%
   );
   pointer-events: none;
@@ -206,7 +209,7 @@ body {
 .dark textarea:focus {
   outline: none;
   border-color: var(--primary) !important;
-  box-shadow: 0 0 0 3px rgba(255, 92, 134, 0.15);
+  box-shadow: 0 0 0 3px rgba(232, 93, 130, 0.14);
 }
 
 /* Focus ring utility for accessibility */

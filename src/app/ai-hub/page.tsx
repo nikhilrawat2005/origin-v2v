@@ -44,8 +44,8 @@ export default function AIHub() {
 
   if (authLoading || !currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-brand-lilac/30">
-        <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-primary/30">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
   }
@@ -57,10 +57,10 @@ export default function AIHub() {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-10 text-center sm:text-left">
-            <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-brand-purple bg-brand-purple/10 px-3 py-1.5 rounded-full">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1.5 rounded-full">
               <Sparkles className="w-4 h-4" /> AI Hub Workspace
             </span>
-            <h1 className="text-3xl sm:text-4xl font-black text-brand-navy mt-3 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl font-black text-foreground mt-3 tracking-tight">
               Intelligent Career Guidance
             </h1>
             <p className="text-sm text-slate-500 mt-2 max-w-2xl">
@@ -91,8 +91,8 @@ export default function AIHub() {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold text-left transition-all ${
                       isActive
-                        ? "bg-brand-purple text-white shadow-md shadow-brand-purple/10"
-                        : "text-slate-650 hover:bg-brand-lilac/50 hover:text-brand-purple"
+                        ? "bg-primary text-white shadow-md shadow-primary/10"
+                        : "text-slate-700 hover:bg-primary/50 hover:text-primary"
                     }`}
                   >
                     <Icon className="w-4.5 h-4.5" />
@@ -219,8 +219,8 @@ function EligibilityCheckerTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-brand-navy flex items-center gap-2">
-          <UserCheck className="w-5 h-5 text-brand-purple" /> Opportunity Eligibility Checker
+        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+          <UserCheck className="w-5 h-5 text-primary" /> Opportunity Eligibility Checker
         </h2>
         <p className="text-xs text-slate-500 mt-1">
           Verify your eligibility against database rules, and receive structured action suggestions from Gemini.
@@ -235,7 +235,7 @@ function EligibilityCheckerTab() {
           <select
             value={selectedOppId}
             onChange={(e) => setSelectedOppId(e.target.value)}
-            className="w-full text-xs px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-brand-purple transition-all"
+            className="w-full text-xs px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-primary transition-all"
           >
             {opportunities.map((o) => (
               <option key={o.id} value={o.id}>
@@ -248,7 +248,7 @@ function EligibilityCheckerTab() {
         <button
           onClick={checkEligibility}
           disabled={loading}
-          className="w-full py-3 bg-brand-purple hover:bg-brand-indigo text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+          className="w-full py-3 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-60"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify Eligibility Matrix"}
         </button>
@@ -256,12 +256,12 @@ function EligibilityCheckerTab() {
 
       {result && (
         <div className="border-t border-slate-100 pt-6 space-y-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-brand-lilac/30 rounded-2xl border border-brand-purple/10">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-primary/30 rounded-2xl border border-primary/10">
             <div>
               <h4 className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">
                 Eligibility Score
               </h4>
-              <span className="text-3xl font-black text-brand-purple">{result.score}%</span>
+              <span className="text-3xl font-black text-primary">{result.score}%</span>
             </div>
             <div className="flex items-center gap-2">
               {result.score >= 80 ? (
@@ -295,7 +295,7 @@ function EligibilityCheckerTab() {
             <h5 className="text-[10px] uppercase font-bold text-slate-400 mb-2">
               AI Action Analysis (Gemini):
             </h5>
-            <p className="text-slate-650 text-xs leading-relaxed p-4 bg-slate-50 rounded-2xl whitespace-pre-line border border-slate-100">
+            <p className="text-slate-700 text-xs leading-relaxed p-4 bg-slate-50 rounded-2xl whitespace-pre-line border border-slate-100">
               {result.explanation}
             </p>
           </div>
@@ -365,8 +365,8 @@ function RecommendationsTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-brand-navy flex items-center gap-2">
-          <Award className="w-5 h-5 text-brand-purple" /> AI Career Opportunity Matcher
+        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+          <Award className="w-5 h-5 text-primary" /> AI Career Opportunity Matcher
         </h2>
         <p className="text-xs text-slate-500 mt-1">
           Matches opportunities based on your skills, interests, and profile details using database logic.
@@ -376,36 +376,36 @@ function RecommendationsTab() {
       <div className="space-y-4">
         {loading ? (
           <div className="py-12 flex justify-center">
-            <Loader2 className="w-6 h-6 text-brand-purple animate-spin" />
+            <Loader2 className="w-6 h-6 text-primary animate-spin" />
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6">
             {recs.map(({ opportunity, score, reason }) => (
               <div
                 key={opportunity.id}
-                className="bg-white border border-slate-100 hover:border-brand-purple/20 p-6 rounded-3xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                className="bg-white border border-slate-100 hover:border-primary/20 p-6 rounded-3xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
               >
                 <div className="flex justify-between items-start gap-4 mb-3">
                   <div>
-                    <span className="text-[9px] font-bold uppercase tracking-wider bg-brand-purple/10 text-brand-purple px-2 py-0.5 rounded-full">
+                    <span className="text-[9px] font-bold uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-full">
                       {opportunity.category}
                     </span>
-                    <h3 className="font-extrabold text-slate-800 text-sm mt-2 hover:text-brand-purple transition-colors">
+                    <h3 className="font-extrabold text-slate-800 text-sm mt-2 hover:text-primary transition-colors">
                       <Link href={`/opportunity/${opportunity.id}`}>{opportunity.title}</Link>
                     </h3>
                     <p className="text-slate-500 text-xs font-semibold">{opportunity.organization}</p>
                   </div>
                   <div className="text-right">
                     <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Match score</span>
-                    <span className="text-base font-extrabold text-brand-purple">{score}%</span>
+                    <span className="text-base font-extrabold text-primary">{score}%</span>
                   </div>
                 </div>
 
-                <div className="bg-brand-lilac/30 border border-brand-purple/10 p-3.5 rounded-2xl mt-4">
-                  <span className="block text-[9px] font-bold uppercase tracking-wider text-brand-purple mb-1">
+                <div className="bg-primary/30 border border-primary/10 p-3.5 rounded-2xl mt-4">
+                  <span className="block text-[9px] font-bold uppercase tracking-wider text-primary mb-1">
                     Matching Criteria
                   </span>
-                  <p className="text-slate-650 text-xs font-medium leading-relaxed">
+                  <p className="text-slate-700 text-xs font-medium leading-relaxed">
                     {reason}
                   </p>
                 </div>
@@ -480,8 +480,8 @@ function ResumeTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-brand-navy flex items-center gap-2">
-          <FileText className="w-5 h-5 text-brand-purple" /> AI ATS Resume Scanner
+        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+          <FileText className="w-5 h-5 text-primary" /> AI ATS Resume Scanner
         </h2>
         <p className="text-xs text-slate-500 mt-1">
           Paste your resume text to get formatted formatting advice, ATS scoring, and skill addition templates from Gemini.
@@ -498,14 +498,14 @@ function ResumeTab() {
             placeholder="Paste raw text of your resume here to analyze structure, skills, and formats..."
             value={resumeText}
             onChange={(e) => setResumeText(e.target.value)}
-            className="w-full text-xs p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:bg-white focus:border-brand-purple resize-none"
+            className="w-full text-xs p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:bg-white focus:border-primary resize-none"
           />
         </div>
 
         <button
           onClick={analyzeResume}
           disabled={loading || !resumeText.trim()}
-          className="w-full py-3 bg-brand-purple hover:bg-brand-indigo text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+          className="w-full py-3 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-60"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Run AI Scan & ATS Grade"}
         </button>
@@ -513,12 +513,12 @@ function ResumeTab() {
 
       {result && (
         <div className="border-t border-slate-100 pt-6 space-y-5">
-          <div className="p-5 bg-brand-lilac/30 rounded-2xl border border-brand-purple/10 flex justify-between items-center">
+          <div className="p-5 bg-primary/30 rounded-2xl border border-primary/10 flex justify-between items-center">
             <div>
               <h4 className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">
                 ATS Score Estimation
               </h4>
-              <span className="text-3xl font-black text-brand-purple">{result.atsScore}/100</span>
+              <span className="text-3xl font-black text-primary">{result.atsScore}/100</span>
             </div>
             <div>
               {result.atsScore >= 75 ? (
@@ -561,7 +561,7 @@ function ResumeTab() {
             <h5 className="text-[10px] uppercase font-bold text-slate-400 mb-2">Missing Skills from Industry</h5>
             <div className="flex flex-wrap gap-2">
               {result.missingSkills.map((sk, i) => (
-                <span key={i} className="text-[10px] font-bold uppercase bg-brand-purple/10 text-brand-purple px-2.5 py-1 rounded-full">
+                <span key={i} className="text-[10px] font-bold uppercase bg-primary/10 text-primary px-2.5 py-1 rounded-full">
                   {sk}
                 </span>
               ))}
@@ -570,7 +570,7 @@ function ResumeTab() {
 
           <div className="space-y-2">
             <h5 className="text-[10px] uppercase font-bold text-slate-400">Improvement Suggestions</h5>
-            <p className="text-slate-650 text-xs leading-relaxed">
+            <p className="text-slate-700 text-xs leading-relaxed">
               {result.formattingFeedback}
             </p>
             <ul className="space-y-1 pt-2">
@@ -594,7 +594,7 @@ function ResumeTab() {
               <div key={i} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl text-xs">
                 <div>
                   <span className="font-bold text-slate-800">ATS Score: {h.atsScore}/100</span>
-                  <span className="block text-[10px] text-slate-450 mt-0.5">
+                  <span className="block text-[10px] text-slate-500 mt-0.5">
                     {new Date(h.timestamp).toLocaleDateString(undefined, {
                       month: "short",
                       day: "numeric",
@@ -663,8 +663,8 @@ function RoadmapTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-brand-navy flex items-center gap-2">
-          <BookOpen className="w-5 h-5 text-brand-purple" /> Personalized Career Roadmap
+        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+          <BookOpen className="w-5 h-5 text-primary" /> Personalized Career Roadmap
         </h2>
         <p className="text-xs text-slate-500 mt-1">
           Select roadmap goals to customize structural timelines, projects, and learning references through Gemini.
@@ -681,7 +681,7 @@ function RoadmapTab() {
             placeholder="e.g. Junior Frontend Developer, AI Research Specialist"
             value={goal}
             onChange={(e) => setGoal(e.target.value)}
-            className="w-full text-xs px-3.5 py-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-brand-purple transition-all"
+            className="w-full text-xs px-3.5 py-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-primary transition-all"
           />
         </div>
 
@@ -692,7 +692,7 @@ function RoadmapTab() {
           <select
             value={time}
             onChange={(e) => setTime(e.target.value)}
-            className="w-full text-xs px-3.5 py-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-brand-purple transition-all"
+            className="w-full text-xs px-3.5 py-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-primary transition-all"
           >
             <option value="5 hours/week">Light (5 hours/week)</option>
             <option value="10 hours/week">Moderate (10 hours/week)</option>
@@ -703,7 +703,7 @@ function RoadmapTab() {
         <button
           onClick={generateRoadmap}
           disabled={loading || !goal.trim()}
-          className="w-full py-3 bg-brand-purple hover:bg-brand-indigo text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+          className="w-full py-3 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-60"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Build Career Roadmap"}
         </button>
@@ -711,18 +711,18 @@ function RoadmapTab() {
 
       {roadmap && (
         <div className="border-t border-slate-100 pt-6 space-y-6">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-brand-purple">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-primary">
             Your Custom Journey Plan
           </h3>
 
           <div className="space-y-6">
             {roadmap.milestones.map((m, idx) => (
-              <div key={idx} className="relative pl-6 pb-6 last:pb-0 border-l border-brand-purple/20">
-                <div className="absolute top-0.5 -left-1.5 w-3 h-3 rounded-full bg-brand-purple"></div>
+              <div key={idx} className="relative pl-6 pb-6 last:pb-0 border-l border-primary/20">
+                <div className="absolute top-0.5 -left-1.5 w-3 h-3 rounded-full bg-primary"></div>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <h4 className="font-extrabold text-slate-800 text-sm">{m.title}</h4>
-                    <span className="text-[10px] font-bold uppercase bg-brand-purple/10 text-brand-purple px-2.5 py-1 rounded-full">
+                    <span className="text-[10px] font-bold uppercase bg-primary/10 text-primary px-2.5 py-1 rounded-full">
                       {m.timeline}
                     </span>
                   </div>
@@ -830,8 +830,8 @@ function ChatTab() {
   return (
     <div className="space-y-6 flex flex-col h-[550px]">
       <div>
-        <h2 className="text-xl font-bold text-brand-navy flex items-center gap-2">
-          <MessageSquare className="w-5 h-5 text-brand-purple" /> AI Career Chatbot
+        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+          <MessageSquare className="w-5 h-5 text-primary" /> AI Career Chatbot
         </h2>
         <p className="text-xs text-slate-500 mt-1">
           Chat with a context-aware assistant loaded with your profile settings. Unrelated questions are filtered.
@@ -848,7 +848,7 @@ function ChatTab() {
               <div
                 className={`max-w-[80%] rounded-2xl p-4 text-xs leading-relaxed ${
                   m.role === "user"
-                    ? "bg-brand-purple text-white shadow-sm"
+                    ? "bg-primary text-white shadow-sm"
                     : "bg-white border border-slate-100 text-slate-700 shadow-sm"
                 }`}
               >
@@ -858,8 +858,8 @@ function ChatTab() {
           ))}
           {loading && (
             <div className="flex justify-start">
-              <div className="bg-white border border-slate-100 text-slate-550 rounded-2xl px-4 py-3 text-xs flex items-center gap-2">
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-brand-purple" />
+              <div className="bg-white border border-slate-100 text-slate-600 rounded-2xl px-4 py-3 text-xs flex items-center gap-2">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
                 <span>Bloom Assistant is typing...</span>
               </div>
             </div>
@@ -873,12 +873,12 @@ function ChatTab() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={loading}
-            className="flex-grow text-xs px-4 py-3 bg-white border border-slate-200 rounded-2xl outline-none focus:border-brand-purple transition-all"
+            className="flex-grow text-xs px-4 py-3 bg-white border border-slate-200 rounded-2xl outline-none focus:border-primary transition-all"
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
-            className="p-3 bg-brand-purple hover:bg-brand-indigo text-white rounded-2xl shadow-sm transition-all disabled:opacity-60 flex items-center justify-center"
+            className="p-3 bg-primary hover:bg-primary-hover text-white rounded-2xl shadow-sm transition-all disabled:opacity-60 flex items-center justify-center"
           >
             <Send className="w-4 h-4" />
           </button>
@@ -963,8 +963,8 @@ function InterviewTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-brand-navy flex items-center gap-2">
-          <Zap className="w-5 h-5 text-brand-purple" /> AI Technical Interview Coach
+        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+          <Zap className="w-5 h-5 text-primary" /> AI Technical Interview Coach
         </h2>
         <p className="text-xs text-slate-500 mt-1">
           Simulate structured questions based on chosen roles and receive technical feedback summaries from Gemini.
@@ -980,7 +980,7 @@ function InterviewTab() {
             <select
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
-              className="w-full text-xs px-3.5 py-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-brand-purple transition-all"
+              className="w-full text-xs px-3.5 py-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-primary transition-all"
             >
               <option value="Frontend Engineer">Frontend Engineer</option>
               <option value="Backend Engineer">Backend Engineer</option>
@@ -990,7 +990,7 @@ function InterviewTab() {
 
           <button
             onClick={startInterview}
-            className="w-full py-3 bg-brand-purple hover:bg-brand-indigo text-white text-xs font-bold rounded-xl transition-all"
+            className="w-full py-3 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl transition-all"
           >
             Begin Interview Session
           </button>
@@ -1001,10 +1001,10 @@ function InterviewTab() {
         <div className="space-y-4">
           <div className="flex justify-between items-center text-[10px] font-bold text-slate-400">
             <span>QUESTION {currentIdx + 1} OF {questions.length}</span>
-            <span className="text-brand-purple">{jobTitle} Interview</span>
+            <span className="text-primary">{jobTitle} Interview</span>
           </div>
 
-          <div className="p-5 bg-brand-lilac/30 border border-brand-purple/10 rounded-2xl">
+          <div className="p-5 bg-primary/30 border border-primary/10 rounded-2xl">
             <p className="text-slate-800 text-xs font-bold leading-relaxed">
               {questions[currentIdx]}
             </p>
@@ -1023,14 +1023,14 @@ function InterviewTab() {
                 updated[currentIdx] = e.target.value;
                 setAnswers(updated);
               }}
-              className="w-full text-xs p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:bg-white focus:border-brand-purple resize-none"
+              className="w-full text-xs p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:bg-white focus:border-primary resize-none"
             />
           </div>
 
           <button
             onClick={handleAnswerSubmit}
             disabled={!answers[currentIdx].trim()}
-            className="w-full py-3 bg-brand-purple hover:bg-brand-indigo text-white text-xs font-bold rounded-xl transition-all disabled:opacity-60"
+            className="w-full py-3 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl transition-all disabled:opacity-60"
           >
             {currentIdx < questions.length - 1 ? "Next Question" : "Complete & Evaluate"}
           </button>
@@ -1041,36 +1041,36 @@ function InterviewTab() {
         <div className="space-y-6">
           {loading ? (
             <div className="py-12 flex flex-col items-center gap-2">
-              <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
+              <Loader2 className="w-8 h-8 text-primary animate-spin" />
               <span className="text-xs text-slate-500">Gemini is evaluating your responses...</span>
             </div>
           ) : (
             feedback && (
               <div className="space-y-5">
-                <div className="p-5 bg-brand-lilac/30 border border-brand-purple/10 rounded-2xl flex justify-between items-center">
+                <div className="p-5 bg-primary/30 border border-primary/10 rounded-2xl flex justify-between items-center">
                   <div>
                     <h4 className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">
                       Confidence & Tone Rating
                     </h4>
-                    <span className="text-3xl font-black text-brand-purple">{feedback.confidenceScore}/100</span>
+                    <span className="text-3xl font-black text-primary">{feedback.confidenceScore}/100</span>
                   </div>
                 </div>
 
                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-2">
                   <h5 className="text-[10px] uppercase font-bold text-slate-400">Technical Evaluation</h5>
-                  <p className="text-slate-650 text-xs leading-relaxed">{feedback.technicalFeedback}</p>
+                  <p className="text-slate-700 text-xs leading-relaxed">{feedback.technicalFeedback}</p>
                 </div>
 
                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-2">
                   <h5 className="text-[10px] uppercase font-bold text-slate-400">Communication & Structure</h5>
-                  <p className="text-slate-650 text-xs leading-relaxed">{feedback.communicationFeedback}</p>
+                  <p className="text-slate-700 text-xs leading-relaxed">{feedback.communicationFeedback}</p>
                 </div>
 
                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-2">
                   <h5 className="text-[10px] uppercase font-bold text-slate-400">Improvement Suggestions</h5>
                   <ul className="space-y-1">
                     {feedback.improvementSuggestions.map((s, i) => (
-                      <li key={i} className="text-xs text-slate-650">
+                      <li key={i} className="text-xs text-slate-700">
                         - {s}
                       </li>
                     ))}
@@ -1082,7 +1082,7 @@ function InterviewTab() {
                     <h5 className="text-[10px] uppercase font-bold text-slate-400">Follow-up Questions to Practice</h5>
                     <ul className="space-y-1">
                       {feedback.followUpQuestions.map((q, i) => (
-                        <li key={i} className="text-xs text-slate-650 italic">
+                        <li key={i} className="text-xs text-slate-700 italic">
                           "{q}"
                         </li>
                       ))}
@@ -1092,7 +1092,7 @@ function InterviewTab() {
 
                 <button
                   onClick={() => setStage("setup")}
-                  className="w-full py-3 border border-slate-200 hover:border-brand-purple hover:text-brand-purple text-slate-600 text-xs font-bold rounded-xl transition-all"
+                  className="w-full py-3 border border-slate-200 hover:border-primary hover:text-primary text-slate-600 text-xs font-bold rounded-xl transition-all"
                 >
                   Start New Session
                 </button>
@@ -1169,7 +1169,7 @@ function AnalyticsTab() {
   if (loading) {
     return (
       <div className="py-12 flex justify-center">
-        <Loader2 className="w-6 h-6 text-brand-purple animate-spin" />
+        <Loader2 className="w-6 h-6 text-primary animate-spin" />
       </div>
     );
   }
@@ -1177,8 +1177,8 @@ function AnalyticsTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-brand-navy flex items-center gap-2">
-          <LineChart className="w-5 h-5 text-brand-purple" /> AI Performance & Analytics Dashboard
+        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+          <LineChart className="w-5 h-5 text-primary" /> AI Performance & Analytics Dashboard
         </h2>
         <p className="text-xs text-slate-500 mt-1">
           Overview metrics compiled from database rule actions, with monthly progress digests generated by Gemini.
@@ -1194,17 +1194,17 @@ function AnalyticsTab() {
         ].map((stat, idx) => (
           <div key={idx} className="bg-slate-50 border border-slate-100 p-4 rounded-2xl">
             <span className="block text-[9px] font-bold uppercase text-slate-400">{stat.label}</span>
-            <span className="text-lg font-black text-brand-navy mt-1 block">{stat.value}</span>
+            <span className="text-lg font-black text-foreground mt-1 block">{stat.value}</span>
           </div>
         ))}
       </div>
 
-      <div className="p-5 bg-brand-lilac/30 border border-brand-purple/10 rounded-2xl flex flex-col md:flex-row items-start gap-4">
-        <div className="p-3 bg-white rounded-2xl border border-brand-purple/10 text-brand-purple shadow-sm">
+      <div className="p-5 bg-primary/30 border border-primary/10 rounded-2xl flex flex-col md:flex-row items-start gap-4">
+        <div className="p-3 bg-white rounded-2xl border border-primary/10 text-primary shadow-sm">
           <TrendingUp className="w-5 h-5" />
         </div>
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-brand-purple">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
             Monthly AI Progress Summary (Gemini)
           </span>
           <p className="text-slate-700 text-xs leading-relaxed mt-2 whitespace-pre-line font-medium">

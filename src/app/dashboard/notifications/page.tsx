@@ -88,7 +88,7 @@ export default function NotificationsPage() {
       case "new_opportunity":
         return <Briefcase className="w-4 h-4 text-blue-500" />;
       case "application_update":
-        return <Layers className="w-4 h-4 text-purple-500" />;
+        return <Layers className="w-4 h-4 text-primary" />;
       case "ai_suggestion":
         return <Sparkles className="w-4 h-4 text-amber-500" />;
       default:
@@ -103,7 +103,7 @@ export default function NotificationsPage() {
   if (loading) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
   }
@@ -113,8 +113,8 @@ export default function NotificationsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-brand-navy flex items-center gap-2">
-            <Bell className="w-6 h-6 text-brand-purple" /> Notification Center
+          <h1 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
+            <Bell className="w-6 h-6 text-primary" /> Notification Center
           </h1>
           <p className="text-slate-500 text-sm mt-1">
             Stay updated with deadline alerts, status updates, and personalized AI suggestions.
@@ -154,8 +154,8 @@ export default function NotificationsPage() {
             onClick={() => setFilter(tab.key)}
             className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all border ${
               filter === tab.key
-                ? "bg-brand-purple border-brand-purple text-white shadow-sm"
-                : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
+                ? "bg-primary border-primary text-white shadow-sm"
+                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
             }`}
           >
             {tab.label}
@@ -171,17 +171,17 @@ export default function NotificationsPage() {
             className={`p-4 rounded-2xl border transition-all flex items-start gap-4 ${
               item.isRead
                 ? "bg-white border-slate-100 opacity-75"
-                : "bg-gradient-to-r from-purple-50/30 to-white border-purple-100 shadow-sm"
+                : "bg-gradient-to-r from-primary/5 to-white border-primary/10 shadow-sm"
             }`}
           >
-            <div className={`p-2.5 rounded-xl ${item.isRead ? "bg-slate-50" : "bg-purple-50"}`}>
+            <div className={`p-2.5 rounded-xl ${item.isRead ? "bg-slate-50" : "bg-primary/10"}`}>
               {getCategoryIcon(item.category)}
             </div>
 
             <div className="flex-1 space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                  item.isRead ? "bg-slate-100 text-slate-500" : "bg-purple-100 text-brand-purple"
+                  item.isRead ? "bg-slate-100 text-slate-500" : "bg-primary/15 text-primary"
                 }`}>
                   {getCategoryLabel(item.category)}
                 </span>
@@ -194,7 +194,7 @@ export default function NotificationsPage() {
                   })}
                 </span>
               </div>
-              <h4 className={`text-sm font-bold text-slate-800 ${!item.isRead ? "text-brand-purple" : ""}`}>
+              <h4 className={`text-sm font-bold text-slate-800 ${!item.isRead ? "text-primary" : ""}`}>
                 {item.title}
               </h4>
               <p className="text-slate-605 text-xs leading-relaxed">{item.message}</p>
@@ -203,7 +203,7 @@ export default function NotificationsPage() {
                 <div className="pt-2">
                   <Link
                     href={item.linkedRoute}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-brand-purple hover:underline"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline"
                   >
                     View Details
                   </Link>
@@ -215,7 +215,7 @@ export default function NotificationsPage() {
               {!item.isRead && (
                 <button
                   onClick={() => markAsRead(item.id)}
-                  className="p-1.5 rounded-full text-brand-purple hover:bg-purple-50"
+                  className="p-1.5 rounded-full text-primary hover:bg-primary/10"
                   title="Mark as read"
                 >
                   <Check className="w-4 h-4" />
@@ -235,10 +235,10 @@ export default function NotificationsPage() {
         {filtered.length === 0 && (
           <div className="text-center py-16">
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Inbox className="w-8 h-8 text-slate-350" />
+              <Inbox className="w-8 h-8 text-slate-400" />
             </div>
             <h3 className="font-bold text-slate-700 text-base">Inbox is empty</h3>
-            <p className="text-slate-550 text-xs max-w-xs mx-auto mt-1">
+            <p className="text-slate-600 text-xs max-w-xs mx-auto mt-1">
               {filter === "all"
                 ? "No alerts generated yet."
                 : `No alerts match the category: "${filter}".`}

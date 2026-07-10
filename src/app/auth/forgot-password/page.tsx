@@ -32,17 +32,17 @@ export default function ForgotPassword() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Decorative Blur Orbs */}
-      <div className="absolute top-10 left-10 w-48 h-48 bg-purple-100 rounded-full filter blur-3xl opacity-50"></div>
-      <div className="absolute bottom-10 right-10 w-64 h-64 bg-indigo-100 rounded-full filter blur-3xl opacity-50"></div>
+      <div className="absolute top-10 left-10 w-48 h-48 bg-primary/10 rounded-full filter blur-3xl opacity-50"></div>
+      <div className="absolute bottom-10 right-10 w-64 h-64 bg-secondary/10 rounded-full filter blur-3xl opacity-50"></div>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <Link href="/" className="flex items-center justify-center gap-2 text-2xl font-bold text-brand-navy mb-6">
-          <span className="p-1.5 bg-brand-purple text-white rounded-lg shadow-sm">
+        <Link href="/" className="flex items-center justify-center gap-2 text-2xl font-bold text-foreground mb-6">
+          <span className="p-1.5 bg-primary text-white rounded-lg shadow-sm">
             <Sparkles className="w-5 h-5" />
           </span>
           <span>Bloom</span>
         </Link>
-        <h2 className="text-center text-3xl font-extrabold text-brand-navy">Reset Password</h2>
+        <h2 className="text-center text-3xl font-extrabold text-foreground">Reset Password</h2>
         <p className="mt-2 text-center text-sm text-slate-500">
           We'll send you an email with instructions to set a new password.
         </p>
@@ -67,7 +67,7 @@ export default function ForgotPassword() {
               </p>
               <Link
                 href="/auth/login"
-                className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-brand-purple hover:underline"
+                className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
               >
                 <ArrowLeft className="w-4 h-4" /> Back to Login
               </Link>
@@ -89,7 +89,7 @@ export default function ForgotPassword() {
                     placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full text-sm pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:bg-white focus:border-brand-purple transition-all"
+                    className="w-full text-sm pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:bg-white focus:border-primary transition-all"
                   />
                 </div>
               </div>
@@ -98,7 +98,7 @@ export default function ForgotPassword() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-2 bg-brand-purple hover:bg-brand-indigo text-white font-semibold text-sm py-3.5 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+                className="w-full mt-2 bg-primary hover:bg-primary-hover text-white font-semibold text-sm py-3.5 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-60"
               >
                 {loading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />

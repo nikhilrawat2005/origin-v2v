@@ -96,7 +96,7 @@ export default function Dashboard() {
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-        <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
   }
@@ -112,13 +112,13 @@ export default function Dashboard() {
   return (
     <div className="space-y-8">
       {/* Welcome Card & Badge Notifications */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 p-8 rounded-3xl shadow-sm transition-colors duration-300">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 p-8 rounded-3xl shadow-sm transition-colors duration-300">
         <div>
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-brand-purple">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
             <Sparkles className="w-3.5 h-3.5" /> Workspace Dashboard
           </span>
-          <h1 className="text-3xl font-extrabold text-brand-navy dark:text-slate-200 mt-1">
-            Hello, <span className="text-brand-purple italic">{profile?.name || currentUser?.displayName || "Bloom Member"}</span>
+          <h1 className="text-3xl font-extrabold text-foreground mt-1">
+            Hello, <span className="text-primary italic">{profile?.name || currentUser?.displayName || "Bloom Member"}</span>
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">
             {profile?.education ? `${profile.education} • ` : ""}{profile?.location || "Bloom Platform"}
@@ -126,9 +126,9 @@ export default function Dashboard() {
         </div>
 
         {/* Notification Badge */}
-        <Link href="/dashboard/notifications" className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-750 transition-colors">
+        <Link href="/dashboard/notifications" className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
           <div className="relative">
-            <Bell className="w-5 h-5 text-brand-navy dark:text-slate-300" />
+            <Bell className="w-5 h-5 text-foreground" />
             {incomingDeadlinesCount > 0 && (
               <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">
                 {incomingDeadlinesCount}
@@ -137,7 +137,7 @@ export default function Dashboard() {
           </div>
           <div className="text-left">
             <h5 className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Deadlines Pending</h5>
-            <p className="text-xs text-slate-700 dark:text-slate-350 font-semibold">
+            <p className="text-xs text-slate-700 dark:text-slate-400 font-semibold">
               {incomingDeadlinesCount} closing this month
             </p>
           </div>
@@ -147,7 +147,7 @@ export default function Dashboard() {
       {/* Ecosystem Launchpad shortcuts */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { title: "Opportunity Wallet", desc: "Credentials vault", href: "/dashboard/wallet", icon: Bookmark, color: "from-purple-500 to-indigo-500 text-white" },
+          { title: "Opportunity Wallet", desc: "Credentials vault", href: "/dashboard/wallet", icon: Bookmark, color: "from-primary to-secondary text-white" },
           { title: "Application Tracker", desc: "Kanban board stages", href: "/dashboard/tracker", icon: Briefcase, color: "from-pink-500 to-rose-500 text-white" },
           { title: "Calendar Hub", desc: "Deadlines & interviews", href: "/dashboard/calendar", icon: Calendar, color: "from-blue-500 to-cyan-500 text-white" },
           { title: "Community Board", desc: "Mentorship & networking", href: "/dashboard/community", icon: Users, color: "from-amber-500 to-orange-500 text-white" },
@@ -155,14 +155,14 @@ export default function Dashboard() {
           <Link
             key={mod.title}
             href={mod.href}
-            className="p-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-3xl shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 flex flex-col justify-between h-36"
+            className="p-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 rounded-3xl shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 flex flex-col justify-between h-36"
           >
             <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${mod.color} flex items-center justify-center`}>
               <mod.icon className="w-4 h-4" />
             </div>
             <div>
               <h4 className="font-bold text-slate-800 dark:text-slate-200 text-xs leading-none">{mod.title}</h4>
-              <p className="text-[10px] text-slate-450 dark:text-slate-400 mt-1 font-semibold">{mod.desc}</p>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-semibold">{mod.desc}</p>
             </div>
           </Link>
         ))}
@@ -171,8 +171,8 @@ export default function Dashboard() {
       {/* Quick Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         {/* Bookmarks Stat */}
-        <div className="p-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-3xl shadow-sm flex items-center gap-4 transition-colors duration-300">
-          <div className="p-3 bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 rounded-2xl">
+        <div className="p-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 rounded-3xl shadow-sm flex items-center gap-4 transition-colors duration-300">
+          <div className="p-3 bg-primary/10 dark:bg-primary/15 text-primary rounded-2xl">
             <Bookmark className="w-6 h-6" />
           </div>
           <div className="text-left">
@@ -182,8 +182,8 @@ export default function Dashboard() {
         </div>
 
         {/* Reminders Stat */}
-        <div className="p-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-3xl shadow-sm flex items-center gap-4 transition-colors duration-300">
-          <div className="p-3 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 rounded-2xl">
+        <div className="p-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 rounded-3xl shadow-sm flex items-center gap-4 transition-colors duration-300">
+          <div className="p-3 bg-secondary/10 dark:bg-secondary/15 text-secondary rounded-2xl">
             <Calendar className="w-6 h-6" />
           </div>
           <div className="text-left">
@@ -193,13 +193,13 @@ export default function Dashboard() {
         </div>
 
         {/* Interest Stat */}
-        <div className="p-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-3xl shadow-sm flex items-center gap-4 transition-colors duration-300">
+        <div className="p-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 rounded-3xl shadow-sm flex items-center gap-4 transition-colors duration-300">
           <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-2xl">
             <Briefcase className="w-6 h-6" />
           </div>
           <div className="text-left">
             <span className="block text-slate-400 dark:text-slate-500 text-[10px] font-bold uppercase tracking-wider">Category Focus</span>
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-350 truncate max-w-[150px]">
+            <span className="text-xs font-bold text-slate-700 dark:text-slate-400 truncate max-w-[150px]">
               {profile?.category || "None Set"}
             </span>
           </div>
@@ -211,12 +211,12 @@ export default function Dashboard() {
         {/* Saved Opportunities List */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-brand-navy dark:text-slate-200 flex items-center gap-2">
-              <Bookmark className="w-5 h-5 text-brand-purple" /> Saved Opportunities
+            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+              <Bookmark className="w-5 h-5 text-primary" /> Saved Opportunities
             </h3>
             <Link
               href="/explore"
-              className="text-xs font-semibold text-brand-purple hover:underline flex items-center gap-0.5"
+              className="text-xs font-semibold text-primary hover:underline flex items-center gap-0.5"
             >
               Explore more <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -226,16 +226,16 @@ export default function Dashboard() {
             {savedOpps.map((opp) => (
               <div
                 key={opp.id}
-                className="p-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                className="p-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
               >
                 <div>
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-brand-purple bg-brand-purple/10 px-2 py-0.5 rounded-full">
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full">
                     {opp.category}
                   </span>
-                  <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm mt-2 hover:text-brand-purple transition-colors">
+                  <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm mt-2 hover:text-primary transition-colors">
                     <Link href={`/opportunity/${opp.id}`}>{opp.title}</Link>
                   </h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-450 font-medium mt-0.5">{opp.organization}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-500 font-medium mt-0.5">{opp.organization}</p>
                 </div>
 
                 <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-start">
@@ -244,7 +244,7 @@ export default function Dashboard() {
                   </span>
                   <Link
                     href={`/opportunity/${opp.id}`}
-                    className="px-4 py-2 bg-slate-50 dark:bg-slate-800 hover:bg-brand-purple hover:text-white dark:hover:bg-brand-purple rounded-xl text-xs font-semibold text-slate-650 dark:text-slate-300 transition-colors"
+                    className="px-4 py-2 bg-slate-50 dark:bg-slate-800 hover:bg-primary hover:text-white dark:hover:bg-primary rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 transition-colors"
                   >
                     Details
                   </Link>
@@ -254,9 +254,9 @@ export default function Dashboard() {
 
             {savedOpps.length === 0 && (
               <div className="text-center py-12 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-855 rounded-3xl">
-                <Bookmark className="w-8 h-8 text-slate-350 dark:text-slate-650 mx-auto mb-2" />
+                <Bookmark className="w-8 h-8 text-slate-400 dark:text-slate-700 mx-auto mb-2" />
                 <h5 className="text-slate-800 dark:text-slate-200 font-bold mb-0.5">No saved opportunities yet</h5>
-                <p className="text-slate-500 dark:text-slate-450 text-xs">Bookmark opportunities on the explore screen to view them here.</p>
+                <p className="text-slate-500 dark:text-slate-500 text-xs">Bookmark opportunities on the explore screen to view them here.</p>
               </div>
             )}
           </div>
@@ -264,11 +264,11 @@ export default function Dashboard() {
 
         {/* Deadline Reminders Alert Panel */}
         <div className="space-y-6">
-          <h3 className="text-lg font-bold text-brand-navy dark:text-slate-200 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-brand-purple" /> Upcoming Reminders
+          <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+            <Clock className="w-5 h-5 text-primary" /> Upcoming Reminders
           </h3>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 p-6 rounded-3xl shadow-sm space-y-4 transition-colors duration-300">
+          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 p-6 rounded-3xl shadow-sm space-y-4 transition-colors duration-300">
             {reminders.map((rem) => {
               const daysLeft = Math.ceil(
                 (new Date(rem.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
@@ -279,13 +279,13 @@ export default function Dashboard() {
                 <div key={rem.id} className="pb-4 border-b border-slate-50 dark:border-slate-800 last:border-0 last:pb-0">
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1">
-                      <h5 className="font-bold text-xs text-slate-800 dark:text-slate-200 leading-snug hover:text-brand-purple transition-colors">
+                      <h5 className="font-bold text-xs text-slate-800 dark:text-slate-200 leading-snug hover:text-primary transition-colors">
                         <Link href={`/opportunity/${rem.opportunityId}`}>{rem.opportunityTitle}</Link>
                       </h5>
                       <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${
                         isClosingSoon
                           ? "bg-red-50 dark:bg-red-950/20 text-red-650 dark:text-red-400 border border-red-100 dark:border-red-900/30"
-                          : "bg-slate-50 dark:bg-slate-800 text-slate-650 dark:text-slate-400"
+                          : "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-400"
                       }`}>
                         {daysLeft > 0 ? `${daysLeft} days left` : "Deadline passed"}
                       </span>
@@ -305,9 +305,9 @@ export default function Dashboard() {
 
             {reminders.length === 0 && (
               <div className="text-center py-10">
-                <Bell className="w-8 h-8 text-slate-350 dark:text-slate-650 mx-auto mb-2" />
-                <h5 className="text-slate-850 dark:text-slate-200 font-bold text-xs mb-0.5">No active alerts</h5>
-                <p className="text-slate-450 dark:text-slate-550 text-[10px] leading-relaxed">
+                <Bell className="w-8 h-8 text-slate-400 dark:text-slate-700 mx-auto mb-2" />
+                <h5 className="text-slate-900 dark:text-slate-200 font-bold text-xs mb-0.5">No active alerts</h5>
+                <p className="text-slate-500 dark:text-slate-600 text-[10px] leading-relaxed">
                   Click "Set Reminder" on any opportunity page to receive alerts.
                 </p>
               </div>

@@ -189,7 +189,7 @@ export default function WalletPage() {
   if (loading) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
   }
@@ -199,7 +199,7 @@ export default function WalletPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
-          <Wallet className="w-6 h-6 text-brand-purple" /> Opportunity Wallet
+          <Wallet className="w-6 h-6 text-primary" /> Opportunity Wallet
         </h1>
         <p className="text-foreground-muted text-sm mt-1">
           Store your career documents, achievements, and credentials in a secure sandbox. Use AI to scan resumes and auto-verify certificates.
@@ -210,7 +210,7 @@ export default function WalletPage() {
         {/* Upload Panel */}
         <div className="bg-surface border border-border p-6 rounded-3xl shadow-sm space-y-4 h-fit">
           <h3 className="font-bold text-foreground text-sm flex items-center gap-1.5">
-            <UploadCloud className="w-4 h-4 text-brand-purple" /> Upload Document
+            <UploadCloud className="w-4 h-4 text-primary" /> Upload Document
           </h3>
 
           <form onSubmit={handleUpload} className="space-y-4">
@@ -222,7 +222,7 @@ export default function WalletPage() {
                 value={docName}
                 onChange={(e) => setDocName(e.target.value)}
                 required
-                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-brand-purple bg-background text-foreground placeholder:text-foreground-muted"
+                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-primary bg-background text-foreground placeholder:text-foreground-muted"
               />
             </div>
 
@@ -231,7 +231,7 @@ export default function WalletPage() {
               <select
                 value={docCategory}
                 onChange={(e) => setDocCategory(e.target.value as WalletCategory)}
-                className="w-full text-xs p-3 border border-border rounded-xl outline-none bg-background text-foreground focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-border rounded-xl outline-none bg-background text-foreground focus:border-primary"
               >
                 {categories.slice(1).map((cat) => (
                   <option key={cat} value={cat}>
@@ -266,7 +266,7 @@ export default function WalletPage() {
             <button
               type="submit"
               disabled={uploading || !selectedFile}
-              className="w-full py-3 bg-brand-purple hover:bg-brand-indigo text-white font-semibold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+              className="w-full py-3 bg-primary hover:bg-primary-hover text-white font-semibold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
               {uploading ? (
                 <>
@@ -289,7 +289,7 @@ export default function WalletPage() {
                 onClick={() => setActiveTab(cat)}
                 className={`pb-3 px-1 text-xs font-semibold whitespace-nowrap border-b-2 transition-all ${
                   activeTab === cat
-                    ? "border-brand-purple text-brand-purple"
+                    ? "border-primary text-primary"
                     : "border-transparent text-foreground-muted hover:text-foreground"
                 }`}
               >
@@ -307,7 +307,7 @@ export default function WalletPage() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3">
-                    <div className="p-3 bg-brand-purple/10 text-brand-purple rounded-2xl">
+                    <div className="p-3 bg-primary/10 text-primary rounded-2xl">
                       <FileText className="w-5 h-5" />
                     </div>
                     <div>
@@ -322,7 +322,7 @@ export default function WalletPage() {
                     <button
                       onClick={() => handleAIVerify(doc.id, doc.name, doc.category)}
                       disabled={analyzingId === doc.id}
-                      className="p-2 text-brand-purple hover:bg-brand-purple/10 rounded-xl transition-all"
+                      className="p-2 text-primary hover:bg-primary/10 rounded-xl transition-all"
                       title="AI Audit"
                     >
                       {analyzingId === doc.id ? (
@@ -353,7 +353,7 @@ export default function WalletPage() {
                 {/* Render AI audit report if active */}
                 {aiReport[doc.id] && (
                   <div className="bg-surface-raised border border-border p-4 rounded-2xl text-xs space-y-2 relative overflow-hidden">
-                    <div className="absolute top-2 right-2 flex items-center gap-1 bg-brand-purple/10 text-brand-purple px-2 py-0.5 rounded text-[8px] font-bold">
+                    <div className="absolute top-2 right-2 flex items-center gap-1 bg-primary/10 text-primary px-2 py-0.5 rounded text-[8px] font-bold">
                       <Sparkles className="w-2.5 h-2.5" /> AI Evaluated
                     </div>
                     <div className="text-foreground whitespace-pre-line font-medium leading-relaxed">

@@ -156,7 +156,7 @@ export default function TrackerPage() {
   if (loading) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
   }
@@ -167,7 +167,7 @@ export default function TrackerPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
-            <Layers className="w-6 h-6 text-brand-purple" /> Application Tracker
+            <Layers className="w-6 h-6 text-primary" /> Application Tracker
           </h1>
           <p className="text-foreground-muted text-sm mt-1">
             Track and update your opportunity stages. Progress changes trigger real-time AI suggestions and status alert notifications.
@@ -176,7 +176,7 @@ export default function TrackerPage() {
 
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-1.5 px-5 py-3 bg-brand-purple hover:bg-brand-indigo text-white font-semibold text-xs rounded-full transition-all shadow-sm"
+          className="flex items-center gap-1.5 px-5 py-3 bg-primary hover:bg-primary-hover text-white font-semibold text-xs rounded-full transition-all shadow-sm"
         >
           <Plus className="w-4 h-4" /> Add Application
         </button>
@@ -199,7 +199,7 @@ export default function TrackerPage() {
                     className={`flex items-center gap-1 px-3 py-1.5 rounded-xl border text-[11px] font-bold whitespace-nowrap transition-all ${
                       alreadyAdded
                         ? "bg-surface-raised border-border text-foreground-muted cursor-not-allowed"
-                        : "bg-surface border-border text-brand-purple hover:bg-brand-purple/10"
+                        : "bg-surface border-border text-primary hover:bg-primary/10"
                     }`}
                   >
                     {opp.title.slice(0, 22)}... {alreadyAdded ? "(Added)" : "+"}
@@ -223,7 +223,7 @@ export default function TrackerPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-brand-purple bg-background text-foreground placeholder:text-foreground-muted"
+                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-primary bg-background text-foreground placeholder:text-foreground-muted"
               />
             </div>
             <div className="space-y-1">
@@ -234,7 +234,7 @@ export default function TrackerPage() {
                 value={orgName}
                 onChange={(e) => setOrgName(e.target.value)}
                 required
-                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-brand-purple bg-background text-foreground placeholder:text-foreground-muted"
+                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-primary bg-background text-foreground placeholder:text-foreground-muted"
               />
             </div>
             <div className="space-y-1">
@@ -243,7 +243,7 @@ export default function TrackerPage() {
                 type="date"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
-                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-brand-purple bg-background text-foreground"
+                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-primary bg-background text-foreground"
               />
             </div>
             <div className="space-y-1">
@@ -253,7 +253,7 @@ export default function TrackerPage() {
                 placeholder="Need to finish essay & recommendation"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-brand-purple bg-background text-foreground placeholder:text-foreground-muted"
+                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-primary bg-background text-foreground placeholder:text-foreground-muted"
               />
             </div>
             <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
@@ -266,7 +266,7 @@ export default function TrackerPage() {
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-brand-purple text-white rounded-xl text-xs font-semibold hover:bg-brand-indigo shadow-sm"
+                className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-semibold hover:bg-primary-hover shadow-sm"
               >
                 Create Card
               </button>
@@ -320,14 +320,14 @@ export default function TrackerPage() {
                       <button
                         onClick={() => moveStatus(app.id, app.opportunityTitle, app.status, "prev")}
                         disabled={stage === "Applied"}
-                        className="p-1 hover:bg-surface-raised rounded text-foreground-muted hover:text-brand-purple disabled:opacity-30"
+                        className="p-1 hover:bg-surface-raised rounded text-foreground-muted hover:text-primary disabled:opacity-30"
                       >
                         <ChevronLeft className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => moveStatus(app.id, app.opportunityTitle, app.status, "next")}
                         disabled={stage === "Offer Received"}
-                        className="p-1 hover:bg-surface-raised rounded text-foreground-muted hover:text-brand-purple disabled:opacity-30"
+                        className="p-1 hover:bg-surface-raised rounded text-foreground-muted hover:text-primary disabled:opacity-30"
                       >
                         <ChevronRight className="w-3.5 h-3.5" />
                       </button>

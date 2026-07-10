@@ -162,7 +162,7 @@ export default function AdminPage() {
   if (loading || authLoading || !currentUser || !isAllowedAdminEmail(currentUser.email)) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
   }
@@ -175,7 +175,7 @@ export default function AdminPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
-          <ShieldCheck className="w-6 h-6 text-brand-purple" /> Admin Panel
+          <ShieldCheck className="w-6 h-6 text-primary" /> Admin Panel
         </h1>
         <p className="text-foreground-muted text-sm mt-1">
           Moderate organization postings, change user access permissions, and evaluate platform statistics.
@@ -185,7 +185,7 @@ export default function AdminPage() {
       {/* Stats Counters */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-surface border border-border p-5 rounded-3xl shadow-sm text-center hover:shadow-[0_0_0_1px_rgba(255,92,134,0.15),0_4px_16px_rgba(255,60,110,0.1)] transition-shadow">
-          <Users className="w-6 h-6 text-purple-500 mx-auto mb-2" />
+          <Users className="w-6 h-6 text-primary mx-auto mb-2" />
           <span className="block text-[9px] font-bold text-foreground-muted uppercase tracking-wider">Total Members</span>
           <span className="text-lg font-extrabold text-foreground">{stats.totalUsers} users</span>
         </div>
@@ -232,7 +232,7 @@ export default function AdminPage() {
                     </span>
                     <h5 className="font-bold text-foreground text-xs mt-1 leading-snug">{req.orgName}</h5>
                     {req.website && (
-                      <a href={req.website} target="_blank" rel="noopener noreferrer" className="text-[10px] text-brand-purple hover:underline">
+                      <a href={req.website} target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline">
                         {req.website}
                       </a>
                     )}
@@ -359,12 +359,12 @@ export default function AdminPage() {
               <button
                 key={usr.id}
                 onClick={() => setSelectedUser(usr)}
-                className="w-full p-4 bg-surface-raised border border-border rounded-2xl flex items-center justify-between gap-4 text-left hover:border-brand-purple/40 hover:shadow-sm transition-all"
+                className="w-full p-4 bg-surface-raised border border-border rounded-2xl flex items-center justify-between gap-4 text-left hover:border-primary/40 hover:shadow-sm transition-all"
               >
                 <h5 className="font-bold text-foreground text-xs truncate">{usr.name || "Unnamed User"}</h5>
                 <span className={`shrink-0 text-[8px] font-bold uppercase px-2 py-1 rounded-full border ${
                   usr.role === "admin"
-                    ? "bg-purple-500/10 text-purple-500 border-purple-500/20"
+                    ? "bg-primary/10 text-primary border-primary/20"
                     : usr.role === "organization"
                     ? "bg-blue-500/10 text-blue-500 border-blue-500/20"
                     : "bg-slate-500/10 text-slate-500 border-slate-500/20"
@@ -436,7 +436,7 @@ export default function AdminPage() {
                 value={selectedUser.role || "user"}
                 onChange={(e) => handleRoleChange(selectedUser.id, e.target.value as any)}
                 disabled={isAllowedAdminEmail(selectedUser.email)}
-                className="w-full text-xs font-bold p-2.5 bg-surface-raised border border-border rounded-xl outline-none text-foreground focus:border-brand-purple disabled:opacity-50"
+                className="w-full text-xs font-bold p-2.5 bg-surface-raised border border-border rounded-xl outline-none text-foreground focus:border-primary disabled:opacity-50"
               >
                 <option value="user">User</option>
                 <option value="organization">Organization</option>

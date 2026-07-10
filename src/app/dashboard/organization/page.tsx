@@ -186,7 +186,7 @@ export default function OrgDashboardPage() {
   if (authLoading || !currentUser) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
   }
@@ -197,7 +197,7 @@ export default function OrgDashboardPage() {
     if (requestLoading) {
       return (
         <div className="min-h-[50vh] flex items-center justify-center">
-          <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
         </div>
       );
     }
@@ -231,7 +231,7 @@ export default function OrgDashboardPage() {
           </p>
           <button
             onClick={() => setOrgRequest(null)}
-            className="mt-2 px-5 py-2.5 bg-brand-purple hover:bg-brand-purple/90 text-white rounded-2xl text-xs font-bold transition-all"
+            className="mt-2 px-5 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-2xl text-xs font-bold transition-all"
           >
             Submit a new request
           </button>
@@ -243,7 +243,7 @@ export default function OrgDashboardPage() {
     return (
       <div className="max-w-lg mx-auto py-14">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-brand-purple/10 text-brand-purple rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Building2 className="w-7 h-7" />
           </div>
           <h1 className="text-xl font-extrabold text-foreground">Become an organization partner</h1>
@@ -269,7 +269,7 @@ export default function OrgDashboardPage() {
               value={reqOrgName}
               onChange={(e) => setReqOrgName(e.target.value)}
               placeholder="e.g. AnitaB.org India"
-              className="w-full text-sm px-4 py-3 bg-surface-raised border border-border rounded-2xl outline-none focus:border-brand-purple text-foreground placeholder-foreground-muted"
+              className="w-full text-sm px-4 py-3 bg-surface-raised border border-border rounded-2xl outline-none focus:border-primary text-foreground placeholder-foreground-muted"
             />
           </div>
 
@@ -282,7 +282,7 @@ export default function OrgDashboardPage() {
               value={reqWebsite}
               onChange={(e) => setReqWebsite(e.target.value)}
               placeholder="https://..."
-              className="w-full text-sm px-4 py-3 bg-surface-raised border border-border rounded-2xl outline-none focus:border-brand-purple text-foreground placeholder-foreground-muted"
+              className="w-full text-sm px-4 py-3 bg-surface-raised border border-border rounded-2xl outline-none focus:border-primary text-foreground placeholder-foreground-muted"
             />
           </div>
 
@@ -295,14 +295,14 @@ export default function OrgDashboardPage() {
               onChange={(e) => setReqDescription(e.target.value)}
               rows={4}
               placeholder="What does your organization do, and what kind of opportunities do you want to post?"
-              className="w-full text-sm px-4 py-3 bg-surface-raised border border-border rounded-2xl outline-none focus:border-brand-purple text-foreground placeholder-foreground-muted resize-none"
+              className="w-full text-sm px-4 py-3 bg-surface-raised border border-border rounded-2xl outline-none focus:border-primary text-foreground placeholder-foreground-muted resize-none"
             />
           </div>
 
           <button
             onClick={submitOrgRequest}
             disabled={reqSubmitting}
-            className="w-full bg-brand-purple hover:bg-brand-purple/90 text-white font-bold text-sm py-3.5 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+            className="w-full bg-primary hover:bg-primary/90 text-white font-bold text-sm py-3.5 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-60"
           >
             {reqSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Submit Request"}
           </button>
@@ -314,7 +314,7 @@ export default function OrgDashboardPage() {
   if (loading) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
   }
@@ -329,8 +329,8 @@ export default function OrgDashboardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-brand-navy flex items-center gap-2">
-            <Building2 className="w-6 h-6 text-brand-purple" /> Organization Hub
+          <h1 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
+            <Building2 className="w-6 h-6 text-primary" /> Organization Hub
           </h1>
           <p className="text-slate-500 text-sm mt-1">
             Post opportunities, check candidate analytics, and shortlist candidates from submissions.
@@ -339,7 +339,7 @@ export default function OrgDashboardPage() {
 
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-purple hover:bg-brand-indigo text-white font-semibold text-xs rounded-xl shadow-sm transition-all"
+          className="flex items-center gap-1.5 px-4 py-2.5 bg-primary hover:bg-primary-hover text-white font-semibold text-xs rounded-xl shadow-sm transition-all"
         >
           <Plus className="w-3.5 h-3.5" /> Post Opportunity
         </button>
@@ -358,7 +358,7 @@ export default function OrgDashboardPage() {
         </div>
 
         <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm flex items-center gap-4">
-          <div className="p-3 bg-purple-50 text-brand-purple rounded-2xl">
+          <div className="p-3 bg-primary/10 text-primary rounded-2xl">
             <Users className="w-6 h-6" />
           </div>
           <div>
@@ -382,7 +382,7 @@ export default function OrgDashboardPage() {
       {showAddForm && (
         <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm animate-in fade-in duration-200">
           <h3 className="font-bold text-slate-800 text-sm mb-4 flex items-center gap-1">
-            <Sparkles className="w-4 h-4 text-brand-purple" /> Publish Opportunity Program
+            <Sparkles className="w-4 h-4 text-primary" /> Publish Opportunity Program
           </h3>
           <form onSubmit={handlePostOpportunity} className="space-y-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
@@ -393,7 +393,7 @@ export default function OrgDashboardPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-primary"
               />
             </div>
             <div className="space-y-1">
@@ -403,7 +403,7 @@ export default function OrgDashboardPage() {
                 placeholder="e.g. Computer Science, Aerospace"
                 value={field}
                 onChange={(e) => setField(e.target.value)}
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-primary"
               />
             </div>
             <div className="space-y-1">
@@ -412,7 +412,7 @@ export default function OrgDashboardPage() {
                 type="date"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-primary"
               />
             </div>
             <div className="space-y-1">
@@ -420,7 +420,7 @@ export default function OrgDashboardPage() {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none bg-white focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none bg-white focus:border-primary"
               >
                 <option value="Scholarships">Scholarships</option>
                 <option value="Internships">Internships</option>
@@ -439,7 +439,7 @@ export default function OrgDashboardPage() {
                 value={desc}
                 onChange={(e) => setDesc(e.target.value)}
                 required
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-primary"
               ></textarea>
             </div>
             <div className="space-y-1 sm:col-span-2">
@@ -449,7 +449,7 @@ export default function OrgDashboardPage() {
                 placeholder="e.g. Open to female students enrolled in Bachelor's program."
                 value={eligibility}
                 onChange={(e) => setEligibility(e.target.value)}
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-primary"
               />
             </div>
             <div className="space-y-1 sm:col-span-2">
@@ -459,7 +459,7 @@ export default function OrgDashboardPage() {
                 placeholder="https://company.com/careers"
                 value={applyLink}
                 onChange={(e) => setApplyLink(e.target.value)}
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-primary"
               />
             </div>
             <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
@@ -472,7 +472,7 @@ export default function OrgDashboardPage() {
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-brand-purple text-white rounded-xl text-xs font-semibold hover:bg-brand-indigo shadow-sm"
+                className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-semibold hover:bg-primary-hover shadow-sm"
               >
                 Publish Program
               </button>
@@ -486,7 +486,7 @@ export default function OrgDashboardPage() {
         {/* Published opportunities */}
         <div className="lg:col-span-2 space-y-6">
           <h3 className="font-extrabold text-slate-800 text-base flex items-center gap-1.5">
-            <FileSpreadsheet className="w-5 h-5 text-brand-purple" /> Published Opportunities ({opportunities.length})
+            <FileSpreadsheet className="w-5 h-5 text-primary" /> Published Opportunities ({opportunities.length})
           </h3>
 
           <div className="space-y-4">
@@ -497,7 +497,7 @@ export default function OrgDashboardPage() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <span className="text-[9px] font-bold uppercase tracking-wider bg-brand-purple/10 text-brand-purple px-2 py-0.5 rounded">
+                    <span className="text-[9px] font-bold uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded">
                       {opp.category}
                     </span>
                     <h4 className="font-bold text-slate-800 text-sm mt-2">{opp.title}</h4>
@@ -523,7 +523,7 @@ export default function OrgDashboardPage() {
               <div className="text-center py-16 bg-white border border-slate-100 rounded-3xl">
                 <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-2" />
                 <h4 className="font-bold text-slate-805 text-sm">No published programs yet</h4>
-                <p className="text-slate-450 text-xs mt-1">
+                <p className="text-slate-500 text-xs mt-1">
                   Click the Post Opportunity button to publish women-focused scholarships or hackathons.
                 </p>
               </div>
@@ -534,7 +534,7 @@ export default function OrgDashboardPage() {
         {/* Candidate evaluation tracker */}
         <div className="space-y-6">
           <h3 className="font-extrabold text-slate-800 text-base flex items-center gap-1.5">
-            <Users className="w-5 h-5 text-brand-purple" /> Review Submissions
+            <Users className="w-5 h-5 text-primary" /> Review Submissions
           </h3>
 
           <div className="space-y-4 max-h-[460px] overflow-y-auto pr-1">
@@ -543,13 +543,13 @@ export default function OrgDashboardPage() {
                 <div className="space-y-0.5">
                   <span className="text-[8px] font-bold text-slate-400 uppercase">Program Applied</span>
                   <h5 className="font-bold text-slate-800 text-xs leading-snug">{app.opportunityTitle}</h5>
-                  <p className="text-[9px] text-slate-450 font-semibold">Candidate UID: {app.uid.slice(0, 10)}...</p>
+                  <p className="text-[9px] text-slate-500 font-semibold">Candidate UID: {app.uid.slice(0, 10)}...</p>
                 </div>
 
                 <div className="flex justify-between items-center pt-2 border-t border-slate-50 gap-2">
                   <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${
                     app.status === "Shortlisted"
-                      ? "bg-purple-50 text-brand-purple"
+                      ? "bg-primary/10 text-primary"
                       : app.status === "Rejected"
                       ? "bg-red-50 text-red-650"
                       : "bg-slate-50 text-slate-500"
@@ -560,7 +560,7 @@ export default function OrgDashboardPage() {
                     <div className="flex gap-1">
                       <button
                         onClick={() => handleShortlistCandidate(app.id, "Shortlisted")}
-                        className="p-1 hover:bg-purple-50 rounded text-brand-purple"
+                        className="p-1 hover:bg-primary/10 rounded text-primary"
                         title="Shortlist Candidate"
                       >
                         <CheckCircle className="w-4 h-4" />
@@ -582,7 +582,7 @@ export default function OrgDashboardPage() {
               <div className="text-center py-12 bg-white border border-slate-100 rounded-3xl">
                 <Users className="w-8 h-8 text-slate-300 mx-auto mb-2" />
                 <h5 className="font-bold text-slate-700 text-xs">No candidate applications</h5>
-                <p className="text-slate-450 text-[10px] mt-1">
+                <p className="text-slate-500 text-[10px] mt-1">
                   Once users submit applications targeting your programs, they will appear here.
                 </p>
               </div>

@@ -35,12 +35,12 @@ export default function Home() {
   };
 
   const categories = [
-    { name: "Scholarships", icon: GraduationCap, lightColor: "text-purple-600 bg-purple-50", darkColor: "dark:text-purple-300 dark:bg-purple-950/40" },
-    { name: "Fellowships", icon: Users, lightColor: "text-indigo-600 bg-indigo-50", darkColor: "dark:text-indigo-300 dark:bg-indigo-950/40" },
-    { name: "Internships", icon: Briefcase, lightColor: "text-blue-600 bg-blue-50", darkColor: "dark:text-blue-300 dark:bg-blue-950/40" },
-    { name: "Conferences", icon: Compass, lightColor: "text-pink-600 bg-pink-50", darkColor: "dark:text-primary dark:bg-primary/10" },
-    { name: "Hackathons", icon: Trophy, lightColor: "text-amber-600 bg-amber-50", darkColor: "dark:text-amber-300 dark:bg-amber-950/40" },
-    { name: "STEM Programs", icon: Sparkles, lightColor: "text-violet-600 bg-violet-50", darkColor: "dark:text-violet-300 dark:bg-violet-950/40" },
+    { name: "Scholarships", icon: GraduationCap, lightColor: "text-primary bg-primary/8", darkColor: "dark:text-primary dark:bg-primary/10" },
+    { name: "Fellowships", icon: Users, lightColor: "text-secondary bg-secondary/8", darkColor: "dark:text-secondary dark:bg-secondary/10" },
+    { name: "Internships", icon: Briefcase, lightColor: "text-accent-gold bg-accent-gold-surface", darkColor: "dark:text-accent-gold dark:bg-accent-gold-surface" },
+    { name: "Conferences", icon: Compass, lightColor: "text-primary bg-primary/8", darkColor: "dark:text-primary dark:bg-primary/10" },
+    { name: "Hackathons", icon: Trophy, lightColor: "text-secondary bg-secondary/8", darkColor: "dark:text-secondary dark:bg-secondary/10" },
+    { name: "STEM Programs", icon: Sparkles, lightColor: "text-accent-gold bg-accent-gold-surface", darkColor: "dark:text-accent-gold dark:bg-accent-gold-surface" },
   ];
 
   const benefits = [
@@ -56,12 +56,9 @@ export default function Home() {
       <main className="flex-grow">
         {/* Hero Section */}
         <section className="relative overflow-hidden py-20 px-4 sm:px-6 lg:px-8 hero-glow">
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-background to-background pointer-events-none" />
-
-          {/* Light mode decorative orbs */}
-          <div className="absolute top-1/4 left-[10%] w-72 h-72 bg-primary/20 rounded-full filter blur-3xl opacity-40 animate-pulse dark:bg-primary/10 dark:opacity-20" />
-          <div className="absolute top-1/3 right-[10%] w-96 h-96 bg-primary/15 rounded-full filter blur-3xl opacity-30 animate-pulse delay-2000 dark:bg-[rgba(180,0,60,0.08)] dark:opacity-30" />
+          {/* Single soft decorative wash — primary + secondary, subtle */}
+          <div className="absolute top-[-10%] left-[8%] w-80 h-80 bg-primary/10 rounded-full filter blur-3xl opacity-60 dark:bg-primary/8 dark:opacity-40" />
+          <div className="absolute top-[10%] right-[8%] w-72 h-72 bg-secondary/8 rounded-full filter blur-3xl opacity-50 dark:bg-secondary/10 dark:opacity-30" />
 
           <div className="max-w-5xl mx-auto text-center relative z-10">
             <motion.span
@@ -128,7 +125,7 @@ export default function Home() {
             >
               <Link
                 href={currentUser ? "/dashboard" : "/auth/signup"}
-                className="px-6 py-3.5 bg-foreground hover:opacity-90 text-background font-semibold rounded-full shadow-md transition-all flex items-center gap-2"
+                className="px-6 py-3.5 bg-primary hover:bg-primary-hover text-white font-semibold rounded-full shadow-md transition-all flex items-center gap-2 btn-glow"
               >
                 {currentUser ? "Go to Dashboard" : "Join Platform"}
                 <ArrowRight className="w-4 h-4" />
@@ -225,9 +222,10 @@ export default function Home() {
               ].map((t) => (
                 <div
                   key={t.name}
-                  className="p-8 bg-background rounded-3xl border border-border hover:border-primary/20 transition-all card-hover"
+                  className="p-8 bg-background rounded-3xl border border-border hover:border-secondary/30 transition-all card-hover relative overflow-hidden"
                 >
-                  <div className="flex gap-1 mb-4 text-amber-500 dark:text-amber-400">
+                  <div className="absolute top-0 left-0 w-1.5 h-full bg-secondary/60" />
+                  <div className="flex gap-1 mb-4 text-accent-gold">
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} className="w-4 h-4 fill-current" />
                     ))}

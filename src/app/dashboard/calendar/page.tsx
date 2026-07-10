@@ -163,7 +163,7 @@ export default function CalendarPage() {
   if (loading) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
   }
@@ -173,8 +173,8 @@ export default function CalendarPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-brand-navy flex items-center gap-2">
-            <CalendarDays className="w-6 h-6 text-brand-purple" /> Calendar Hub
+          <h1 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
+            <CalendarDays className="w-6 h-6 text-primary" /> Calendar Hub
           </h1>
           <p className="text-slate-500 text-sm mt-1">
             Aggregate bookmarked application deadlines, schedule interviews, and custom reminders.
@@ -192,7 +192,7 @@ export default function CalendarPage() {
           </button>
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-purple hover:bg-brand-indigo text-white font-semibold text-xs rounded-xl shadow-sm transition-all"
+            className="flex items-center gap-1.5 px-4 py-2.5 bg-primary hover:bg-primary-hover text-white font-semibold text-xs rounded-xl shadow-sm transition-all"
           >
             <Plus className="w-3.5 h-3.5" /> New Event
           </button>
@@ -212,7 +212,7 @@ export default function CalendarPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-primary"
               />
             </div>
             <div className="space-y-1">
@@ -222,7 +222,7 @@ export default function CalendarPage() {
                 value={dateStr}
                 onChange={(e) => setDateStr(e.target.value)}
                 required
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-primary"
               />
             </div>
             <div className="space-y-1">
@@ -230,7 +230,7 @@ export default function CalendarPage() {
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as CalendarEventType)}
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none bg-white focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none bg-white focus:border-primary"
               >
                 <option value="reminder">Reminder</option>
                 <option value="interview">Interview Slot</option>
@@ -245,20 +245,20 @@ export default function CalendarPage() {
                 placeholder="Google Meet Link / Notes"
                 value={desc}
                 onChange={(e) => setDesc(e.target.value)}
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-primary"
               />
             </div>
             <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setShowAddForm(false)}
-                className="px-4 py-2 border border-slate-200 text-slate-650 rounded-xl text-xs font-semibold hover:bg-slate-50"
+                className="px-4 py-2 border border-slate-200 text-slate-700 rounded-xl text-xs font-semibold hover:bg-slate-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-brand-purple text-white rounded-xl text-xs font-semibold hover:bg-brand-indigo shadow-sm"
+                className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-semibold hover:bg-primary-hover shadow-sm"
               >
                 Create Event
               </button>
@@ -316,9 +316,9 @@ export default function CalendarPage() {
               return (
                 <div
                   key={`day-${day}`}
-                  className="h-16 border border-slate-100 rounded-xl p-1.5 flex flex-col justify-between items-start group hover:border-brand-purple/40 hover:bg-slate-50/20 transition-all overflow-hidden"
+                  className="h-16 border border-slate-100 rounded-xl p-1.5 flex flex-col justify-between items-start group hover:border-primary/40 hover:bg-slate-50/20 transition-all overflow-hidden"
                 >
-                  <span className="text-[10px] font-bold text-slate-650">{day}</span>
+                  <span className="text-[10px] font-bold text-slate-700">{day}</span>
                   {dayEvents.length > 0 && (
                     <div className="w-full space-y-0.5 max-h-[28px] overflow-hidden">
                       {dayEvents.slice(0, 2).map((de) => (
@@ -328,7 +328,7 @@ export default function CalendarPage() {
                             de.type === "deadline"
                               ? "bg-red-50 text-red-650"
                               : de.type === "interview"
-                              ? "bg-purple-50 text-brand-purple"
+                              ? "bg-primary/10 text-primary"
                               : "bg-blue-50 text-blue-600"
                           }`}
                           title={de.title}
@@ -352,7 +352,7 @@ export default function CalendarPage() {
         {/* Agenda View */}
         <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm space-y-6">
           <h3 className="font-extrabold text-slate-800 text-base flex items-center gap-1.5">
-            <Clock className="w-5 h-5 text-brand-purple" /> Upcoming Agenda
+            <Clock className="w-5 h-5 text-primary" /> Upcoming Agenda
           </h3>
 
           <div className="space-y-4 max-h-[420px] overflow-y-auto pr-1">
@@ -365,7 +365,7 @@ export default function CalendarPage() {
                     <span className="block text-[8px] font-extrabold text-slate-400 uppercase">
                       {new Date(e.date).toLocaleDateString(undefined, { month: "short" })}
                     </span>
-                    <span className="block text-lg font-extrabold text-brand-navy">
+                    <span className="block text-lg font-extrabold text-foreground">
                       {new Date(e.date).getDate()}
                     </span>
                   </div>
@@ -376,7 +376,7 @@ export default function CalendarPage() {
                         e.type === "deadline"
                           ? "bg-red-50 text-red-650"
                           : e.type === "interview"
-                          ? "bg-purple-50 text-brand-purple"
+                          ? "bg-primary/10 text-primary"
                           : "bg-blue-50 text-blue-600"
                       }`}>
                         {e.type}
@@ -384,7 +384,7 @@ export default function CalendarPage() {
                     </div>
                     <h5 className="font-bold text-xs text-slate-800">{e.title}</h5>
                     {e.description && (
-                      <p className="text-[10px] text-slate-450 leading-relaxed font-semibold">
+                      <p className="text-[10px] text-slate-500 leading-relaxed font-semibold">
                         {e.description}
                       </p>
                     )}
@@ -394,9 +394,9 @@ export default function CalendarPage() {
 
             {events.length === 0 && (
               <div className="text-center py-12">
-                <Calendar className="w-8 h-8 text-slate-350 mx-auto mb-2" />
+                <Calendar className="w-8 h-8 text-slate-400 mx-auto mb-2" />
                 <h5 className="font-bold text-slate-700 text-xs">No entries scheduled</h5>
-                <p className="text-slate-450 text-[10px] mt-1">
+                <p className="text-slate-500 text-[10px] mt-1">
                   Add deadlines from saved Opportunities, or create custom items using the New Event button.
                 </p>
               </div>

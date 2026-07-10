@@ -87,7 +87,7 @@ export default function Profile() {
   if (authLoading || !currentUser) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
   }
@@ -100,10 +100,10 @@ export default function Profile() {
         <div className="max-w-3xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <span className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-brand-purple">
+            <span className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-primary">
               <Sparkles className="w-3.5 h-3.5" /> Profile Settings
             </span>
-            <h1 className="text-3xl font-extrabold text-brand-navy mt-2">Personalize Your Space</h1>
+            <h1 className="text-3xl font-extrabold text-foreground mt-2">Personalize Your Space</h1>
             <p className="text-sm text-slate-500 mt-1">
               Provide your background details so Bloom can match you with relevant scholarships and reminders.
             </p>
@@ -126,7 +126,7 @@ export default function Profile() {
                   <input
                     type="text"
                     {...register("name")}
-                    className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-brand-purple transition-all ${
+                    className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-primary transition-all ${
                       errors.name ? "border-red-300 focus:border-red-500" : "border-slate-200"
                     }`}
                   />
@@ -155,7 +155,7 @@ export default function Profile() {
                   </label>
                   <select
                     {...register("education")}
-                    className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-brand-purple transition-all ${
+                    className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-primary transition-all ${
                       errors.education ? "border-red-300 focus:border-red-500" : "border-slate-200"
                     }`}
                   >
@@ -177,7 +177,7 @@ export default function Profile() {
                   </label>
                   <select
                     {...register("income")}
-                    className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-brand-purple transition-all ${
+                    className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-primary transition-all ${
                       errors.income ? "border-red-300 focus:border-red-500" : "border-slate-200"
                     }`}
                   >
@@ -202,7 +202,7 @@ export default function Profile() {
                     type="text"
                     placeholder="e.g. United States, Global"
                     {...register("location")}
-                    className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-brand-purple transition-all ${
+                    className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-primary transition-all ${
                       errors.location ? "border-red-300 focus:border-red-500" : "border-slate-200"
                     }`}
                   />
@@ -218,7 +218,7 @@ export default function Profile() {
                   </label>
                   <select
                     {...register("category")}
-                    className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-brand-purple transition-all ${
+                    className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-primary transition-all ${
                       errors.category ? "border-red-300 focus:border-red-500" : "border-slate-200"
                     }`}
                   >
@@ -245,7 +245,7 @@ export default function Profile() {
                   rows={3}
                   placeholder="Tell us a little bit about yourself..."
                   {...register("bio")}
-                  className="w-full text-sm px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-brand-purple resize-none"
+                  className="w-full text-sm px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-primary resize-none"
                 />
               </div>
 
@@ -258,7 +258,7 @@ export default function Profile() {
                   type="text"
                   placeholder="e.g. Python, Public Speaking, Data Analysis"
                   {...register("skills")}
-                  className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-brand-purple transition-all ${
+                  className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-primary transition-all ${
                     errors.skills ? "border-red-300 focus:border-red-500" : "border-slate-200"
                   }`}
                 />
@@ -276,7 +276,7 @@ export default function Profile() {
                   type="text"
                   placeholder="e.g. STEM, Artificial Intelligence, Business"
                   {...register("interests")}
-                  className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-brand-purple transition-all ${
+                  className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-primary transition-all ${
                     errors.interests ? "border-red-300 focus:border-red-500" : "border-slate-200"
                   }`}
                 />
@@ -290,7 +290,7 @@ export default function Profile() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="w-full bg-brand-purple hover:bg-brand-indigo text-white font-semibold text-sm py-3.5 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+                  className="w-full bg-primary hover:bg-primary-hover text-white font-semibold text-sm py-3.5 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-60"
                 >
                   {saving ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
