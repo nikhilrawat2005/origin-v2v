@@ -32,7 +32,7 @@ const faqs = [
   },
   {
     q: "What is the Opportunity Tracker?",
-    a: "The tracker is a Kanban-style board where you can monitor the status of your applications — from 'Applied' through 'Shortlisted', 'Interview', 'Selected', and 'Offer Received'. You can add applications manually or import from your bookmarks.",
+    a: "The tracker is a Kanban-style board where you can monitor the status of your applications. Each opportunity Type (Job, Internship, Hackathon, Scholarship, Research, Other) has its own pipeline of stages — e.g. Jobs go 'Applied → Shortlisted → Interview → Offer Received → Joined', while Hackathons go 'Registered → Submitted → Shortlisted → Finalist → Winner'. You can add applications manually or import from your bookmarks, and filter the board by type.",
   },
   {
     q: "What is the Opportunity Wallet?",

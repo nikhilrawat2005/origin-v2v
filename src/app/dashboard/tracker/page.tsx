@@ -3,21 +3,21 @@
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import { collection, query, where, onSnapshot, doc, updateDoc, addDoc, getDoc } from "firebase/firestore";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import {
   Layers,
   Plus,
   Loader2,
   Calendar,
   Building,
-  CheckCircle,
   ChevronRight,
   ChevronLeft,
   X,
   FileText,
   ExternalLink,
 } from "lucide-react";
-import type { ApplicationEntry, ApplicationStatus } from "@/lib/types";
+import type { ApplicationEntry, ApplicationType } from "@/lib/types";
+import { TRACKER_TYPES, TRACKER_TYPE_CONFIG, getStagesForType } from "@/lib/trackerTypes";
 import { useOpportunities } from "@/hooks/useOpportunities";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 
@@ -78,15 +78,21 @@ function CountUp({ to }: { to: number }) {
   return <>{value}</>;
 }
 
-/* ── Status color map ───────────────────────────────────────── */
-const STATUS_COLORS: Record<ApplicationStatus, string> = {
-  Applied: "bg-secondary/10 text-secondary border-secondary/20",
-  Shortlisted: "bg-accent-gold-surface text-accent-gold border-accent-gold/20",
-  Interview: "bg-primary/10 text-primary border-primary/20",
-  Rejected: "bg-danger-surface text-danger border-danger/20",
-  Selected: "bg-success-surface text-success border-success/20",
-  "Offer Received": "bg-success-surface text-success border-success/20",
-};
+/* ── Generic stage color fallback (cycles per stage index within a type) ── */
+const STAGE_COLOR_CYCLE = [
+  "bg-secondary/10 text-secondary border-secondary/20",
+  "bg-accent-gold-surface text-accent-gold border-accent-gold/20",
+  "bg-primary/10 text-primary border-primary/20",
+  "bg-danger-surface text-danger border-danger/20",
+  "bg-success-surface text-success border-success/20",
+  "bg-surface-raised text-foreground-muted border-border",
+];
+
+function stageColor(type: ApplicationType, stage: string) {
+  const stages = getStagesForType(type);
+  const idx = stages.indexOf(stage);
+  return STAGE_COLOR_CYCLE[idx % STAGE_COLOR_CYCLE.length] ?? STAGE_COLOR_CYCLE[0];
+}
 
 export default function TrackerPage() {
   const { currentUser } = useAuth();
@@ -95,6 +101,9 @@ export default function TrackerPage() {
   const [bookmarks, setBookmarks] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Type filter tab — "All" or one specific ApplicationType
+  const [activeType, setActiveType] = useState<ApplicationType | "All">("All");
+
   // Form states
   const [showAddForm, setShowAddForm] = useState(false);
   const [title, setTitle] = useState("");
@@ -102,18 +111,10 @@ export default function TrackerPage() {
   const [deadline, setDeadline] = useState("");
   const [applyLink, setApplyLink] = useState("");
   const [notes, setNotes] = useState("");
+  const [formType, setFormType] = useState<ApplicationType>("Job");
 
   // Card detail modal
   const [selectedApp, setSelectedApp] = useState<ApplicationEntry | null>(null);
-
-  const stages: ApplicationStatus[] = [
-    "Applied",
-    "Shortlisted",
-    "Interview",
-    "Rejected",
-    "Selected",
-    "Offer Received",
-  ];
 
   useEffect(() => {
     if (!currentUser) return;
@@ -122,7 +123,13 @@ export default function TrackerPage() {
     const unsub = onSnapshot(q, (snap) => {
       const items: ApplicationEntry[] = [];
       snap.forEach((d) => {
-        items.push({ id: d.id, ...d.data() } as ApplicationEntry);
+        const data = d.data();
+        items.push({
+          id: d.id,
+          ...data,
+          // Legacy entries created before the Type System won't have `type` set.
+          type: (data.type as ApplicationType) || "Other",
+        } as ApplicationEntry);
       });
       setApplications(items);
       setLoading(false);
@@ -139,19 +146,30 @@ export default function TrackerPage() {
     return () => unsub();
   }, [currentUser]);
 
+  // Which type(s) get their own Kanban board section below.
+  const boardTypes: ApplicationType[] = activeType === "All" ? TRACKER_TYPES : [activeType];
+
+  const filteredApplications = useMemo(() => {
+    if (activeType === "All") return applications;
+    return applications.filter((app) => app.type === activeType);
+  }, [applications, activeType]);
+
   const handleCreateApplication = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser || !title.trim() || !orgName.trim()) return;
 
     try {
+      const initialStage = getStagesForType(formType)[0];
       const newEntry = {
         uid: currentUser.uid,
         opportunityTitle: title.trim(),
         organization: orgName.trim(),
         deadline: deadline || new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0],
         applyLink: applyLink.trim() || null,
-        status: "Applied" as ApplicationStatus,
+        type: formType,
+        status: initialStage,
         notes: notes.trim(),
+        sentAlerts: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -162,6 +180,7 @@ export default function TrackerPage() {
       setDeadline("");
       setApplyLink("");
       setNotes("");
+      setFormType("Job");
       setShowAddForm(false);
     } catch (err) {
       console.error("Create application error:", err);
@@ -176,14 +195,23 @@ export default function TrackerPage() {
     try {
       if (applications.some((app) => app.opportunityTitle === opp.title)) return;
 
+      // Best-effort map from opportunity category to a tracker Type; falls
+      // back to "Other" when the category doesn't match a known type.
+      const guessedType: ApplicationType =
+        (TRACKER_TYPES.find(
+          (t) => t.toLowerCase() === (opp.category || "").toLowerCase()
+        ) as ApplicationType) || "Other";
+
       const newEntry = {
         uid: currentUser.uid,
         opportunityTitle: opp.title,
         organization: opp.organization,
         deadline: opp.deadline,
         applyLink: opp.applyLink,
-        status: "Applied" as ApplicationStatus,
+        type: guessedType,
+        status: getStagesForType(guessedType)[0],
         notes: "Created from bookmarks",
+        sentAlerts: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -196,11 +224,12 @@ export default function TrackerPage() {
 
   const moveStatus = async (
     appId: string,
-    title: string,
-    current: ApplicationStatus,
+    type: ApplicationType,
+    current: string,
     direction: "next" | "prev"
   ) => {
     if (!currentUser) return;
+    const stages = getStagesForType(type);
     const currentIndex = stages.indexOf(current);
     let nextIndex = currentIndex;
 
@@ -254,7 +283,7 @@ export default function TrackerPage() {
             <Layers className="w-6 h-6 text-primary" /> Application Tracker
           </h1>
           <p className="text-foreground-muted text-sm mt-1">
-            Track and update your opportunity stages. Progress changes trigger real-time AI suggestions and status alert notifications.
+            Track and update your opportunity stages. Each type has its own pipeline — Jobs, Internships, Hackathons, Scholarships, Research, and more.
           </p>
         </div>
 
@@ -273,6 +302,39 @@ export default function TrackerPage() {
           </motion.span>
           {showAddForm ? "Cancel" : "Add Application"}
         </motion.button>
+      </motion.div>
+
+      {/* Type Filter Tabs */}
+      <motion.div variants={headerVariants} className="flex items-center gap-2 overflow-x-auto pb-1">
+        {(["All", ...TRACKER_TYPES] as (ApplicationType | "All")[]).map((t) => {
+          const isActive = activeType === t;
+          const count = t === "All" ? applications.length : applications.filter((a) => a.type === t).length;
+          const icon = t === "All" ? "🗂️" : TRACKER_TYPE_CONFIG[t as ApplicationType].icon;
+          return (
+            <motion.button
+              key={t}
+              onClick={() => setActiveType(t)}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 18 }}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full border text-xs font-bold whitespace-nowrap transition-all ${
+                isActive
+                  ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                  : "bg-surface border-border text-foreground-muted hover:bg-surface-raised"
+              }`}
+            >
+              <span>{icon}</span>
+              {t}
+              <span
+                className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                  isActive ? "bg-white/20" : "bg-surface-raised"
+                }`}
+              >
+                {count}
+              </span>
+            </motion.button>
+          );
+        })}
       </motion.div>
 
       {/* Quick import from bookmarks */}
@@ -337,6 +399,30 @@ export default function TrackerPage() {
                 </motion.button>
               </div>
               <form onSubmit={handleCreateApplication} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1 sm:col-span-2">
+                  <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">
+                    Type
+                  </label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {TRACKER_TYPES.map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => setFormType(t)}
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded-xl border text-[11px] font-bold transition-all ${
+                          formType === t
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-background border-border text-foreground-muted hover:bg-surface-raised"
+                        }`}
+                      >
+                        <span>{TRACKER_TYPE_CONFIG[t].icon}</span> {t}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-foreground-muted pt-1">
+                    Stages: {getStagesForType(formType).join(" → ")}
+                  </p>
+                </div>
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">
                     Title
@@ -422,141 +508,177 @@ export default function TrackerPage() {
         )}
       </AnimatePresence>
 
-      {/* Board Columns */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 overflow-x-auto pb-4">
-        {stages.map((stage, stageIdx) => {
-          const filtered = applications.filter((app) => app.status === stage);
+      {/* Board — one section per visible type, each with its own stage columns */}
+      {boardTypes.map((boardType) => {
+        const stages = getStagesForType(boardType);
+        const typeApps = filteredApplications.filter((app) => app.type === boardType);
+        if (activeType === "All" && typeApps.length === 0) return null;
 
-          return (
-            <motion.div
-              key={stage}
-              custom={stageIdx}
-              variants={columnVariants}
-              className="bg-surface-raised border border-border p-4 rounded-2xl flex flex-col space-y-3 min-w-[200px]"
+        return (
+          <div key={boardType} className="space-y-3">
+            {activeType === "All" && (
+              <div className="flex items-center gap-2">
+                <span className="text-lg">{TRACKER_TYPE_CONFIG[boardType].icon}</span>
+                <h3 className="text-sm font-extrabold text-foreground">{boardType}</h3>
+                <span className="text-[10px] font-bold text-foreground-muted bg-surface-raised px-2 py-0.5 rounded-full border border-border">
+                  {typeApps.length}
+                </span>
+              </div>
+            )}
+
+            <div
+              className="grid gap-4 overflow-x-auto pb-4"
+              style={{ gridTemplateColumns: `repeat(${Math.min(stages.length, 6)}, minmax(200px, 1fr))` }}
             >
-              {/* Column Header */}
-              <div className="flex items-center justify-between pb-1">
-                <h4 className="text-xs font-extrabold text-foreground uppercase tracking-wider">
-                  {stage}
-                </h4>
-                <motion.span
-                  layout
-                  className="text-[10px] font-extrabold bg-background text-foreground-muted px-2 py-0.5 rounded-full border border-border"
-                >
-                  <CountUp to={filtered.length} />
-                </motion.span>
-              </div>
+              {stages.map((stage, stageIdx) => {
+                const filtered = typeApps.filter((app) => app.status === stage);
 
-              {/* Cards List */}
-              <div className="flex-1 space-y-3 min-h-[300px]">
-                <AnimatePresence mode="popLayout">
-                  {filtered.map((app) => (
-                    <motion.div
-                      key={app.id}
-                      layout
-                      variants={cardVariants}
-                      initial="hidden"
-                      animate="show"
-                      exit="exit"
-                      whileHover={{
-                        boxShadow:
-                          "0 0 0 1px rgba(255,92,134,0.2), 0 8px 24px rgba(255,60,110,0.12)",
-                        y: -2,
-                      }}
-                      transition={{ layout: { type: "spring", stiffness: 300, damping: 26 } }}
-                      className="p-4 bg-surface border border-border rounded-xl shadow-sm space-y-2 group cursor-pointer"
-                      onClick={() => setSelectedApp(app)}
-                    >
-                      <div className="space-y-0.5">
-                        <h5 className="font-bold text-foreground text-xs leading-snug line-clamp-2">
-                          {app.opportunityTitle}
-                        </h5>
-                        <p className="text-[10px] text-foreground-muted flex items-center gap-1 font-semibold">
-                          <Building className="w-3 h-3 flex-shrink-0" /> {app.organization}
-                        </p>
-                      </div>
-
-                      {/* Status badge */}
-                      <span
-                        className={`inline-flex items-center text-[9px] font-bold px-2 py-0.5 rounded-full border ${
-                          STATUS_COLORS[app.status] ?? "bg-surface-raised text-foreground-muted border-border"
-                        }`}
+                return (
+                  <motion.div
+                    key={stage}
+                    custom={stageIdx}
+                    variants={columnVariants}
+                    initial="hidden"
+                    animate="show"
+                    className="bg-surface-raised border border-border p-4 rounded-2xl flex flex-col space-y-3 min-w-[200px]"
+                  >
+                    {/* Column Header */}
+                    <div className="flex items-center justify-between pb-1">
+                      <h4 className="text-xs font-extrabold text-foreground uppercase tracking-wider">
+                        {stage}
+                      </h4>
+                      <motion.span
+                        layout
+                        className="text-[10px] font-extrabold bg-background text-foreground-muted px-2 py-0.5 rounded-full border border-border"
                       >
-                        {app.status}
-                      </span>
+                        <CountUp to={filtered.length} />
+                      </motion.span>
+                    </div>
 
-                      <div className="flex items-center gap-1 text-[9px] text-foreground-muted font-semibold">
-                        <Calendar className="w-3 h-3" />
-                        <span>
-                          {new Date(app.deadline).toLocaleDateString(undefined, {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </span>
-                      </div>
+                    {/* Cards List */}
+                    <div className="flex-1 space-y-3 min-h-[300px]">
+                      <AnimatePresence mode="popLayout">
+                        {filtered.map((app) => (
+                          <motion.div
+                            key={app.id}
+                            layout
+                            variants={cardVariants}
+                            initial="hidden"
+                            animate="show"
+                            exit="exit"
+                            whileHover={{
+                              boxShadow:
+                                "0 0 0 1px rgba(255,92,134,0.2), 0 8px 24px rgba(255,60,110,0.12)",
+                              y: -2,
+                            }}
+                            transition={{ layout: { type: "spring", stiffness: 300, damping: 26 } }}
+                            className="p-4 bg-surface border border-border rounded-xl shadow-sm space-y-2 group cursor-pointer"
+                            onClick={() => setSelectedApp(app)}
+                          >
+                            <div className="space-y-0.5">
+                              <h5 className="font-bold text-foreground text-xs leading-snug line-clamp-2">
+                                {app.opportunityTitle}
+                              </h5>
+                              <p className="text-[10px] text-foreground-muted flex items-center gap-1 font-semibold">
+                                <Building className="w-3 h-3 flex-shrink-0" /> {app.organization}
+                              </p>
+                            </div>
 
-                      {app.notes && (
-                        <p className="text-[10px] text-foreground-muted italic line-clamp-1 border-t border-border pt-1.5">
-                          {app.notes}
-                        </p>
-                      )}
+                            {/* Type badge + Status badge */}
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <span
+                                className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border ${TRACKER_TYPE_CONFIG[app.type]?.badgeColor ?? TRACKER_TYPE_CONFIG.Other.badgeColor}`}
+                              >
+                                {TRACKER_TYPE_CONFIG[app.type]?.icon ?? "📌"} {app.type}
+                              </span>
+                              <span
+                                className={`inline-flex items-center text-[9px] font-bold px-2 py-0.5 rounded-full border ${stageColor(app.type, app.status)}`}
+                              >
+                                {app.status}
+                              </span>
+                            </div>
 
-                      {/* Column controls — stop propagation so click doesn't open modal */}
-                      <div
-                        className="flex justify-between items-center pt-2 border-t border-border"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <motion.button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            moveStatus(app.id, app.opportunityTitle, app.status, "prev");
-                          }}
-                          disabled={stage === "Applied"}
-                          whileHover={stage !== "Applied" ? { scale: 1.15 } : {}}
-                          whileTap={stage !== "Applied" ? { scale: 0.85 } : {}}
-                          transition={{ type: "spring", stiffness: 400, damping: 18 }}
-                          className="p-1 hover:bg-surface-raised rounded text-foreground-muted hover:text-primary disabled:opacity-30 transition-all"
-                          title="Move to previous stage"
-                        >
-                          <ChevronLeft className="w-3.5 h-3.5" />
-                        </motion.button>
-                        <span className="text-[8px] text-foreground-muted font-medium">tap card for details</span>
-                        <motion.button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            moveStatus(app.id, app.opportunityTitle, app.status, "next");
-                          }}
-                          disabled={stage === "Offer Received"}
-                          whileHover={stage !== "Offer Received" ? { scale: 1.15 } : {}}
-                          whileTap={stage !== "Offer Received" ? { scale: 0.85 } : {}}
-                          transition={{ type: "spring", stiffness: 400, damping: 18 }}
-                          className="p-1 hover:bg-surface-raised rounded text-foreground-muted hover:text-primary disabled:opacity-30 transition-all"
-                          title="Move to next stage"
-                        >
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </motion.button>
-                      </div>
-                    </motion.div>
-                  ))}
+                            <div className="flex items-center gap-1 text-[9px] text-foreground-muted font-semibold">
+                              <Calendar className="w-3 h-3" />
+                              <span>
+                                {new Date(app.deadline).toLocaleDateString(undefined, {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                })}
+                              </span>
+                            </div>
 
-                  {filtered.length === 0 && (
-                    <motion.div
-                      key="empty"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="border-2 border-dashed border-border rounded-xl py-12 text-center text-foreground-muted"
-                    >
-                      <p className="text-[10px] font-medium">Drop items here</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
+                            {app.notes && (
+                              <p className="text-[10px] text-foreground-muted italic line-clamp-1 border-t border-border pt-1.5">
+                                {app.notes}
+                              </p>
+                            )}
+
+                            {/* Column controls — stop propagation so click doesn't open modal */}
+                            <div
+                              className="flex justify-between items-center pt-2 border-t border-border"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <motion.button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  moveStatus(app.id, app.type, app.status, "prev");
+                                }}
+                                disabled={stage === stages[0]}
+                                whileHover={stage !== stages[0] ? { scale: 1.15 } : {}}
+                                whileTap={stage !== stages[0] ? { scale: 0.85 } : {}}
+                                transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                                className="p-1 hover:bg-surface-raised rounded text-foreground-muted hover:text-primary disabled:opacity-30 transition-all"
+                                title="Move to previous stage"
+                              >
+                                <ChevronLeft className="w-3.5 h-3.5" />
+                              </motion.button>
+                              <span className="text-[8px] text-foreground-muted font-medium">tap card for details</span>
+                              <motion.button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  moveStatus(app.id, app.type, app.status, "next");
+                                }}
+                                disabled={stage === stages[stages.length - 1]}
+                                whileHover={stage !== stages[stages.length - 1] ? { scale: 1.15 } : {}}
+                                whileTap={stage !== stages[stages.length - 1] ? { scale: 0.85 } : {}}
+                                transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                                className="p-1 hover:bg-surface-raised rounded text-foreground-muted hover:text-primary disabled:opacity-30 transition-all"
+                                title="Move to next stage"
+                              >
+                                <ChevronRight className="w-3.5 h-3.5" />
+                              </motion.button>
+                            </div>
+                          </motion.div>
+                        ))}
+
+                        {filtered.length === 0 && (
+                          <motion.div
+                            key="empty"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="border-2 border-dashed border-border rounded-xl py-12 text-center text-foreground-muted"
+                          >
+                            <p className="text-[10px] font-medium">Drop items here</p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+
+      {activeType === "All" && filteredApplications.length === 0 && (
+        <div className="border-2 border-dashed border-border rounded-3xl py-16 text-center text-foreground-muted">
+          <p className="text-xs font-medium">No applications yet. Add one to get started!</p>
+        </div>
+      )}
 
       {/* ── Card Detail Modal ──────────────────────────────── */}
       <AnimatePresence>
@@ -582,13 +704,18 @@ export default function TrackerPage() {
               {/* Modal Header */}
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <span
-                    className={`inline-flex items-center text-[9px] font-bold px-2 py-0.5 rounded-full border mb-2 ${
-                      STATUS_COLORS[selectedApp.status] ?? "bg-surface-raised text-foreground-muted border-border"
-                    }`}
-                  >
-                    {selectedApp.status}
-                  </span>
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <span
+                      className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border ${TRACKER_TYPE_CONFIG[selectedApp.type]?.badgeColor ?? TRACKER_TYPE_CONFIG.Other.badgeColor}`}
+                    >
+                      {TRACKER_TYPE_CONFIG[selectedApp.type]?.icon ?? "📌"} {selectedApp.type}
+                    </span>
+                    <span
+                      className={`inline-flex items-center text-[9px] font-bold px-2 py-0.5 rounded-full border ${stageColor(selectedApp.type, selectedApp.status)}`}
+                    >
+                      {selectedApp.status}
+                    </span>
+                  </div>
                   <h3 className="font-extrabold text-foreground text-base leading-snug">
                     {selectedApp.opportunityTitle}
                   </h3>

@@ -25,6 +25,10 @@ export interface WalletDocument {
 
 // ─── APPLICATION TRACKER ───────────────────────────────────────────────────
 
+// Kept for backward compatibility with any code still importing the old
+// closed union. New code should treat status as a plain string (see
+// ApplicationEntry["status"] below) since valid stages now depend on
+// the entry's `type` — see TRACKER_TYPE_CONFIG in trackerTypes.ts.
 export type ApplicationStatus =
   | "Applied"
   | "Shortlisted"
@@ -32,6 +36,16 @@ export type ApplicationStatus =
   | "Rejected"
   | "Selected"
   | "Offer Received";
+
+// Tracker "type" — determines which stages / Kanban columns apply to an
+// entry. See src/lib/trackerTypes.ts for the stage list + colors per type.
+export type ApplicationType =
+  | "Job"
+  | "Internship"
+  | "Hackathon"
+  | "Scholarship"
+  | "Research"
+  | "Other";
 
 export interface ApplicationEntry {
   id: string;
@@ -41,7 +55,16 @@ export interface ApplicationEntry {
   deadline: string;
   applyLink?: string;
   notes?: string;
-  status: ApplicationStatus;
+  // Widened from the old closed union to a plain string: each ApplicationType
+  // has its own stage list (see trackerTypes.ts), so a single fixed union
+  // across every type no longer applies. Always keep it in sync with an
+  // entry's `type` — use TRACKER_TYPE_CONFIG[type].stages as the source of truth.
+  status: string;
+  // Defaults to "Other" for legacy entries that predate this field.
+  type: ApplicationType;
+  // Days-before-deadline thresholds (7/3/1) the backend has already emailed
+  // for this entry, so it never sends the same alert twice.
+  sentAlerts?: number[];
   createdAt: string;
   updatedAt: string;
 }
