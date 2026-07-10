@@ -10,8 +10,30 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Save, Loader2, Sparkles, Check } from "lucide-react";
 import { z } from "zod";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 
 type ProfileFormInputs = z.infer<typeof profileSchema>;
+
+/* ── Animation Variants ─────────────────────────────────────── */
+const pageVariants: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.04 } },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.36, ease: "easeOut" } },
+};
+
+const bannerVariants: Variants = {
+  hidden: { opacity: 0, y: -12, scale: 0.97 },
+  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.3, ease: [0.23, 1, 0.32, 1] } },
+  exit: { opacity: 0, y: -10, scale: 0.97, transition: { duration: 0.22 } },
+};
+
+/* ── Input base class ───────────────────────────────────────── */
+const inputBase =
+  "w-full text-sm px-4 py-3 bg-surface-raised border rounded-xl outline-none focus:bg-surface focus:border-primary transition-all text-foreground placeholder:text-foreground-muted";
 
 export default function Profile() {
   const { currentUser, profile, updateUserProfile, loading: authLoading } = useAuth();
@@ -84,10 +106,16 @@ export default function Profile() {
     }
   };
 
+  /* ── Loading ──────────────────────────────────────────────── */
   if (authLoading || !currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-background transition-colors duration-300">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 0.9, ease: "linear" }}
+        >
+          <Loader2 className="w-8 h-8 text-primary" />
+        </motion.div>
       </div>
     );
   }
@@ -96,89 +124,114 @@ export default function Profile() {
     <>
       <Navbar />
 
-      <main className="flex-grow py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
-        <div className="max-w-3xl mx-auto">
+      <main className="flex-grow py-12 px-4 sm:px-6 lg:px-8 bg-background transition-colors duration-300">
+        <motion.div
+          className="max-w-3xl mx-auto"
+          variants={pageVariants}
+          initial="hidden"
+          animate="show"
+        >
           {/* Header */}
-          <div className="mb-8">
+          <motion.div className="mb-8" variants={itemVariants}>
             <span className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-primary">
               <Sparkles className="w-3.5 h-3.5" /> Profile Settings
             </span>
             <h1 className="text-3xl font-extrabold text-foreground mt-2">Personalize Your Space</h1>
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-sm text-foreground-muted mt-1">
               Provide your background details so Bloom can match you with relevant scholarships and reminders.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="bg-white border border-slate-100 shadow-xl rounded-3xl p-8">
-            {success && (
-              <div className="mb-6 flex items-center gap-2 text-sm bg-green-50 text-green-600 p-4 rounded-2xl border border-green-100">
-                <Check className="w-4 h-4" /> Profile saved successfully!
-              </div>
-            )}
+          <motion.div
+            className="bg-surface border border-border shadow-xl dark:shadow-[0_8px_40px_rgba(255,60,110,0.08)] rounded-3xl p-8 transition-colors duration-300"
+            variants={itemVariants}
+          >
+            {/* Success Banner */}
+            <AnimatePresence>
+              {success && (
+                <motion.div
+                  key="success-banner"
+                  variants={bannerVariants}
+                  initial="hidden"
+                  animate="show"
+                  exit="exit"
+                  className="mb-6 flex items-center gap-2 text-sm bg-success-surface text-success p-4 rounded-2xl border border-success/20"
+                >
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 20 }}
+                  >
+                    <Check className="w-4 h-4" />
+                  </motion.span>
+                  Profile saved successfully!
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-6" variants={pageVariants}>
                 {/* Name */}
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                <motion.div variants={itemVariants}>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                     Full Name
                   </label>
                   <input
                     type="text"
                     {...register("name")}
-                    className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-primary transition-all ${
-                      errors.name ? "border-red-300 focus:border-red-500" : "border-slate-200"
+                    className={`${inputBase} ${
+                      errors.name ? "border-danger focus:border-danger" : "border-border"
                     }`}
                   />
                   {errors.name && (
-                    <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
+                    <p className="mt-1 text-xs text-danger">{errors.name.message}</p>
                   )}
-                </div>
+                </motion.div>
 
                 {/* Email (Read only) */}
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                <motion.div variants={itemVariants}>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                     Email Address
                   </label>
                   <input
                     type="email"
                     {...register("email")}
                     readOnly
-                    className="w-full text-sm px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl outline-none text-slate-500 cursor-not-allowed"
+                    className="w-full text-sm px-4 py-3 bg-surface-raised border border-border rounded-xl outline-none text-foreground-muted cursor-not-allowed"
                   />
-                </div>
+                </motion.div>
 
                 {/* Education */}
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                <motion.div variants={itemVariants}>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                     Highest Education Level
                   </label>
                   <select
                     {...register("education")}
-                    className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-primary transition-all ${
-                      errors.education ? "border-red-300 focus:border-red-500" : "border-slate-200"
+                    className={`${inputBase} ${
+                      errors.education ? "border-danger" : "border-border"
                     }`}
                   >
                     <option value="">Select Level</option>
                     <option value="High School">High School</option>
-                    <option value="Bachelor">Bachelor's Degree</option>
-                    <option value="Master">Master's Degree</option>
+                    <option value="Bachelor">Bachelor&apos;s Degree</option>
+                    <option value="Master">Master&apos;s Degree</option>
                     <option value="PhD">PhD / Doctorate</option>
                   </select>
                   {errors.education && (
-                    <p className="mt-1 text-xs text-red-500">{errors.education.message}</p>
+                    <p className="mt-1 text-xs text-danger">{errors.education.message}</p>
                   )}
-                </div>
+                </motion.div>
 
                 {/* Annual Income */}
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                <motion.div variants={itemVariants}>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                     Annual Family Income ($)
                   </label>
                   <select
                     {...register("income")}
-                    className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-primary transition-all ${
-                      errors.income ? "border-red-300 focus:border-red-500" : "border-slate-200"
+                    className={`${inputBase} ${
+                      errors.income ? "border-danger" : "border-border"
                     }`}
                   >
                     <option value="">Select Bracket</option>
@@ -189,37 +242,37 @@ export default function Profile() {
                     <option value="999999">No Limit / Above $150,000</option>
                   </select>
                   {errors.income && (
-                    <p className="mt-1 text-xs text-red-500">{errors.income.message}</p>
+                    <p className="mt-1 text-xs text-danger">{errors.income.message}</p>
                   )}
-                </div>
+                </motion.div>
 
                 {/* Location */}
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                <motion.div variants={itemVariants}>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                     Location (Country)
                   </label>
                   <input
                     type="text"
                     placeholder="e.g. United States, Global"
                     {...register("location")}
-                    className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-primary transition-all ${
-                      errors.location ? "border-red-300 focus:border-red-500" : "border-slate-200"
+                    className={`${inputBase} ${
+                      errors.location ? "border-danger" : "border-border"
                     }`}
                   />
                   {errors.location && (
-                    <p className="mt-1 text-xs text-red-500">{errors.location.message}</p>
+                    <p className="mt-1 text-xs text-danger">{errors.location.message}</p>
                   )}
-                </div>
+                </motion.div>
 
                 {/* Preferred Category */}
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                <motion.div variants={itemVariants}>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                     Preferred Opportunity
                   </label>
                   <select
                     {...register("category")}
-                    className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-primary transition-all ${
-                      errors.category ? "border-red-300 focus:border-red-500" : "border-slate-200"
+                    className={`${inputBase} ${
+                      errors.category ? "border-danger" : "border-border"
                     }`}
                   >
                     <option value="">Select Category</option>
@@ -231,80 +284,100 @@ export default function Profile() {
                     <option value="STEM Programs">STEM Programs</option>
                   </select>
                   {errors.category && (
-                    <p className="mt-1 text-xs text-red-500">{errors.category.message}</p>
+                    <p className="mt-1 text-xs text-danger">{errors.category.message}</p>
                   )}
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
 
               {/* Bio */}
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+              <motion.div variants={itemVariants}>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                   Short Bio
                 </label>
                 <textarea
                   rows={3}
                   placeholder="Tell us a little bit about yourself..."
                   {...register("bio")}
-                  className="w-full text-sm px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-primary resize-none"
+                  className={`${inputBase} resize-none border-border`}
                 />
-              </div>
+              </motion.div>
 
               {/* Skills */}
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+              <motion.div variants={itemVariants}>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                   Skills (comma separated)
                 </label>
                 <input
                   type="text"
                   placeholder="e.g. Python, Public Speaking, Data Analysis"
                   {...register("skills")}
-                  className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-primary transition-all ${
-                    errors.skills ? "border-red-300 focus:border-red-500" : "border-slate-200"
+                  className={`${inputBase} ${
+                    errors.skills ? "border-danger" : "border-border"
                   }`}
                 />
                 {errors.skills && (
-                  <p className="mt-1 text-xs text-red-500">{errors.skills.message}</p>
+                  <p className="mt-1 text-xs text-danger">{errors.skills.message}</p>
                 )}
-              </div>
+              </motion.div>
 
               {/* Interests */}
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+              <motion.div variants={itemVariants}>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                   Fields of Interest (comma separated)
                 </label>
                 <input
                   type="text"
                   placeholder="e.g. STEM, Artificial Intelligence, Business"
                   {...register("interests")}
-                  className={`w-full text-sm px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:bg-white focus:border-primary transition-all ${
-                    errors.interests ? "border-red-300 focus:border-red-500" : "border-slate-200"
+                  className={`${inputBase} ${
+                    errors.interests ? "border-danger" : "border-border"
                   }`}
                 />
                 {errors.interests && (
-                  <p className="mt-1 text-xs text-red-500">{errors.interests.message}</p>
+                  <p className="mt-1 text-xs text-danger">{errors.interests.message}</p>
                 )}
-              </div>
+              </motion.div>
 
               {/* Submit button */}
-              <div className="pt-2">
-                <button
+              <motion.div className="pt-2" variants={itemVariants}>
+                <motion.button
                   type="submit"
                   disabled={saving}
-                  className="w-full bg-primary hover:bg-primary-hover text-white font-semibold text-sm py-3.5 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+                  whileHover={!saving ? { scale: 1.02 } : {}}
+                  whileTap={!saving ? { scale: 0.97 } : {}}
+                  transition={{ type: "spring", stiffness: 380, damping: 18 }}
+                  className="w-full bg-primary hover:bg-primary-hover text-primary-foreground font-semibold text-sm py-3.5 rounded-2xl shadow-md dark:shadow-[0_4px_16px_rgba(255,60,110,0.22)] transition-all flex items-center justify-center gap-2 disabled:opacity-60"
                 >
-                  {saving ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4" />
-                      Save Profile Settings
-                    </>
-                  )}
-                </button>
-              </div>
+                  <AnimatePresence mode="wait" initial={false}>
+                    {saving ? (
+                      <motion.span
+                        key="saving"
+                        className="flex items-center gap-2"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Saving…
+                      </motion.span>
+                    ) : (
+                      <motion.span
+                        key="save"
+                        className="flex items-center gap-2"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        <Save className="w-4 h-4" />
+                        Save Profile Settings
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
+              </motion.div>
             </form>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </main>
 
       <Footer />

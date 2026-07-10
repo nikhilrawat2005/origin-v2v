@@ -23,6 +23,64 @@ import {
   Loader2,
   Trash2
 } from "lucide-react";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
+
+const sectionVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+};
+
+const containerVariants: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+};
+
+const gridStaggerVariants: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06 } },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 14, scale: 0.98 },
+  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.32, ease: "easeOut" } },
+  exit: { opacity: 0, x: -12, transition: { duration: 0.18 } },
+};
+
+function SkeletonDashboard() {
+  return (
+    <div className="space-y-8">
+      <div className="flex justify-between items-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 p-8 rounded-3xl shadow-sm">
+        <div className="space-y-3">
+          <div className="skeleton h-3 w-40" />
+          <div className="skeleton h-7 w-56" />
+          <div className="skeleton h-3 w-32" />
+        </div>
+        <div className="skeleton h-14 w-40 rounded-2xl" />
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="skeleton h-36 rounded-3xl" />
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="skeleton h-20 rounded-3xl" />
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="skeleton h-20 rounded-2xl" />
+          ))}
+        </div>
+        <div className="skeleton h-64 rounded-3xl" />
+      </div>
+    </div>
+  );
+}
 
 interface Reminder {
   id: string;
@@ -94,11 +152,7 @@ export default function Dashboard() {
   };
 
   if (authLoading || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
-      </div>
-    );
+    return <SkeletonDashboard />;
   }
 
   // Calculate upcoming deadlines count (within next 30 days)
@@ -110,9 +164,12 @@ export default function Dashboard() {
   }).length;
 
   return (
-    <div className="space-y-8">
+    <motion.div initial="hidden" animate="show" variants={containerVariants} className="space-y-8">
       {/* Welcome Card & Badge Notifications */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 p-8 rounded-3xl shadow-sm transition-colors duration-300">
+      <motion.div
+        variants={sectionVariants}
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 p-8 rounded-3xl shadow-sm transition-colors duration-300"
+      >
         <div>
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
             <Sparkles className="w-3.5 h-3.5" /> Workspace Dashboard
@@ -142,36 +199,37 @@ export default function Dashboard() {
             </p>
           </div>
         </Link>
-      </div>
+      </motion.div>
 
       {/* Ecosystem Launchpad shortcuts */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <motion.div variants={gridStaggerVariants} className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { title: "Opportunity Wallet", desc: "Credentials vault", href: "/dashboard/wallet", icon: Bookmark, color: "from-primary to-secondary text-white" },
           { title: "Application Tracker", desc: "Kanban board stages", href: "/dashboard/tracker", icon: Briefcase, color: "from-pink-500 to-rose-500 text-white" },
           { title: "Calendar Hub", desc: "Deadlines & interviews", href: "/dashboard/calendar", icon: Calendar, color: "from-blue-500 to-cyan-500 text-white" },
           { title: "Community Board", desc: "Mentorship & networking", href: "/dashboard/community", icon: Users, color: "from-amber-500 to-orange-500 text-white" },
         ].map((mod) => (
-          <Link
-            key={mod.title}
-            href={mod.href}
-            className="p-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 rounded-3xl shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 flex flex-col justify-between h-36"
-          >
-            <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${mod.color} flex items-center justify-center`}>
-              <mod.icon className="w-4 h-4" />
-            </div>
-            <div>
-              <h4 className="font-bold text-slate-800 dark:text-slate-200 text-xs leading-none">{mod.title}</h4>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-semibold">{mod.desc}</p>
-            </div>
-          </Link>
+          <motion.div key={mod.title} variants={itemVariants} whileHover={{ y: -3 }}>
+            <Link
+              href={mod.href}
+              className="p-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 rounded-3xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between h-36"
+            >
+              <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${mod.color} flex items-center justify-center`}>
+                <mod.icon className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-800 dark:text-slate-200 text-xs leading-none">{mod.title}</h4>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-semibold">{mod.desc}</p>
+              </div>
+            </Link>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* Quick Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <motion.div variants={gridStaggerVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         {/* Bookmarks Stat */}
-        <div className="p-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 rounded-3xl shadow-sm flex items-center gap-4 transition-colors duration-300">
+        <motion.div variants={itemVariants} className="p-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 rounded-3xl shadow-sm flex items-center gap-4 transition-colors duration-300">
           <div className="p-3 bg-primary/10 dark:bg-primary/15 text-primary rounded-2xl">
             <Bookmark className="w-6 h-6" />
           </div>
@@ -179,10 +237,10 @@ export default function Dashboard() {
             <span className="block text-slate-400 dark:text-slate-500 text-[10px] font-bold uppercase tracking-wider">Bookmarked Hub</span>
             <span className="text-xl font-extrabold text-slate-800 dark:text-slate-200">{savedOpps.length} saved</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Reminders Stat */}
-        <div className="p-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 rounded-3xl shadow-sm flex items-center gap-4 transition-colors duration-300">
+        <motion.div variants={itemVariants} className="p-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 rounded-3xl shadow-sm flex items-center gap-4 transition-colors duration-300">
           <div className="p-3 bg-secondary/10 dark:bg-secondary/15 text-secondary rounded-2xl">
             <Calendar className="w-6 h-6" />
           </div>
@@ -190,10 +248,10 @@ export default function Dashboard() {
             <span className="block text-slate-400 dark:text-slate-500 text-[10px] font-bold uppercase tracking-wider">Reminders Set</span>
             <span className="text-xl font-extrabold text-slate-800 dark:text-slate-200">{reminders.length} alerts active</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Interest Stat */}
-        <div className="p-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 rounded-3xl shadow-sm flex items-center gap-4 transition-colors duration-300">
+        <motion.div variants={itemVariants} className="p-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 rounded-3xl shadow-sm flex items-center gap-4 transition-colors duration-300">
           <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-2xl">
             <Briefcase className="w-6 h-6" />
           </div>
@@ -203,11 +261,11 @@ export default function Dashboard() {
               {profile?.category || "None Set"}
             </span>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Bottom Grid: Saved & Deadlines */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <motion.div variants={sectionVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Saved Opportunities List */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
@@ -222,10 +280,21 @@ export default function Dashboard() {
             </Link>
           </div>
 
-          <div className="space-y-4">
+          <motion.div
+            initial="hidden"
+            animate="show"
+            variants={gridStaggerVariants}
+            className="space-y-4"
+          >
+            <AnimatePresence>
             {savedOpps.map((opp) => (
-              <div
+              <motion.div
                 key={opp.id}
+                layout
+                variants={itemVariants}
+                initial="hidden"
+                animate="show"
+                exit="exit"
                 className="p-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
               >
                 <div>
@@ -249,17 +318,29 @@ export default function Dashboard() {
                     Details
                   </Link>
                 </div>
-              </div>
+              </motion.div>
             ))}
+            </AnimatePresence>
 
             {savedOpps.length === 0 && (
-              <div className="text-center py-12 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-855 rounded-3xl">
-                <Bookmark className="w-8 h-8 text-slate-400 dark:text-slate-700 mx-auto mb-2" />
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="text-center py-12 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-855 rounded-3xl"
+              >
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+                  className="inline-flex"
+                >
+                  <Bookmark className="w-8 h-8 text-slate-400 dark:text-slate-700 mx-auto mb-2" />
+                </motion.div>
                 <h5 className="text-slate-800 dark:text-slate-200 font-bold mb-0.5">No saved opportunities yet</h5>
                 <p className="text-slate-500 dark:text-slate-500 text-xs">Bookmark opportunities on the explore screen to view them here.</p>
-              </div>
+              </motion.div>
             )}
-          </div>
+          </motion.div>
         </div>
 
         {/* Deadline Reminders Alert Panel */}
@@ -268,7 +349,13 @@ export default function Dashboard() {
             <Clock className="w-5 h-5 text-primary" /> Upcoming Reminders
           </h3>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 p-6 rounded-3xl shadow-sm space-y-4 transition-colors duration-300">
+          <motion.div
+            initial="hidden"
+            animate="show"
+            variants={gridStaggerVariants}
+            className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-900 p-6 rounded-3xl shadow-sm space-y-4 transition-colors duration-300"
+          >
+            <AnimatePresence>
             {reminders.map((rem) => {
               const daysLeft = Math.ceil(
                 (new Date(rem.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
@@ -276,7 +363,15 @@ export default function Dashboard() {
               const isClosingSoon = daysLeft > 0 && daysLeft <= 30;
 
               return (
-                <div key={rem.id} className="pb-4 border-b border-slate-50 dark:border-slate-800 last:border-0 last:pb-0">
+                <motion.div
+                  key={rem.id}
+                  layout
+                  variants={itemVariants}
+                  initial="hidden"
+                  animate="show"
+                  exit="exit"
+                  className="pb-4 border-b border-slate-50 dark:border-slate-800 last:border-0 last:pb-0"
+                >
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1">
                       <h5 className="font-bold text-xs text-slate-800 dark:text-slate-200 leading-snug hover:text-primary transition-colors">
@@ -299,22 +394,34 @@ export default function Dashboard() {
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
+            </AnimatePresence>
 
             {reminders.length === 0 && (
-              <div className="text-center py-10">
-                <Bell className="w-8 h-8 text-slate-400 dark:text-slate-700 mx-auto mb-2" />
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="text-center py-10"
+              >
+                <motion.div
+                  animate={{ rotate: [0, -10, 10, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  className="inline-flex"
+                >
+                  <Bell className="w-8 h-8 text-slate-400 dark:text-slate-700 mx-auto mb-2" />
+                </motion.div>
                 <h5 className="text-slate-900 dark:text-slate-200 font-bold text-xs mb-0.5">No active alerts</h5>
                 <p className="text-slate-500 dark:text-slate-600 text-[10px] leading-relaxed">
                   Click "Set Reminder" on any opportunity page to receive alerts.
                 </p>
-              </div>
+              </motion.div>
             )}
-          </div>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

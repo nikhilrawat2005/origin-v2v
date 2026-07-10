@@ -34,6 +34,35 @@ import {
   Loader2,
   Check
 } from "lucide-react";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
+
+/* ── Animation Variants ─────────────────────────────────────── */
+const pageVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.09, delayChildren: 0.05 },
+  },
+};
+
+const sectionVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.42, ease: "easeOut" } },
+};
+
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 24, scale: 0.98 },
+  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.48, ease: [0.23, 1, 0.32, 1] } },
+};
+
+const checklistItemVariants: Variants = {
+  hidden: { opacity: 0, x: -10 },
+  show: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.28, delay: i * 0.06, ease: "easeOut" },
+  }),
+};
 
 export default function OpportunityDetail({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -134,164 +163,311 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
     }
   };
 
+  /* ── Loading State ──────────────────────────────────────────── */
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background transition-colors duration-300">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 0.9, ease: "linear" }}
+        >
+          <Loader2 className="w-8 h-8 text-primary" />
+        </motion.div>
       </div>
     );
   }
 
+  /* ── Not Found State ───────────────────────────────────────── */
   if (!opp) {
     return (
       <>
         <Navbar />
-        <div className="max-w-xl mx-auto py-20 text-center px-4">
-          <AlertCircle className="w-12 h-12 text-danger mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-foreground">Opportunity not found</h2>
-          <p className="text-foreground-muted text-sm mt-1">
-            The link may be broken or the opportunity has been archived.
-          </p>
-          <Link
-            href="/explore"
-            className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+        <motion.div
+          className="max-w-xl mx-auto py-20 text-center px-4"
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+        >
+          <motion.div
+            initial={{ y: -8, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.1 }}
           >
-            <ArrowLeft className="w-4 h-4" /> Back to Explore
-          </Link>
-        </div>
+            <AlertCircle className="w-12 h-12 text-danger mx-auto mb-4" />
+          </motion.div>
+          <motion.h2
+            className="text-xl font-bold text-foreground"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            Opportunity not found
+          </motion.h2>
+          <motion.p
+            className="text-foreground-muted text-sm mt-1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            The link may be broken or the opportunity has been archived.
+          </motion.p>
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+            <Link
+              href="/explore"
+              className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+            >
+              <ArrowLeft className="w-4 h-4" /> Back to Explore
+            </Link>
+          </motion.div>
+        </motion.div>
         <Footer />
       </>
     );
   }
 
+  /* ── Main Page ─────────────────────────────────────────────── */
   return (
     <>
       <Navbar />
 
       <main className="flex-grow bg-background py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-        <div className="max-w-4xl mx-auto">
-          {/* Back btn */}
-          <Link
-            href="/explore"
-            className="inline-flex items-center gap-1 text-xs font-semibold text-foreground-muted hover:text-foreground mb-6 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back to explore
-          </Link>
+        <motion.div
+          className="max-w-4xl mx-auto"
+          variants={pageVariants}
+          initial="hidden"
+          animate="show"
+        >
+          {/* Back link */}
+          <motion.div variants={sectionVariants}>
+            <Link
+              href="/explore"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-foreground-muted hover:text-foreground mb-6 transition-colors group"
+            >
+              <motion.span
+                className="inline-flex"
+                whileHover={{ x: -3 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </motion.span>
+              Back to explore
+            </Link>
+          </motion.div>
 
-          <div className="bg-surface border border-border shadow-xl dark:shadow-[0_8px_40px_rgba(255,60,110,0.08)] rounded-3xl overflow-hidden p-8 md:p-10 transition-colors duration-300">
+          {/* Main card */}
+          <motion.div
+            variants={cardVariants}
+            className="bg-surface border border-border shadow-xl dark:shadow-[0_8px_40px_rgba(255,60,110,0.08)] rounded-3xl overflow-hidden p-8 md:p-10 transition-colors duration-300"
+          >
             {/* Top Bar actions */}
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-              <span className="text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary px-3.5 py-1.5 rounded-full">
+            <motion.div
+              className="flex flex-wrap items-center justify-between gap-4 mb-6"
+              variants={sectionVariants}
+            >
+              <motion.span
+                className="text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary px-3.5 py-1.5 rounded-full"
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.35, delay: 0.15 }}
+              >
                 {opp.category}
-              </span>
+              </motion.span>
 
               <div className="flex gap-2">
-                {/* Bookmark */}
-                <button
+                {/* Bookmark button */}
+                <motion.button
                   onClick={toggleBookmark}
+                  whileTap={{ scale: 0.92 }}
+                  whileHover={{ scale: 1.04 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 18 }}
                   className={`p-2.5 rounded-xl border transition-all flex items-center gap-1.5 text-xs font-semibold ${
                     isSaved
                       ? "bg-primary/10 text-primary border-primary/20"
                       : "bg-surface-raised text-foreground-muted border-border hover:border-primary/30 hover:text-primary"
                   }`}
                 >
-                  {isSaved ? (
-                    <><BookmarkCheck className="w-4 h-4" /> Bookmarked</>
-                  ) : (
-                    <><Bookmark className="w-4 h-4" /> Bookmark</>
-                  )}
-                </button>
+                  <AnimatePresence mode="wait" initial={false}>
+                    {isSaved ? (
+                      <motion.span
+                        key="saved"
+                        className="flex items-center gap-1.5"
+                        initial={{ opacity: 0, scale: 0.7 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.7 }}
+                        transition={{ duration: 0.18 }}
+                      >
+                        <BookmarkCheck className="w-4 h-4" /> Bookmarked
+                      </motion.span>
+                    ) : (
+                      <motion.span
+                        key="unsaved"
+                        className="flex items-center gap-1.5"
+                        initial={{ opacity: 0, scale: 0.7 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.7 }}
+                        transition={{ duration: 0.18 }}
+                      >
+                        <Bookmark className="w-4 h-4" /> Bookmark
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
 
-                {/* Share */}
-                <button
+                {/* Share button */}
+                <motion.button
                   onClick={handleShare}
+                  whileTap={{ scale: 0.92 }}
+                  whileHover={{ scale: 1.04 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 18 }}
                   className="p-2.5 rounded-xl border border-border bg-surface-raised text-foreground-muted hover:border-primary/30 hover:text-primary transition-all flex items-center gap-1.5 text-xs font-semibold"
                 >
-                  <Share2 className="w-4 h-4" />
-                  {shareSuccess ? "Copied Link!" : "Share"}
-                </button>
+                  <AnimatePresence mode="wait" initial={false}>
+                    {shareSuccess ? (
+                      <motion.span
+                        key="copied"
+                        className="flex items-center gap-1.5 text-success"
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Check className="w-4 h-4" /> Copied!
+                      </motion.span>
+                    ) : (
+                      <motion.span
+                        key="share"
+                        className="flex items-center gap-1.5"
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Share2 className="w-4 h-4" /> Share
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
               </div>
-            </div>
+            </motion.div>
 
             {/* Title / Org info */}
-            <div className="mb-8">
+            <motion.div className="mb-8" variants={sectionVariants}>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight">
                 {opp.title}
               </h1>
               <p className="text-sm font-semibold text-primary mt-2">{opp.organization}</p>
-            </div>
+            </motion.div>
 
             {/* Quick Metadata highlights */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 p-6 bg-surface-raised border border-border rounded-2xl mb-8">
-              <div>
-                <span className="block text-[10px] uppercase font-bold text-foreground-muted tracking-wider mb-1">
-                  Location
-                </span>
-                <span className="flex items-center gap-1 text-xs font-bold text-foreground">
-                  <MapPin className="w-4 h-4 text-foreground-muted" />
-                  {opp.country}
-                </span>
-              </div>
-              <div>
-                <span className="block text-[10px] uppercase font-bold text-foreground-muted tracking-wider mb-1">
-                  Deadline
-                </span>
-                <span className="flex items-center gap-1 text-xs font-bold text-foreground">
-                  <Calendar className="w-4 h-4 text-foreground-muted" />
-                  {formatDeadline(opp.deadline)}
-                </span>
-              </div>
-              <div className="col-span-2 sm:col-span-1">
-                <span className="block text-[10px] uppercase font-bold text-foreground-muted tracking-wider mb-1">
-                  Target Field
-                </span>
-                <span className="text-xs font-bold text-foreground">{opp.field}</span>
-              </div>
-            </div>
+            <motion.div
+              className="grid grid-cols-2 sm:grid-cols-3 gap-6 p-6 bg-surface-raised border border-border rounded-2xl mb-8"
+              variants={sectionVariants}
+            >
+              {[
+                {
+                  label: "Location",
+                  icon: <MapPin className="w-4 h-4 text-foreground-muted" />,
+                  value: opp.country,
+                },
+                {
+                  label: "Deadline",
+                  icon: <Calendar className="w-4 h-4 text-foreground-muted" />,
+                  value: formatDeadline(opp.deadline),
+                },
+                { label: "Target Field", icon: null, value: opp.field },
+              ].map(({ label, icon, value }, i) => (
+                <motion.div
+                  key={label}
+                  className={i === 2 ? "col-span-2 sm:col-span-1" : ""}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + i * 0.08, duration: 0.3 }}
+                >
+                  <span className="block text-[10px] uppercase font-bold text-foreground-muted tracking-wider mb-1">
+                    {label}
+                  </span>
+                  <span className="flex items-center gap-1 text-xs font-bold text-foreground">
+                    {icon}
+                    {value}
+                  </span>
+                </motion.div>
+              ))}
+            </motion.div>
 
             {/* Main content grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-10" variants={sectionVariants}>
               <div className="md:col-span-2 space-y-8">
                 {/* Description */}
-                <div>
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35, duration: 0.38 }}
+                >
                   <h3 className="text-base font-bold text-foreground border-b border-border pb-2 mb-3">
                     Program Description
                   </h3>
                   <p className="text-foreground-muted text-sm leading-relaxed whitespace-pre-line">
                     {opp.description}
                   </p>
-                </div>
+                </motion.div>
 
                 {/* Eligibility */}
-                <div>
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.44, duration: 0.38 }}
+                >
                   <h3 className="text-base font-bold text-foreground border-b border-border pb-2 mb-3">
                     Eligibility Criteria
                   </h3>
                   <p className="text-foreground-muted text-sm leading-relaxed whitespace-pre-line bg-surface-raised border border-border p-4 rounded-xl">
                     {opp.eligibility}
                   </p>
-                </div>
+                </motion.div>
               </div>
 
-              {/* Sidebar Checklist */}
+              {/* Sidebar */}
               <div className="space-y-6">
                 {/* Required Documents */}
-                <div className="p-6 bg-surface-raised border border-border rounded-2xl">
+                <motion.div
+                  className="p-6 bg-surface-raised border border-border rounded-2xl"
+                  initial={{ opacity: 0, x: 16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.32, duration: 0.42 }}
+                >
                   <h4 className="text-xs font-bold uppercase tracking-wider text-foreground-muted mb-4 flex items-center gap-1.5">
                     <FileText className="w-4 h-4" /> Required Documents
                   </h4>
                   <ul className="space-y-2.5">
-                    {opp.requiredDocuments.map((docName) => (
-                      <li key={docName} className="flex items-start gap-2 text-xs text-foreground-muted">
-                        <Check className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
+                    {opp.requiredDocuments.map((docName, i) => (
+                      <motion.li
+                        key={docName}
+                        custom={i}
+                        variants={checklistItemVariants}
+                        initial="hidden"
+                        animate="show"
+                        className="flex items-start gap-2 text-xs text-foreground-muted"
+                      >
+                        <motion.span
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: 0.4 + i * 0.06, type: "spring", stiffness: 500 }}
+                        >
+                          <Check className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
+                        </motion.span>
                         <span>{docName}</span>
-                      </li>
+                      </motion.li>
                     ))}
                   </ul>
-                </div>
+                </motion.div>
 
-                {/* Reminders */}
-                <div className="p-6 border border-primary/20 bg-primary/5 rounded-2xl">
+                {/* Reminder */}
+                <motion.div
+                  className="p-6 border border-primary/20 bg-primary/5 rounded-2xl"
+                  initial={{ opacity: 0, x: 16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.45, duration: 0.42 }}
+                >
                   <h4 className="text-xs font-bold uppercase tracking-wider text-primary mb-2 flex items-center gap-1.5">
                     <Bell className="w-4 h-4 text-primary" /> Deadline Alert
                   </h4>
@@ -299,44 +475,86 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
                     Receive a priority reminder on your dashboard before applications close.
                   </p>
 
-                  <button
+                  <motion.button
                     onClick={setDeadlineReminder}
                     disabled={reminderSaved || reminderLoading}
+                    whileTap={!reminderSaved && !reminderLoading ? { scale: 0.95 } : {}}
+                    whileHover={!reminderSaved && !reminderLoading ? { scale: 1.03 } : {}}
+                    transition={{ type: "spring", stiffness: 380, damping: 18 }}
                     className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                       reminderSaved
                         ? "bg-success text-white cursor-default"
-                        : "bg-primary hover:bg-primary-hover text-white shadow-sm hover:shadow-md dark:shadow-[0_4px_12px_rgba(255,60,110,0.25)] disabled:opacity-60"
+                        : "bg-primary hover:bg-primary-hover text-primary-foreground shadow-sm hover:shadow-md dark:shadow-[0_4px_12px_rgba(255,60,110,0.25)] disabled:opacity-60"
                     }`}
                   >
-                    {reminderLoading ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    ) : reminderSaved ? (
-                      <><Check className="w-3.5 h-3.5" /> Saved Reminder</>
-                    ) : (
-                      "Set Reminder"
-                    )}
-                  </button>
-                </div>
+                    <AnimatePresence mode="wait" initial={false}>
+                      {reminderLoading ? (
+                        <motion.span
+                          key="loading"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                        >
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        </motion.span>
+                      ) : reminderSaved ? (
+                        <motion.span
+                          key="saved"
+                          className="flex items-center gap-1.5"
+                          initial={{ opacity: 0, scale: 0.7 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ type: "spring", stiffness: 500 }}
+                        >
+                          <Check className="w-3.5 h-3.5" /> Saved Reminder
+                        </motion.span>
+                      ) : (
+                        <motion.span
+                          key="set"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                        >
+                          Set Reminder
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </motion.button>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Official Apply Footer */}
-            <div className="border-t border-border mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <motion.div
+              className="border-t border-border mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.55, duration: 0.4 }}
+            >
               <p className="text-xs text-foreground-muted max-w-sm text-center sm:text-left">
                 Ensure you have all required documents updated on your Bloom profile before applying.
               </p>
-              <a
+              <motion.a
                 href={opp.applyLink}
                 target="_blank"
                 rel="noopener noreferrer"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 350, damping: 18 }}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-8 py-4 bg-foreground hover:opacity-90 text-background font-semibold text-sm rounded-2xl shadow-md transition-all group"
               >
                 Apply On Official Site
-                <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </a>
-            </div>
-          </div>
-        </div>
+                <motion.span
+                  className="inline-flex"
+                  whileHover={{ x: 2, y: -2 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </motion.span>
+              </motion.a>
+            </motion.div>
+          </motion.div>
+        </motion.div>
       </main>
 
       <Footer />

@@ -21,6 +21,54 @@ import {
   Loader2,
 } from "lucide-react";
 import Link from "next/link";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
+
+const filterPanelVariants: Variants = {
+  hidden: { opacity: 0, x: -16 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.35, ease: "easeOut", staggerChildren: 0.06, delayChildren: 0.1 },
+  },
+};
+
+const filterFieldVariants: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } },
+};
+
+const gridVariants: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
+};
+
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 16, scale: 0.98 },
+  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.32, ease: "easeOut" } },
+  exit: { opacity: 0, scale: 0.97, transition: { duration: 0.15 } },
+};
+
+function SkeletonCard() {
+  return (
+    <div className="bg-surface border border-border rounded-3xl p-6 shadow-sm flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <div className="skeleton h-5 w-20 rounded-full" />
+        <div className="skeleton h-7 w-7 rounded-full" />
+      </div>
+      <div className="skeleton h-4 w-4/5" />
+      <div className="skeleton h-3 w-2/5" />
+      <div className="space-y-2 mt-2">
+        <div className="skeleton h-3 w-full" />
+        <div className="skeleton h-3 w-full" />
+        <div className="skeleton h-3 w-3/5" />
+      </div>
+      <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
+        <div className="skeleton h-3 w-24" />
+        <div className="skeleton h-3 w-16" />
+      </div>
+    </div>
+  );
+}
 
 function ExploreContent() {
   const searchParams = useSearchParams();
@@ -30,6 +78,7 @@ function ExploreContent() {
 
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [searchFocused, setSearchFocused] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "");
   const [selectedDegree, setSelectedDegree] = useState("");
   const [selectedField, setSelectedField] = useState("");
@@ -116,15 +165,23 @@ function ExploreContent() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Left Filters Panel */}
-        <div className="lg:col-span-1 bg-surface border border-border rounded-3xl p-6 shadow-sm h-fit transition-colors duration-300">
-          <div className="flex items-center gap-2 font-bold text-foreground mb-6 pb-4 border-b border-border">
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={filterPanelVariants}
+          className="lg:col-span-1 bg-surface border border-border rounded-3xl p-6 shadow-sm h-fit transition-colors duration-300"
+        >
+          <motion.div
+            variants={filterFieldVariants}
+            className="flex items-center gap-2 font-bold text-foreground mb-6 pb-4 border-b border-border"
+          >
             <Filter className="w-4 h-4 text-primary" />
             <span>Filters</span>
-          </div>
+          </motion.div>
 
           <div className="space-y-5">
             {/* Category Select */}
-            <div>
+            <motion.div variants={filterFieldVariants}>
               <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                 Category
               </label>
@@ -141,10 +198,10 @@ function ExploreContent() {
                 <option value="Hackathons">Hackathons</option>
                 <option value="STEM Programs">STEM Programs</option>
               </select>
-            </div>
+            </motion.div>
 
             {/* Degree Select */}
-            <div>
+            <motion.div variants={filterFieldVariants}>
               <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                 Degree Level
               </label>
@@ -158,10 +215,10 @@ function ExploreContent() {
                 <option value="Master">Master</option>
                 <option value="PhD">PhD</option>
               </select>
-            </div>
+            </motion.div>
 
             {/* Field Select */}
-            <div>
+            <motion.div variants={filterFieldVariants}>
               <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                 Field of Study
               </label>
@@ -176,10 +233,10 @@ function ExploreContent() {
                 <option value="Software Engineering">Software Engineering</option>
                 <option value="Cybersecurity">Cybersecurity</option>
               </select>
-            </div>
+            </motion.div>
 
             {/* Country Select */}
-            <div>
+            <motion.div variants={filterFieldVariants}>
               <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                 Country
               </label>
@@ -194,10 +251,10 @@ function ExploreContent() {
                 <option value="France">France</option>
                 <option value="Global">Global</option>
               </select>
-            </div>
+            </motion.div>
 
             {/* Income Bracket Limit */}
-            <div>
+            <motion.div variants={filterFieldVariants}>
               <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                 Family Income Bracket ($)
               </label>
@@ -211,10 +268,13 @@ function ExploreContent() {
                 <option value="90000">Under $90,000</option>
                 <option value="120000">Under $120,000</option>
               </select>
-            </div>
+            </motion.div>
 
             {/* Clear Filters Button */}
-            <button
+            <motion.button
+              variants={filterFieldVariants}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => {
                 setSearchQuery("");
                 setSelectedCategory("");
@@ -226,25 +286,46 @@ function ExploreContent() {
               className="w-full text-xs text-center border border-border hover:border-primary hover:text-primary py-2.5 rounded-xl transition-all font-semibold text-foreground-muted hover:bg-primary/5"
             >
               Reset Filters
-            </button>
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Right Opportunities Grid */}
         <div className="lg:col-span-3 space-y-6">
           {/* Universal Search input */}
-          <div className="flex bg-surface rounded-2xl shadow-sm border border-border p-2 transition-colors duration-300">
+          <motion.div
+            animate={{
+              scale: searchFocused ? 1.01 : 1,
+              boxShadow: searchFocused
+                ? "0 0 0 3px var(--accent-glow), 0 8px 20px -8px rgba(178, 58, 92, 0.25)"
+                : "0 1px 2px rgba(0,0,0,0.04)",
+              borderColor: searchFocused ? "var(--primary)" : "var(--border)",
+            }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="flex bg-surface rounded-2xl border p-2"
+          >
             <div className="flex items-center flex-grow pl-3">
-              <Search className="text-foreground-muted w-4 h-4 mr-2 flex-shrink-0" />
+              <motion.span
+                animate={{
+                  scale: searchFocused ? 1.15 : 1,
+                  color: searchFocused ? "var(--primary)" : "var(--foreground-muted)",
+                }}
+                transition={{ duration: 0.2 }}
+                className="mr-2 flex-shrink-0 flex"
+              >
+                <Search className="w-4 h-4" />
+              </motion.span>
               <input
                 type="text"
                 placeholder="Search by keywords (e.g. Google, Fellowship, Science)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
                 className="w-full text-xs outline-none text-foreground bg-transparent placeholder-foreground-muted"
               />
             </div>
-          </div>
+          </motion.div>
 
           {/* Results Summary */}
           <div className="text-foreground-muted text-xs font-medium">
@@ -254,15 +335,33 @@ function ExploreContent() {
           </div>
 
           {/* Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredOpportunities.map((opp) => {
-              const isSaved = savedIds.includes(opp.id);
-              return (
-                <div
-                  key={opp.id}
-                  className="bg-surface border border-border rounded-3xl p-6 shadow-sm hover:shadow-md dark:hover:shadow-[0_4px_20px_rgba(255,60,110,0.12)] hover:border-primary/25 transition-all flex flex-col justify-between card-hover"
-                >
-                  <div>
+          {oppsLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              initial="hidden"
+              animate="show"
+              variants={gridVariants}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            >
+              <AnimatePresence>
+                {filteredOpportunities.map((opp) => {
+                  const isSaved = savedIds.includes(opp.id);
+                  return (
+                    <motion.div
+                      key={opp.id}
+                      layout
+                      variants={cardVariants}
+                      initial="hidden"
+                      animate="show"
+                      exit="exit"
+                      className="bg-surface border border-border rounded-3xl p-6 shadow-sm hover:shadow-md dark:hover:shadow-[0_4px_20px_rgba(255,60,110,0.12)] hover:border-primary/25 transition-all flex flex-col justify-between card-hover"
+                    >
+                      <div>
                     {/* Header: Organization & Bookmark */}
                     <div className="flex items-center justify-between gap-4 mb-4">
                       <span className="text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary px-2.5 py-1 rounded-full">
@@ -312,17 +411,30 @@ function ExploreContent() {
                       Details <ChevronRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </motion.div>
+          )}
 
-          {filteredOpportunities.length === 0 && (
-            <div className="text-center py-20 bg-surface border border-border rounded-3xl transition-colors">
-              <Compass className="w-12 h-12 text-foreground-muted mx-auto mb-4 opacity-50" />
+          {!oppsLoading && filteredOpportunities.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="text-center py-20 bg-surface border border-border rounded-3xl transition-colors"
+            >
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+                className="inline-flex"
+              >
+                <Compass className="w-12 h-12 text-foreground-muted mx-auto mb-4 opacity-50" />
+              </motion.div>
               <h4 className="text-foreground font-bold mb-1">No opportunities found</h4>
               <p className="text-foreground-muted text-xs">Try resetting or loosening your search query.</p>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>

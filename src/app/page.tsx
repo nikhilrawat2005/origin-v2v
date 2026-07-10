@@ -20,6 +20,18 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
+const containerStagger = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.1 },
+  },
+};
+
+const fadeUpItem = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
+};
+
 export default function Home() {
   const router = useRouter();
   const { currentUser } = useAuth();
@@ -56,9 +68,17 @@ export default function Home() {
       <main className="flex-grow">
         {/* Hero Section */}
         <section className="relative overflow-hidden py-20 px-4 sm:px-6 lg:px-8 hero-glow">
-          {/* Single soft decorative wash — primary + secondary, subtle */}
-          <div className="absolute top-[-10%] left-[8%] w-80 h-80 bg-primary/10 rounded-full filter blur-3xl opacity-60 dark:bg-primary/8 dark:opacity-40" />
-          <div className="absolute top-[10%] right-[8%] w-72 h-72 bg-secondary/8 rounded-full filter blur-3xl opacity-50 dark:bg-secondary/10 dark:opacity-30" />
+          {/* Single soft decorative wash — primary + secondary, subtle, now gently floating */}
+          <motion.div
+            className="absolute top-[-10%] left-[8%] w-80 h-80 bg-primary/10 rounded-full filter blur-3xl opacity-60 dark:bg-primary/8 dark:opacity-40"
+            animate={{ x: [0, 24, 0], y: [0, 16, 0] }}
+            transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute top-[10%] right-[8%] w-72 h-72 bg-secondary/8 rounded-full filter blur-3xl opacity-50 dark:bg-secondary/10 dark:opacity-30"
+            animate={{ x: [0, -20, 0], y: [0, -14, 0] }}
+            transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+          />
 
           <div className="max-w-5xl mx-auto text-center relative z-10">
             <motion.span
@@ -96,7 +116,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
               onSubmit={handleSearchSubmit}
-              className="max-w-2xl mx-auto flex items-center bg-surface rounded-full p-2 shadow-lg border border-border dark:shadow-[0_4px_24px_rgba(255,60,110,0.1)] mb-12"
+              className="max-w-2xl mx-auto flex items-center bg-surface rounded-full p-2 shadow-lg border border-border focus-within:border-primary/40 focus-within:shadow-[0_4px_24px_rgba(178,58,92,0.18)] dark:shadow-[0_4px_24px_rgba(255,60,110,0.1)] dark:focus-within:shadow-[0_4px_28px_rgba(255,60,110,0.28)] transition-shadow duration-300 mb-12"
             >
               <div className="flex items-center flex-grow pl-4">
                 <Search className="text-foreground-muted w-5 h-5 mr-2 flex-shrink-0" />
@@ -123,19 +143,28 @@ export default function Home() {
               transition={{ delay: 0.4 }}
               className="flex justify-center gap-4 flex-wrap"
             >
-              <Link
-                href={currentUser ? "/dashboard" : "/auth/signup"}
-                className="px-6 py-3.5 bg-primary hover:bg-primary-hover text-white font-semibold rounded-full shadow-md transition-all flex items-center gap-2 btn-glow"
-              >
-                {currentUser ? "Go to Dashboard" : "Join Platform"}
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="/explore"
-                className="px-6 py-3.5 bg-surface hover:bg-surface-raised text-foreground border border-border font-semibold rounded-full shadow-sm transition-all hover:border-primary/30"
-              >
-                Explore Opportunities
-              </Link>
+              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+                <Link
+                  href={currentUser ? "/dashboard" : "/auth/signup"}
+                  className="px-6 py-3.5 bg-primary hover:bg-primary-hover text-white font-semibold rounded-full shadow-md transition-colors flex items-center gap-2 btn-glow"
+                >
+                  {currentUser ? "Go to Dashboard" : "Join Platform"}
+                  <motion.span
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                  </motion.span>
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+                <Link
+                  href="/explore"
+                  className="px-6 py-3.5 bg-surface hover:bg-surface-raised text-foreground border border-border font-semibold rounded-full shadow-sm transition-colors hover:border-primary/30 block"
+                >
+                  Explore Opportunities
+                </Link>
+              </motion.div>
             </motion.div>
           </div>
         </section>
@@ -143,71 +172,123 @@ export default function Home() {
         {/* Categories Section */}
         <section className="py-20 bg-surface transition-colors duration-300">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
+            <motion.div
+              className="text-center mb-12"
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.5 }}
+            >
               <h2 className="text-3xl font-extrabold text-foreground">Explore by Category</h2>
               <p className="mt-3 text-foreground-muted max-w-xl mx-auto">
                 Categorized lists of pathways designed specifically for female students and researchers worldwide.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            <motion.div
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6"
+              variants={containerStagger}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.2 }}
+            >
               {categories.map((cat) => {
                 const IconComponent = cat.icon;
                 return (
-                  <Link
-                    key={cat.name}
-                    href={`/explore?category=${cat.name}`}
-                    className="flex flex-col items-center p-6 bg-background hover:bg-surface-raised rounded-2xl border border-border hover:border-primary/30 transition-all text-center group card-hover"
-                  >
-                    <div className={`p-4 rounded-xl mb-4 transition-transform group-hover:scale-110 ${cat.lightColor} ${cat.darkColor}`}>
-                      <IconComponent className="w-6 h-6" />
-                    </div>
-                    <span className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">
-                      {cat.name}
-                    </span>
-                  </Link>
+                  <motion.div key={cat.name} variants={fadeUpItem}>
+                    <Link
+                      href={`/explore?category=${cat.name}`}
+                      className="flex flex-col items-center p-6 bg-background hover:bg-surface-raised rounded-2xl border border-border hover:border-primary/30 transition-colors text-center group card-hover"
+                    >
+                      <motion.div
+                        whileHover={{ scale: 1.12, rotate: 4 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                        className={`p-4 rounded-xl mb-4 ${cat.lightColor} ${cat.darkColor}`}
+                      >
+                        <IconComponent className="w-6 h-6" />
+                      </motion.div>
+                      <span className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">
+                        {cat.name}
+                      </span>
+                    </Link>
+                  </motion.div>
                 );
               })}
-            </div>
+            </motion.div>
           </div>
         </section>
 
         {/* Benefits Section */}
         <section className="py-20 bg-background transition-colors duration-300">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.5 }}
+            >
               <h2 className="text-3xl font-extrabold text-foreground">Why Join Bloom?</h2>
               <p className="mt-3 text-foreground-muted max-w-xl mx-auto">
                 Built specifically to solve accessibility barriers and bridge the gender gap in technical fields.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-3 gap-8"
+              variants={containerStagger}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.2 }}
+            >
               {benefits.map((b) => (
-                <div
+                <motion.div
                   key={b.title}
-                  className="p-8 bg-surface border border-border rounded-3xl shadow-sm hover:shadow-md dark:hover:shadow-[0_4px_20px_rgba(255,60,110,0.1)] hover:border-primary/20 transition-all card-hover"
+                  variants={fadeUpItem}
+                  whileHover={{ y: -6 }}
+                  transition={{ type: "spring", stiffness: 250, damping: 20 }}
+                  className="p-8 bg-surface border border-border rounded-3xl shadow-sm hover:shadow-md dark:hover:shadow-[0_4px_20px_rgba(255,60,110,0.1)] hover:border-primary/20 card-hover"
                 >
-                  <CheckCircle className="w-8 h-8 text-primary mb-6" />
+                  <motion.div
+                    initial={{ scale: 0, rotate: -20 }}
+                    whileInView={{ scale: 1, rotate: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ type: "spring", stiffness: 260, damping: 14, delay: 0.1 }}
+                  >
+                    <CheckCircle className="w-8 h-8 text-primary mb-6" />
+                  </motion.div>
                   <h3 className="text-lg font-bold text-foreground mb-2">{b.title}</h3>
                   <p className="text-foreground-muted text-sm leading-relaxed">{b.desc}</p>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
 
         {/* Testimonials */}
         <section className="py-20 bg-surface transition-colors duration-300">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.5 }}
+            >
               <h2 className="text-3xl font-extrabold text-foreground">Success Stories</h2>
               <p className="mt-3 text-foreground-muted max-w-xl mx-auto">
                 Hear from women who accelerated their tech journeys using this platform.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 gap-8"
+              variants={containerStagger}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.2 }}
+            >
               {[
                 {
                   quote: "Thanks to this platform, I discovered the Google Generation Scholarship. The search criteria were so clear that I saved hours of lookup time and successfully landed the grant!",
@@ -220,14 +301,25 @@ export default function Home() {
                   title: "PhD Fellow in AI, Stanford University",
                 },
               ].map((t) => (
-                <div
+                <motion.div
                   key={t.name}
-                  className="p-8 bg-background rounded-3xl border border-border hover:border-secondary/30 transition-all card-hover relative overflow-hidden"
+                  variants={fadeUpItem}
+                  whileHover={{ y: -4, scale: 1.01 }}
+                  transition={{ type: "spring", stiffness: 250, damping: 20 }}
+                  className="p-8 bg-background rounded-3xl border border-border hover:border-secondary/30 card-hover relative overflow-hidden"
                 >
                   <div className="absolute top-0 left-0 w-1.5 h-full bg-secondary/60" />
                   <div className="flex gap-1 mb-4 text-accent-gold">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-current" />
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, scale: 0 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.08, type: "spring", stiffness: 300 }}
+                      >
+                        <Star className="w-4 h-4 fill-current" />
+                      </motion.div>
                     ))}
                   </div>
                   <p className="text-foreground-muted italic text-sm leading-relaxed mb-6">
@@ -237,9 +329,9 @@ export default function Home() {
                     <h5 className="font-bold text-foreground text-sm">{t.name}</h5>
                     <span className="text-foreground-muted text-xs">{t.title}</span>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
       </main>

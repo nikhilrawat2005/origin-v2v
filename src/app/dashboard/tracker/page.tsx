@@ -3,21 +3,88 @@
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import { collection, query, where, onSnapshot, doc, updateDoc, addDoc, getDoc } from "firebase/firestore";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Layers,
   Plus,
-  ArrowRight,
   Loader2,
   Calendar,
   Building,
   CheckCircle,
-  ExternalLink,
   ChevronRight,
   ChevronLeft,
+  X,
 } from "lucide-react";
 import type { ApplicationEntry, ApplicationStatus } from "@/lib/types";
 import { useOpportunities } from "@/hooks/useOpportunities";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
+
+/* ── Animation Variants ─────────────────────────────────────── */
+const pageVariants: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06, delayChildren: 0.04 } },
+};
+
+const headerVariants: Variants = {
+  hidden: { opacity: 0, y: -12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.36, ease: "easeOut" } },
+};
+
+const columnVariants: Variants = {
+  hidden: { opacity: 0, y: 20, scale: 0.97 },
+  show: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.4, delay: i * 0.06, ease: [0.23, 1, 0.32, 1] },
+  }),
+};
+
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 12, scale: 0.96 },
+  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.28, ease: "easeOut" } },
+  exit: { opacity: 0, x: 20, scale: 0.94, transition: { duration: 0.22 } },
+};
+
+const formVariants: Variants = {
+  hidden: { opacity: 0, height: 0, y: -10 },
+  show: { opacity: 1, height: "auto", y: 0, transition: { duration: 0.36, ease: [0.23, 1, 0.32, 1] } },
+  exit: { opacity: 0, height: 0, y: -10, transition: { duration: 0.22 } },
+};
+
+/* ── Count-up component ─────────────────────────────────────── */
+function CountUp({ to }: { to: number }) {
+  const [value, setValue] = useState(to);
+  const prevRef = useRef(to);
+
+  useEffect(() => {
+    const from = prevRef.current;
+    prevRef.current = to;
+    if (from === to) return;
+
+    const start = performance.now();
+    const duration = 500;
+    const frame = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(from + (to - from) * eased));
+      if (progress < 1) requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  }, [to]);
+
+  return <>{value}</>;
+}
+
+/* ── Status color map ───────────────────────────────────────── */
+const STATUS_COLORS: Record<ApplicationStatus, string> = {
+  Applied: "bg-secondary/10 text-secondary border-secondary/20",
+  Shortlisted: "bg-accent-gold-surface text-accent-gold border-accent-gold/20",
+  Interview: "bg-primary/10 text-primary border-primary/20",
+  Rejected: "bg-danger-surface text-danger border-danger/20",
+  Selected: "bg-success-surface text-success border-success/20",
+  "Offer Received": "bg-success-surface text-success border-success/20",
+};
 
 export default function TrackerPage() {
   const { currentUser } = useAuth();
@@ -45,7 +112,6 @@ export default function TrackerPage() {
   useEffect(() => {
     if (!currentUser) return;
 
-    // 1. Fetch tracker applications
     const q = query(collection(db, "applications"), where("uid", "==", currentUser.uid));
     const unsub = onSnapshot(q, (snap) => {
       const items: ApplicationEntry[] = [];
@@ -56,7 +122,6 @@ export default function TrackerPage() {
       setLoading(false);
     });
 
-    // 2. Fetch bookmarks to offer quick-add buttons
     const getBookmarks = async () => {
       const snap = await getDoc(doc(db, "bookmarks", currentUser.uid));
       if (snap.exists()) {
@@ -85,8 +150,6 @@ export default function TrackerPage() {
       };
 
       await addDoc(collection(db, "applications"), newEntry);
-
-      // Reset
       setTitle("");
       setOrgName("");
       setDeadline("");
@@ -103,7 +166,6 @@ export default function TrackerPage() {
     if (!opp) return;
 
     try {
-      // Check if already in applications
       if (applications.some((app) => app.opportunityTitle === opp.title)) return;
 
       const newEntry = {
@@ -124,8 +186,12 @@ export default function TrackerPage() {
     }
   };
 
-  // Move columns
-  const moveStatus = async (appId: string, title: string, current: ApplicationStatus, direction: "next" | "prev") => {
+  const moveStatus = async (
+    appId: string,
+    title: string,
+    current: ApplicationStatus,
+    direction: "next" | "prev"
+  ) => {
     if (!currentUser) return;
     const currentIndex = stages.indexOf(current);
     let nextIndex = currentIndex;
@@ -145,7 +211,6 @@ export default function TrackerPage() {
         updatedAt: new Date().toISOString(),
       });
 
-      // Seed notification for status update
       const { notifyApplicationUpdate } = await import("@/lib/automationEngine");
       await notifyApplicationUpdate(currentUser.uid, title, nextStatus);
     } catch (err) {
@@ -153,18 +218,32 @@ export default function TrackerPage() {
     }
   };
 
+  /* ── Loading ──────────────────────────────────────────────── */
   if (loading) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 0.9, ease: "linear" }}
+        >
+          <Loader2 className="w-8 h-8 text-primary" />
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <motion.div
+      className="max-w-7xl mx-auto space-y-8"
+      variants={pageVariants}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <motion.div
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+        variants={headerVariants}
+      >
         <div>
           <h1 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
             <Layers className="w-6 h-6 text-primary" /> Application Tracker
@@ -174,177 +253,283 @@ export default function TrackerPage() {
           </p>
         </div>
 
-        <button
+        <motion.button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-1.5 px-5 py-3 bg-primary hover:bg-primary-hover text-white font-semibold text-xs rounded-full transition-all shadow-sm"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 380, damping: 18 }}
+          className="flex items-center gap-1.5 px-5 py-3 bg-primary hover:bg-primary-hover text-primary-foreground font-semibold text-xs rounded-full transition-all shadow-sm"
         >
-          <Plus className="w-4 h-4" /> Add Application
-        </button>
-      </div>
+          <motion.span
+            animate={{ rotate: showAddForm ? 45 : 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <Plus className="w-4 h-4" />
+          </motion.span>
+          {showAddForm ? "Cancel" : "Add Application"}
+        </motion.button>
+      </motion.div>
 
-      {/* Quick Add bookmarks row */}
+      {/* Quick import from bookmarks */}
       {bookmarks.length > 0 && (
-        <div className="bg-surface border border-border p-4 rounded-3xl space-y-2.5">
-          <span className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">Quick Import From Bookmarks</span>
+        <motion.div
+          variants={headerVariants}
+          className="bg-surface border border-border p-4 rounded-3xl space-y-2.5"
+        >
+          <span className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">
+            Quick Import From Bookmarks
+          </span>
           <div className="flex gap-2 overflow-x-auto pb-1">
             {opportunities
               .filter((opp) => bookmarks.includes(opp.id))
               .map((opp) => {
-                const alreadyAdded = applications.some((app) => app.opportunityTitle === opp.title);
+                const alreadyAdded = applications.some(
+                  (app) => app.opportunityTitle === opp.title
+                );
                 return (
-                  <button
+                  <motion.button
                     key={opp.id}
                     disabled={alreadyAdded}
                     onClick={() => addFromBookmark(opp.id)}
+                    whileHover={!alreadyAdded ? { scale: 1.04 } : {}}
+                    whileTap={!alreadyAdded ? { scale: 0.95 } : {}}
+                    transition={{ type: "spring", stiffness: 400, damping: 18 }}
                     className={`flex items-center gap-1 px-3 py-1.5 rounded-xl border text-[11px] font-bold whitespace-nowrap transition-all ${
                       alreadyAdded
                         ? "bg-surface-raised border-border text-foreground-muted cursor-not-allowed"
                         : "bg-surface border-border text-primary hover:bg-primary/10"
                     }`}
                   >
-                    {opp.title.slice(0, 22)}... {alreadyAdded ? "(Added)" : "+"}
-                  </button>
+                    {opp.title.slice(0, 22)}… {alreadyAdded ? "(Added)" : "+"}
+                  </motion.button>
                 );
               })}
           </div>
-        </div>
+        </motion.div>
       )}
 
-      {/* Add New Application Form overlay */}
-      {showAddForm && (
-        <div className="bg-surface border border-border p-6 rounded-3xl shadow-md max-w-xl animate-in fade-in duration-200">
-          <h3 className="font-bold text-foreground text-sm mb-4">New Tracking Card</h3>
-          <form onSubmit={handleCreateApplication} className="space-y-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">Title</label>
-              <input
-                type="text"
-                placeholder="Google Generation Scholarship"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-primary bg-background text-foreground placeholder:text-foreground-muted"
-              />
+      {/* Add Form — AnimatePresence */}
+      <AnimatePresence>
+        {showAddForm && (
+          <motion.div
+            key="add-form"
+            variants={formVariants}
+            initial="hidden"
+            animate="show"
+            exit="exit"
+            className="overflow-hidden"
+          >
+            <div className="bg-surface border border-border p-6 rounded-3xl shadow-md max-w-xl">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-foreground text-sm">New Tracking Card</h3>
+                <motion.button
+                  onClick={() => setShowAddForm(false)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="p-1 rounded-lg hover:bg-surface-raised text-foreground-muted"
+                >
+                  <X className="w-4 h-4" />
+                </motion.button>
+              </div>
+              <form onSubmit={handleCreateApplication} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">
+                    Title
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Google Generation Scholarship"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                    className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-primary bg-background text-foreground placeholder:text-foreground-muted transition-all"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">
+                    Company / Org
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Google"
+                    value={orgName}
+                    onChange={(e) => setOrgName(e.target.value)}
+                    required
+                    className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-primary bg-background text-foreground placeholder:text-foreground-muted transition-all"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">
+                    Deadline
+                  </label>
+                  <input
+                    type="date"
+                    value={deadline}
+                    onChange={(e) => setDeadline(e.target.value)}
+                    className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-primary bg-background text-foreground transition-all"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">
+                    Notes
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Need to finish essay & recommendation"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-primary bg-background text-foreground placeholder:text-foreground-muted transition-all"
+                  />
+                </div>
+                <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddForm(false)}
+                    className="px-4 py-2 border border-border text-foreground-muted rounded-xl text-xs font-semibold hover:bg-surface-raised transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <motion.button
+                    type="submit"
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.96 }}
+                    transition={{ type: "spring", stiffness: 380, damping: 18 }}
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-xs font-semibold hover:bg-primary-hover shadow-sm transition-all"
+                  >
+                    Create Card
+                  </motion.button>
+                </div>
+              </form>
             </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">Company / Org</label>
-              <input
-                type="text"
-                placeholder="Google"
-                value={orgName}
-                onChange={(e) => setOrgName(e.target.value)}
-                required
-                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-primary bg-background text-foreground placeholder:text-foreground-muted"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">Deadline</label>
-              <input
-                type="date"
-                value={deadline}
-                onChange={(e) => setDeadline(e.target.value)}
-                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-primary bg-background text-foreground"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">Notes</label>
-              <input
-                type="text"
-                placeholder="Need to finish essay & recommendation"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-primary bg-background text-foreground placeholder:text-foreground-muted"
-              />
-            </div>
-            <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowAddForm(false)}
-                className="px-4 py-2 border border-border text-foreground-muted rounded-xl text-xs font-semibold hover:bg-surface-raised"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-semibold hover:bg-primary-hover shadow-sm"
-              >
-                Create Card
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Board Columns Grid */}
+      {/* Board Columns */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 overflow-x-auto pb-4">
-        {stages.map((stage) => {
+        {stages.map((stage, stageIdx) => {
           const filtered = applications.filter((app) => app.status === stage);
 
           return (
-            <div key={stage} className="bg-surface-raised border border-border p-4 rounded-2xl flex flex-col space-y-3 min-w-[200px]">
+            <motion.div
+              key={stage}
+              custom={stageIdx}
+              variants={columnVariants}
+              className="bg-surface-raised border border-border p-4 rounded-2xl flex flex-col space-y-3 min-w-[200px]"
+            >
               {/* Column Header */}
               <div className="flex items-center justify-between pb-1">
-                <h4 className="text-xs font-extrabold text-foreground uppercase tracking-wider">{stage}</h4>
-                <span className="text-[10px] font-extrabold bg-background text-foreground-muted px-2 py-0.5 rounded-full border border-border">
-                  {filtered.length}
-                </span>
+                <h4 className="text-xs font-extrabold text-foreground uppercase tracking-wider">
+                  {stage}
+                </h4>
+                <motion.span
+                  layout
+                  className="text-[10px] font-extrabold bg-background text-foreground-muted px-2 py-0.5 rounded-full border border-border"
+                >
+                  <CountUp to={filtered.length} />
+                </motion.span>
               </div>
 
               {/* Cards List */}
               <div className="flex-1 space-y-3 min-h-[300px]">
-                {filtered.map((app) => (
-                  <div
-                    key={app.id}
-                    className="p-4 bg-surface border border-border rounded-xl shadow-sm hover:shadow-[0_0_0_1px_rgba(255,92,134,0.2),0_8px_24px_rgba(255,60,110,0.12)] transition-shadow space-y-2 group"
-                  >
-                    <div className="space-y-0.5">
-                      <h5 className="font-bold text-foreground text-xs leading-snug">{app.opportunityTitle}</h5>
-                      <p className="text-[10px] text-foreground-muted flex items-center gap-1 font-semibold">
-                        <Building className="w-3 h-3" /> {app.organization}
-                      </p>
-                    </div>
+                <AnimatePresence mode="popLayout">
+                  {filtered.map((app) => (
+                    <motion.div
+                      key={app.id}
+                      layout
+                      variants={cardVariants}
+                      initial="hidden"
+                      animate="show"
+                      exit="exit"
+                      whileHover={{
+                        boxShadow:
+                          "0 0 0 1px rgba(255,92,134,0.2), 0 8px 24px rgba(255,60,110,0.12)",
+                        y: -2,
+                      }}
+                      transition={{ layout: { type: "spring", stiffness: 300, damping: 26 } }}
+                      className="p-4 bg-surface border border-border rounded-xl shadow-sm space-y-2 group cursor-default"
+                    >
+                      <div className="space-y-0.5">
+                        <h5 className="font-bold text-foreground text-xs leading-snug">
+                          {app.opportunityTitle}
+                        </h5>
+                        <p className="text-[10px] text-foreground-muted flex items-center gap-1 font-semibold">
+                          <Building className="w-3 h-3" /> {app.organization}
+                        </p>
+                      </div>
 
-                    <div className="flex items-center gap-1 text-[9px] text-foreground-muted font-semibold">
-                      <Calendar className="w-3 h-3" />
-                      <span>{new Date(app.deadline).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
-                    </div>
-
-                    {app.notes && (
-                      <p className="text-[10px] text-foreground-muted italic line-clamp-1 border-t border-border pt-1.5">
-                        {app.notes}
-                      </p>
-                    )}
-
-                    {/* Column controls */}
-                    <div className="flex justify-between items-center pt-2 border-t border-border">
-                      <button
-                        onClick={() => moveStatus(app.id, app.opportunityTitle, app.status, "prev")}
-                        disabled={stage === "Applied"}
-                        className="p-1 hover:bg-surface-raised rounded text-foreground-muted hover:text-primary disabled:opacity-30"
+                      {/* Status badge */}
+                      <span
+                        className={`inline-flex items-center text-[9px] font-bold px-2 py-0.5 rounded-full border ${
+                          STATUS_COLORS[app.status] ?? "bg-surface-raised text-foreground-muted border-border"
+                        }`}
                       >
-                        <ChevronLeft className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => moveStatus(app.id, app.opportunityTitle, app.status, "next")}
-                        disabled={stage === "Offer Received"}
-                        className="p-1 hover:bg-surface-raised rounded text-foreground-muted hover:text-primary disabled:opacity-30"
-                      >
-                        <ChevronRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                        {app.status}
+                      </span>
 
-                {filtered.length === 0 && (
-                  <div className="border-2 border-dashed border-border rounded-xl py-12 text-center text-foreground-muted">
-                    <p className="text-[10px] font-medium">Drag items here</p>
-                  </div>
-                )}
+                      <div className="flex items-center gap-1 text-[9px] text-foreground-muted font-semibold">
+                        <Calendar className="w-3 h-3" />
+                        <span>
+                          {new Date(app.deadline).toLocaleDateString(undefined, {
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                      </div>
+
+                      {app.notes && (
+                        <p className="text-[10px] text-foreground-muted italic line-clamp-1 border-t border-border pt-1.5">
+                          {app.notes}
+                        </p>
+                      )}
+
+                      {/* Column controls */}
+                      <div className="flex justify-between items-center pt-2 border-t border-border">
+                        <motion.button
+                          onClick={() =>
+                            moveStatus(app.id, app.opportunityTitle, app.status, "prev")
+                          }
+                          disabled={stage === "Applied"}
+                          whileHover={stage !== "Applied" ? { scale: 1.15 } : {}}
+                          whileTap={stage !== "Applied" ? { scale: 0.85 } : {}}
+                          transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                          className="p-1 hover:bg-surface-raised rounded text-foreground-muted hover:text-primary disabled:opacity-30 transition-all"
+                        >
+                          <ChevronLeft className="w-3.5 h-3.5" />
+                        </motion.button>
+                        <motion.button
+                          onClick={() =>
+                            moveStatus(app.id, app.opportunityTitle, app.status, "next")
+                          }
+                          disabled={stage === "Offer Received"}
+                          whileHover={stage !== "Offer Received" ? { scale: 1.15 } : {}}
+                          whileTap={stage !== "Offer Received" ? { scale: 0.85 } : {}}
+                          transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                          className="p-1 hover:bg-surface-raised rounded text-foreground-muted hover:text-primary disabled:opacity-30 transition-all"
+                        >
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </motion.button>
+                      </div>
+                    </motion.div>
+                  ))}
+
+                  {filtered.length === 0 && (
+                    <motion.div
+                      key="empty"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="border-2 border-dashed border-border rounded-xl py-12 text-center text-foreground-muted"
+                    >
+                      <p className="text-[10px] font-medium">Drop items here</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>
-    </div>
+    </motion.div>
   );
 }
