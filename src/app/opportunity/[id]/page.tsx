@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
@@ -76,6 +76,21 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
   const [reminderSaved, setReminderSaved] = useState(false);
   const [reminderLoading, setReminderLoading] = useState(false);
   const [loading, setLoading] = useState(true);
+  const viewCountedRef = useRef<string | null>(null);
+
+  // Real view-count tracking. Runs exactly ONCE per opportunity id per page
+  // visit — deliberately NOT dependent on `opportunities` (which comes from
+  // a live onSnapshot listener). Incrementing viewCount changes the very
+  // doc that listener watches, so depending on `opportunities` here would
+  // re-trigger this effect every time the increment lands, causing an
+  // infinite write loop. The ref guard makes this a true one-shot.
+  useEffect(() => {
+    if (viewCountedRef.current === id) return;
+    viewCountedRef.current = id;
+    updateDoc(doc(db, "org_opportunities", id), {
+      viewCount: increment(1),
+    }).catch((err) => console.warn("View count increment failed:", err));
+  }, [id]);
 
   useEffect(() => {
     const fetchOpp = async () => {
@@ -85,12 +100,6 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
         return;
       }
       setOpp(match);
-
-      // Real view-count tracking (replaces the old random placeholder number).
-      // Fire-and-forget: a failed increment shouldn't block the page.
-      updateDoc(doc(db, "org_opportunities", id), {
-        viewCount: increment(1),
-      }).catch((err) => console.warn("View count increment failed:", err));
 
       if (currentUser) {
         const snap = await getDoc(doc(db, "bookmarks", currentUser.uid));

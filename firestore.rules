@@ -1,18 +1,3 @@
-// firestore.rules
-//
-// HOW TO DEPLOY THIS:
-// Option A (no CLI needed): Firebase Console → your project → Firestore
-// Database → Rules tab → paste this entire file → Publish.
-// Option B (CLI): `firebase deploy --only firestore:rules` (needs
-// firebase-tools installed + `firebase init firestore` run once).
-//
-// IMPORTANT: The admin email list below MUST be kept in sync with
-// src/lib/adminConfig.ts (ALLOWED_ADMIN_EMAILS). This is the layer that
-// actually matters for security — the UI checks in adminConfig.ts /
-// admin page are just UX, this is what actually stops someone editing
-// Firestore directly (e.g. via browser devtools) from making themselves
-// admin.
-
 rules_version = '2';
 
 service cloud.firestore {
@@ -75,7 +60,13 @@ service cloud.firestore {
       allow update: if isAdminEmail() ||
         (isSignedIn() &&
           resource.data.postedByUid == request.auth.uid &&
-          request.resource.data.status == resource.data.status);
+          request.resource.data.status == resource.data.status) ||
+        // Any signed-in visitor may bump the view counter on an approved
+        // listing — every other field (including status) must stay
+        // untouched by this path.
+        (isSignedIn() &&
+          resource.data.status == "approved" &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(["viewCount"]));
 
       allow delete: if isAdminEmail() ||
         (isSignedIn() && resource.data.postedByUid == request.auth.uid);
@@ -104,6 +95,11 @@ service cloud.firestore {
     match /ingestion_logs/{logId} {
       allow read: if isAdminEmail();
       allow write: if false; // Admin SDK (cron route) bypasses rules anyway
+    }
+
+    // ── Bookmarks (doc ID == uid, single doc per user holding an array) ──
+    match /bookmarks/{uid} {
+      allow read, write: if isOwner(uid);
     }
 
     // ── Owner-only collections: wallet, applications (tracker), ──────────
