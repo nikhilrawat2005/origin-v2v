@@ -1,9 +1,8 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { db, storage } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs, addDoc, deleteDoc, doc, updateDoc, onSnapshot } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { useState, useEffect } from "react";
 import {
   Wallet,
@@ -62,10 +61,32 @@ export default function WalletPage() {
 
     setUploading(true);
     try {
-      const filePath = `wallet/${currentUser.uid}/${Date.now()}_${selectedFile.name}`;
-      const storageRef = ref(storage, filePath);
-      await uploadBytes(storageRef, selectedFile);
-      const downloadURL = await getDownloadURL(storageRef);
+      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+      const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+      if (!cloudName || !uploadPreset || cloudName === "your_cloud_name" || uploadPreset === "your_unsigned_preset") {
+        throw new Error("Cloudinary environment variables are not configured yet. Please configure them in .env.local");
+      }
+
+      // Prepare file data and folders to isolate users
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("upload_preset", uploadPreset);
+      formData.append("folder", `wallet/${currentUser.uid}`);
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error?.message || "Failed to upload file to Cloudinary.");
+      }
+
+      const data = await res.json();
+      const downloadURL = data.secure_url;
+      const filePath = data.public_id; // Cloudinary public_id serves as the storage path
 
       const newDoc = {
         uid: currentUser.uid,
@@ -83,8 +104,9 @@ export default function WalletPage() {
       // Reset
       setDocName("");
       setSelectedFile(null);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Upload error:", err);
+      alert(err.message || "Upload failed. Check your console logs.");
     } finally {
       setUploading(false);
     }
@@ -92,10 +114,8 @@ export default function WalletPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      const docToDelete = documents.find((d) => d.id === id);
-      if (docToDelete?.storagePath) {
-        await deleteObject(ref(storage, docToDelete.storagePath)).catch(() => {});
-      }
+      // In unsigned client-side uploads, deleting assets directly from the client is restricted by design to prevent security issues.
+      // We safely delete the reference document from Firestore.
       await deleteDoc(doc(db, "wallet", id));
     } catch (err) {
       console.error("Delete document error:", err);
