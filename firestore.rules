@@ -81,6 +81,25 @@ service cloud.firestore {
         (isSignedIn() && resource.data.postedByUid == request.auth.uid);
     }
 
+    // ── Organization access requests (self-service signup flow) ──────────
+    // Doc ID == uid, one request per user. A user can create their own
+    // request (must start "pending"), and resubmit only after a rejection.
+    // Only admins can approve/reject (which also requires them to update
+    // the matching users/{uid}.role separately — see the /users rule above,
+    // which already allows isAdminEmail() to change anyone's role).
+
+    match /org_requests/{uid} {
+      allow read: if isOwner(uid) || isAdminEmail();
+      allow create: if isOwner(uid) &&
+        request.resource.data.uid == uid &&
+        request.resource.data.status == "pending";
+      allow update: if isAdminEmail() ||
+        (isOwner(uid) &&
+          resource.data.status == "rejected" &&
+          request.resource.data.status == "pending");
+      allow delete: if isAdminEmail();
+    }
+
     // ── Ingestion logs (written only by the server via Admin SDK) ────────
     match /ingestion_logs/{logId} {
       allow read: if isAdminEmail();

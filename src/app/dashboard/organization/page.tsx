@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs, addDoc, doc, updateDoc, onSnapshot } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, doc, getDoc, setDoc, updateDoc, onSnapshot } from "firebase/firestore";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -18,7 +18,7 @@ import {
   Loader2,
   Calendar,
 } from "lucide-react";
-import type { OrgOpportunity, OrgOpportunityStatus } from "@/lib/types";
+import type { OrgOpportunity, OrgOpportunityStatus, OrgRequest } from "@/lib/types";
 
 export default function OrgDashboardPage() {
   const { currentUser, profile, loading: authLoading } = useAuth();
@@ -27,12 +27,65 @@ export default function OrgDashboardPage() {
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const isOrg = profile?.role === "organization" || profile?.role === "admin";
+
+  // ── Self-service org access request state (only relevant if NOT yet org) ──
+  const [orgRequest, setOrgRequest] = useState<OrgRequest | null>(null);
+  const [requestLoading, setRequestLoading] = useState(true);
+  const [reqOrgName, setReqOrgName] = useState("");
+  const [reqWebsite, setReqWebsite] = useState("");
+  const [reqDescription, setReqDescription] = useState("");
+  const [reqSubmitting, setReqSubmitting] = useState(false);
+  const [reqError, setReqError] = useState("");
+
   useEffect(() => {
     if (authLoading) return;
-    if (!currentUser || (profile?.role !== "organization" && profile?.role !== "admin")) {
-      router.push("/dashboard");
+    if (!currentUser) {
+      router.push("/auth/login");
     }
-  }, [currentUser, profile, authLoading, router]);
+  }, [currentUser, authLoading, router]);
+
+  useEffect(() => {
+    if (!currentUser || isOrg) {
+      setRequestLoading(false);
+      return;
+    }
+    getDoc(doc(db, "org_requests", currentUser.uid))
+      .then((snap) => {
+        if (snap.exists()) setOrgRequest(snap.data() as OrgRequest);
+      })
+      .catch((err) => console.error("Failed to load org request:", err))
+      .finally(() => setRequestLoading(false));
+  }, [currentUser, isOrg]);
+
+  const submitOrgRequest = async () => {
+    if (!currentUser) return;
+    if (!reqOrgName.trim() || !reqDescription.trim()) {
+      setReqError("Organization name and description are required.");
+      return;
+    }
+    setReqError("");
+    setReqSubmitting(true);
+    try {
+      const newRequest: OrgRequest = {
+        uid: currentUser.uid,
+        orgName: reqOrgName.trim(),
+        website: reqWebsite.trim() || undefined,
+        description: reqDescription.trim(),
+        requesterName: profile?.name || currentUser.displayName || "Unknown",
+        requesterEmail: currentUser.email || "",
+        status: "pending",
+        createdAt: new Date().toISOString(),
+      };
+      await setDoc(doc(db, "org_requests", currentUser.uid), newRequest);
+      setOrgRequest(newRequest);
+    } catch (err) {
+      console.error(err);
+      setReqError("Something went wrong submitting your request. Please try again.");
+    } finally {
+      setReqSubmitting(false);
+    }
+  };
 
   // Form states
   const [showAddForm, setShowAddForm] = useState(false);
@@ -45,7 +98,10 @@ export default function OrgDashboardPage() {
   const [applyLink, setApplyLink] = useState("");
 
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser || !isOrg) {
+      setLoading(false);
+      return;
+    }
 
     // Fetch organization posted opportunities
     const oppQuery = query(collection(db, "org_opportunities"), where("postedByUid", "==", currentUser.uid));
@@ -71,7 +127,7 @@ export default function OrgDashboardPage() {
     loadSubmissions();
 
     return () => unsubOpp();
-  }, [currentUser, profile]);
+  }, [currentUser, profile, isOrg]);
 
   const handlePostOpportunity = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,7 +183,135 @@ export default function OrgDashboardPage() {
     }
   };
 
-  if (loading || authLoading || !currentUser || (profile?.role !== "organization" && profile?.role !== "admin")) {
+  if (authLoading || !currentUser) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
+      </div>
+    );
+  }
+
+  // Not yet an organization: show the self-service access request flow
+  // instead of the org dashboard (and instead of redirecting away).
+  if (!isOrg) {
+    if (requestLoading) {
+      return (
+        <div className="min-h-[50vh] flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
+        </div>
+      );
+    }
+
+    if (orgRequest?.status === "pending") {
+      return (
+        <div className="max-w-lg mx-auto text-center py-20 space-y-4">
+          <div className="w-14 h-14 bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center mx-auto">
+            <Building2 className="w-7 h-7" />
+          </div>
+          <h1 className="text-xl font-extrabold text-foreground">Request under review</h1>
+          <p className="text-sm text-foreground-muted">
+            Your request to register <strong>{orgRequest.orgName}</strong> as an organization
+            partner is pending admin approval. You'll get organization dashboard access as soon
+            as it's approved.
+          </p>
+        </div>
+      );
+    }
+
+    if (orgRequest?.status === "rejected") {
+      return (
+        <div className="max-w-lg mx-auto text-center py-20 space-y-4">
+          <div className="w-14 h-14 bg-red-500/10 text-red-500 rounded-2xl flex items-center justify-center mx-auto">
+            <XCircle className="w-7 h-7" />
+          </div>
+          <h1 className="text-xl font-extrabold text-foreground">Request not approved</h1>
+          <p className="text-sm text-foreground-muted">
+            Your request for <strong>{orgRequest.orgName}</strong> wasn't approved. If you believe
+            this was a mistake, you can submit a new request below.
+          </p>
+          <button
+            onClick={() => setOrgRequest(null)}
+            className="mt-2 px-5 py-2.5 bg-brand-purple hover:bg-brand-purple/90 text-white rounded-2xl text-xs font-bold transition-all"
+          >
+            Submit a new request
+          </button>
+        </div>
+      );
+    }
+
+    // No request yet — show the form
+    return (
+      <div className="max-w-lg mx-auto py-14">
+        <div className="text-center mb-8">
+          <div className="w-14 h-14 bg-brand-purple/10 text-brand-purple rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Building2 className="w-7 h-7" />
+          </div>
+          <h1 className="text-xl font-extrabold text-foreground">Become an organization partner</h1>
+          <p className="text-sm text-foreground-muted mt-2">
+            Post scholarships, fellowships, internships, or programs directly to Bloom. An admin
+            will review your request before you get posting access.
+          </p>
+        </div>
+
+        <div className="bg-surface border border-border p-6 rounded-3xl shadow-sm space-y-4">
+          {reqError && (
+            <div className="text-xs bg-red-500/10 text-red-600 p-3 rounded-xl border border-red-500/20">
+              {reqError}
+            </div>
+          )}
+
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-1.5">
+              Organization Name
+            </label>
+            <input
+              type="text"
+              value={reqOrgName}
+              onChange={(e) => setReqOrgName(e.target.value)}
+              placeholder="e.g. AnitaB.org India"
+              className="w-full text-sm px-4 py-3 bg-surface-raised border border-border rounded-2xl outline-none focus:border-brand-purple text-foreground placeholder-foreground-muted"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-1.5">
+              Website (optional)
+            </label>
+            <input
+              type="text"
+              value={reqWebsite}
+              onChange={(e) => setReqWebsite(e.target.value)}
+              placeholder="https://..."
+              className="w-full text-sm px-4 py-3 bg-surface-raised border border-border rounded-2xl outline-none focus:border-brand-purple text-foreground placeholder-foreground-muted"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-1.5">
+              Tell us about your organization
+            </label>
+            <textarea
+              value={reqDescription}
+              onChange={(e) => setReqDescription(e.target.value)}
+              rows={4}
+              placeholder="What does your organization do, and what kind of opportunities do you want to post?"
+              className="w-full text-sm px-4 py-3 bg-surface-raised border border-border rounded-2xl outline-none focus:border-brand-purple text-foreground placeholder-foreground-muted resize-none"
+            />
+          </div>
+
+          <button
+            onClick={submitOrgRequest}
+            disabled={reqSubmitting}
+            className="w-full bg-brand-purple hover:bg-brand-purple/90 text-white font-bold text-sm py-3.5 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+          >
+            {reqSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Submit Request"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />

@@ -131,6 +131,22 @@ export interface MentorshipRequest {
   createdAt: string;
 }
 
+// ─── ORGANIZATION ACCESS REQUESTS ─────────────────────────────────────────
+
+export type OrgRequestStatus = "pending" | "approved" | "rejected";
+
+export interface OrgRequest {
+  uid: string;
+  orgName: string;
+  website?: string;
+  description: string;
+  requesterName: string;
+  requesterEmail: string;
+  status: OrgRequestStatus;
+  createdAt: string;
+  reviewedAt?: string;
+}
+
 // ─── ORGANIZATION ──────────────────────────────────────────────────────────
 
 export interface OrgProfile {

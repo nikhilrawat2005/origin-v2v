@@ -18,7 +18,7 @@ import {
   AlertTriangle,
   Loader2,
 } from "lucide-react";
-import type { OrgOpportunity, AdminStats } from "@/lib/types";
+import type { OrgOpportunity, AdminStats, OrgRequest } from "@/lib/types";
 
 export default function AdminPage() {
   const { currentUser, profile, loading: authLoading } = useAuth();
@@ -32,6 +32,7 @@ export default function AdminPage() {
     totalCommunityPosts: 0,
   });
   const [orgOpps, setOrgOpps] = useState<OrgOpportunity[]>([]);
+  const [orgRequests, setOrgRequests] = useState<OrgRequest[]>([]);
   const [usersList, setUsersList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -89,7 +90,18 @@ export default function AdminPage() {
           setLoading(false);
         });
 
-        return () => unsubOrgOpp();
+        // 5. Fetch organization access requests (self-service signups)
+        const orgReqQuery = query(collection(db, "org_requests"));
+        const unsubOrgReq = onSnapshot(orgReqQuery, (snap) => {
+          const items: OrgRequest[] = [];
+          snap.forEach((d) => items.push(d.data() as OrgRequest));
+          setOrgRequests(items);
+        });
+
+        return () => {
+          unsubOrgOpp();
+          unsubOrgReq();
+        };
       } catch (err) {
         console.error(err);
         setLoading(false);
@@ -108,6 +120,24 @@ export default function AdminPage() {
         prev.map((opp) => (opp.id === oppId ? { ...opp, status } : opp))
       );
       alert(`Opportunity program has been successfully: ${status}! 🌸`);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const reviewOrgRequest = async (uid: string, decision: "approved" | "rejected") => {
+    try {
+      await updateDoc(doc(db, "org_requests", uid), {
+        status: decision,
+        reviewedAt: new Date().toISOString(),
+      });
+      if (decision === "approved") {
+        await updateDoc(doc(db, "users", uid), { role: "organization" });
+      }
+      setOrgRequests((prev) =>
+        prev.map((r) => (r.uid === uid ? { ...r, status: decision } : r))
+      );
+      alert(`Organization request ${decision}! 🌸`);
     } catch (err) {
       console.error(err);
     }
@@ -136,6 +166,7 @@ export default function AdminPage() {
   }
 
   const pendingCount = orgOpps.filter((o) => o.status === "pending").length;
+  const pendingOrgRequestsCount = orgRequests.filter((r) => r.status === "pending").length;
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
@@ -177,7 +208,77 @@ export default function AdminPage() {
       </div>
 
       {/* Moderate Opportunities */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Organization access requests */}
+        <div className="bg-surface border border-border p-6 rounded-3xl shadow-sm space-y-6">
+          <h3 className="font-extrabold text-foreground text-sm flex items-center justify-between">
+            <span>Organization requests</span>
+            {pendingOrgRequestsCount > 0 && (
+              <span className="text-[9px] font-bold bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded border border-amber-500/20">
+                {pendingOrgRequestsCount} Pending
+              </span>
+            )}
+          </h3>
+
+          <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
+            {orgRequests.map((req) => (
+              <div key={req.uid} className="p-4 bg-surface-raised border border-border rounded-2xl space-y-3">
+                <div className="flex justify-between items-start gap-4">
+                  <div>
+                    <span className="text-[8px] font-extrabold uppercase tracking-wider text-foreground-muted">
+                      {req.requesterName} · {req.requesterEmail}
+                    </span>
+                    <h5 className="font-bold text-foreground text-xs mt-1 leading-snug">{req.orgName}</h5>
+                    {req.website && (
+                      <a href={req.website} target="_blank" rel="noopener noreferrer" className="text-[10px] text-brand-purple hover:underline">
+                        {req.website}
+                      </a>
+                    )}
+                  </div>
+                  <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded border ${
+                    req.status === "approved"
+                      ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                      : req.status === "rejected"
+                      ? "bg-red-500/10 text-red-500 border-red-500/20"
+                      : "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                  }`}>
+                    {req.status}
+                  </span>
+                </div>
+
+                <p className="text-[11px] text-foreground-muted line-clamp-3 leading-relaxed">{req.description}</p>
+
+                {req.status === "pending" && (
+                  <div className="flex gap-2 justify-end pt-2 border-t border-border">
+                    <button
+                      onClick={() => reviewOrgRequest(req.uid, "approved")}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 rounded-xl text-[10px] font-bold transition-all border border-emerald-500/20"
+                    >
+                      <CheckCircle className="w-3.5 h-3.5" /> Approve
+                    </button>
+                    <button
+                      onClick={() => reviewOrgRequest(req.uid, "rejected")}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl text-[10px] font-bold transition-all border border-red-500/20"
+                    >
+                      <XCircle className="w-3.5 h-3.5" /> Reject
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {orgRequests.length === 0 && (
+              <div className="text-center py-12">
+                <Building className="w-8 h-8 text-foreground-muted mx-auto mb-2" />
+                <h5 className="font-bold text-foreground text-xs">No requests yet</h5>
+                <p className="text-foreground-muted text-[10px] mt-1">
+                  When users request organization access, they'll show up here.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="bg-surface border border-border p-6 rounded-3xl shadow-sm space-y-6">
           <h3 className="font-extrabold text-foreground text-sm flex items-center justify-between">
             <span>Moderate org opportunities</span>
