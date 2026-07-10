@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { GeminiRotatorService } from "@/lib/gemini";
+import { AIRouterService } from "@/lib/aiProviders";
 
 export async function POST(request: Request) {
   try {
@@ -133,7 +133,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
 
-    const aiResponse = await GeminiRotatorService.requestGemini(prompt, jsonMode);
+    const aiResponse = await AIRouterService.requestAI(prompt, jsonMode);
     return NextResponse.json({ success: true, result: aiResponse });
 
   } catch (error: any) {
