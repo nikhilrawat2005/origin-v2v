@@ -25,7 +25,9 @@ import {
   UserCheck,
   Zap,
   TrendingUp,
-  BookmarkCheck
+  BookmarkCheck,
+  UploadCloud,
+  X
 } from "lucide-react";
 
 export default function AIHub() {
@@ -427,6 +429,9 @@ function ResumeTab() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ResumeAnalysisResult | null>(null);
   const [history, setHistory] = useState<any[]>([]);
+  const [uploadedFileName, setUploadedFileName] = useState("");
+  const [extracting, setExtracting] = useState(false);
+  const [extractError, setExtractError] = useState("");
 
   const fetchHistory = async () => {
     if (!currentUser) return;
@@ -449,6 +454,61 @@ function ResumeTab() {
   useEffect(() => {
     fetchHistory();
   }, [currentUser]);
+
+  // Extracts plain text from an uploaded PDF/DOCX/TXT resume file and drops
+  // it into the same `resumeText` state the paste-box uses. Any failure
+  // here is caught and surfaced as a friendly message — it never breaks the
+  // rest of the tab, and the user can always fall back to pasting text
+  // manually below.
+  const handleFileUpload = async (file: File) => {
+    setExtractError("");
+    setExtracting(true);
+    setUploadedFileName(file.name);
+
+    try {
+      const ext = file.name.split(".").pop()?.toLowerCase();
+      let text = "";
+
+      if (ext === "txt") {
+        text = await file.text();
+      } else if (ext === "pdf") {
+        const pdfjsLib = await import("pdfjs-dist");
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const pageTexts: string[] = [];
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          pageTexts.push(content.items.map((item: any) => item.str).join(" "));
+        }
+        text = pageTexts.join("\n\n");
+      } else if (ext === "docx") {
+        const mammoth = await import("mammoth");
+        const arrayBuffer = await file.arrayBuffer();
+        const res = await mammoth.extractRawText({ arrayBuffer });
+        text = res.value;
+      } else {
+        throw new Error("Unsupported file type. Please upload a .pdf, .docx, or .txt file.");
+      }
+
+      if (!text.trim()) {
+        throw new Error(
+          "Couldn't find readable text in this file (it may be a scanned image). Please paste your resume text manually below."
+        );
+      }
+
+      setResumeText(text.trim());
+    } catch (err: any) {
+      console.error("Resume file extraction failed:", err);
+      setExtractError(
+        err?.message || "Failed to read this file. Please paste your resume text manually below."
+      );
+    } finally {
+      setExtracting(false);
+    }
+  };
 
   const analyzeResume = async () => {
     if (!resumeText.trim()) return;
@@ -489,6 +549,59 @@ function ResumeTab() {
       </div>
 
       <div className="space-y-4">
+        <div>
+          <label className="block text-[10px] uppercase font-bold text-slate-400 mb-2">
+            Upload Resume File
+          </label>
+          <label className="flex items-center justify-center gap-2 py-4 px-4 bg-slate-50 border border-dashed border-slate-300 rounded-2xl text-xs font-bold text-slate-500 hover:bg-slate-100 hover:border-primary transition-all cursor-pointer">
+            {extracting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" /> Reading {uploadedFileName}...
+              </>
+            ) : uploadedFileName ? (
+              <>
+                <FileText className="w-4 h-4 text-primary" /> {uploadedFileName}
+                <span
+                  role="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setUploadedFileName("");
+                    setResumeText("");
+                    setExtractError("");
+                  }}
+                  className="ml-2 p-1 rounded-full hover:bg-slate-200"
+                >
+                  <X className="w-3 h-3" />
+                </span>
+              </>
+            ) : (
+              <>
+                <UploadCloud className="w-4 h-4" /> Click to upload a .pdf, .docx, or .txt resume
+              </>
+            )}
+            <input
+              type="file"
+              accept=".pdf,.docx,.txt"
+              className="hidden"
+              disabled={extracting}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleFileUpload(file);
+                e.target.value = "";
+              }}
+            />
+          </label>
+          {extractError && (
+            <p className="text-[10px] text-red-500 font-semibold mt-2">{extractError}</p>
+          )}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px bg-slate-200" />
+          <span className="text-[10px] font-bold text-slate-400 uppercase">or paste manually</span>
+          <div className="flex-1 h-px bg-slate-200" />
+        </div>
+
         <div>
           <label className="block text-[10px] uppercase font-bold text-slate-400 mb-2">
             Paste Resume Plain Text
@@ -1109,15 +1222,35 @@ function InterviewTab() {
    TAB 7: ANALYTICS & CONFIDENCE TRACKER
    ========================================================================== */
 function AnalyticsTab() {
-  const { currentUser } = useAuth();
+  const { currentUser, profile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
-    profileCompletion: 80,
+    profileCompletion: 0,
     resumeScanScore: 0,
     interviewSessionCount: 0,
     eligibilityChecksRun: 0,
   });
   const [summary, setSummary] = useState("");
+
+  // Profile completion is calculated from the actual fields the user has
+  // filled in — NOT a fixed placeholder. Each field is weighted equally.
+  const computeProfileCompletion = (): number => {
+    if (!profile) return 0;
+    const fields: (keyof typeof profile)[] = [
+      "bio",
+      "education",
+      "skills",
+      "interests",
+      "location",
+      "income",
+    ];
+    const filled = fields.filter((f) => {
+      const val = profile[f];
+      if (Array.isArray(val)) return val.length > 0;
+      return typeof val === "string" && val.trim().length > 0;
+    }).length;
+    return Math.round((filled / fields.length) * 100);
+  };
 
   const loadAnalytics = async () => {
     if (!currentUser) return;
@@ -1127,7 +1260,7 @@ function AnalyticsTab() {
       const resumeSnap = await getDocs(
         query(collection(db, "resume_analyses"), where("uid", "==", currentUser.uid), limit(5))
       );
-      let latestATS = 0;
+      let latestATS: number | null = null;
       resumeSnap.forEach((d) => {
         latestATS = d.data().atsScore;
       });
@@ -1143,8 +1276,9 @@ function AnalyticsTab() {
       const eligibilityCount = eligibilitySnap.size;
 
       const currentStats = {
-        profileCompletion: 90,
-        resumeScanScore: latestATS || 65,
+        profileCompletion: computeProfileCompletion(),
+        // No resume analyzed yet == no score, not a fake placeholder number.
+        resumeScanScore: latestATS ?? 0,
         interviewSessionCount: interviewCount,
         eligibilityChecksRun: eligibilityCount,
       };
@@ -1164,7 +1298,7 @@ function AnalyticsTab() {
 
   useEffect(() => {
     loadAnalytics();
-  }, [currentUser]);
+  }, [currentUser, profile]);
 
   if (loading) {
     return (

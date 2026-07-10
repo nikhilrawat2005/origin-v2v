@@ -1,3 +1,18 @@
+// firestore.rules
+//
+// HOW TO DEPLOY THIS:
+// Option A (no CLI needed): Firebase Console → your project → Firestore
+// Database → Rules tab → paste this entire file → Publish.
+// Option B (CLI): `firebase deploy --only firestore:rules` (needs
+// firebase-tools installed + `firebase init firestore` run once).
+//
+// IMPORTANT: The admin email list below MUST be kept in sync with
+// src/lib/adminConfig.ts (ALLOWED_ADMIN_EMAILS). This is the layer that
+// actually matters for security — the UI checks in adminConfig.ts /
+// admin page are just UX, this is what actually stops someone editing
+// Firestore directly (e.g. via browser devtools) from making themselves
+// admin.
+
 rules_version = '2';
 
 service cloud.firestore {
@@ -145,6 +160,15 @@ service cloud.firestore {
       allow read, delete: if isSignedIn() && resource.data.uid == request.auth.uid;
       allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
       allow update: if isSignedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // ── AI Hub: roadmap + chat history (doc ID == uid, single doc each) ──
+    match /roadmaps/{uid} {
+      allow read, write: if isOwner(uid);
+    }
+
+    match /chat_history/{uid} {
+      allow read, write: if isOwner(uid);
     }
 
     // Per-user notification subcollection: notifications/{uid}/items/{id}
