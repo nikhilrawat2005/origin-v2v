@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useAuth } from "@/context/AuthContext";
 import {
   Search,
   Sparkles,
@@ -21,6 +22,7 @@ import { motion } from "framer-motion";
 
 export default function Home() {
   const router = useRouter();
+  const { currentUser } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -125,10 +127,10 @@ export default function Home() {
               className="flex justify-center gap-4 flex-wrap"
             >
               <Link
-                href="/auth/signup"
+                href={currentUser ? "/dashboard" : "/auth/signup"}
                 className="px-6 py-3.5 bg-foreground hover:opacity-90 text-background font-semibold rounded-full shadow-md transition-all flex items-center gap-2"
               >
-                Join Platform
+                {currentUser ? "Go to Dashboard" : "Join Platform"}
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link

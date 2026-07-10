@@ -34,6 +34,7 @@ export default function AdminPage() {
   const [orgOpps, setOrgOpps] = useState<OrgOpportunity[]>([]);
   const [orgRequests, setOrgRequests] = useState<OrgRequest[]>([]);
   const [usersList, setUsersList] = useState<any[]>([]);
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -151,6 +152,7 @@ export default function AdminPage() {
       setUsersList((prev) =>
         prev.map((u) => (u.id === uid ? { ...u, role: nextRole } : u))
       );
+      setSelectedUser((prev: any) => (prev && prev.id === uid ? { ...prev, role: nextRole } : prev));
       alert(`User role updated to: ${nextRole}! 🌸`);
     } catch (err) {
       console.error(err);
@@ -354,30 +356,101 @@ export default function AdminPage() {
 
           <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
             {usersList.map((usr) => (
-              <div key={usr.id} className="p-4 bg-surface-raised border border-border rounded-2xl flex items-center justify-between gap-4">
-                <div>
-                  <h5 className="font-bold text-foreground text-xs">{usr.name}</h5>
-                  <span className="text-[10px] text-foreground-muted">{usr.email}</span>
-                </div>
-
-                <div className="space-y-1">
-                  <span className="block text-[8px] font-bold text-foreground-muted uppercase text-right">Access Level</span>
-                  <select
-                    value={usr.role || "user"}
-                    onChange={(e) => handleRoleChange(usr.id, e.target.value as any)}
-                    disabled={isAllowedAdminEmail(usr.email)}
-                    className="text-[10px] font-bold p-1.5 bg-background border border-border rounded-lg outline-none text-foreground focus:border-brand-purple disabled:opacity-50"
-                  >
-                    <option value="user">User</option>
-                    <option value="organization">Organization</option>
-                    {usr.role === "admin" && <option value="admin">Admin</option>}
-                  </select>
-                </div>
-              </div>
+              <button
+                key={usr.id}
+                onClick={() => setSelectedUser(usr)}
+                className="w-full p-4 bg-surface-raised border border-border rounded-2xl flex items-center justify-between gap-4 text-left hover:border-brand-purple/40 hover:shadow-sm transition-all"
+              >
+                <h5 className="font-bold text-foreground text-xs truncate">{usr.name || "Unnamed User"}</h5>
+                <span className={`shrink-0 text-[8px] font-bold uppercase px-2 py-1 rounded-full border ${
+                  usr.role === "admin"
+                    ? "bg-purple-500/10 text-purple-500 border-purple-500/20"
+                    : usr.role === "organization"
+                    ? "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                    : "bg-slate-500/10 text-slate-500 border-slate-500/20"
+                }`}>
+                  {usr.role || "user"}
+                </span>
+              </button>
             ))}
           </div>
         </div>
       </div>
+
+      {/* User details modal */}
+      {selectedUser && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedUser(null)}
+        >
+          <div
+            className="bg-surface border border-border rounded-3xl shadow-xl max-w-md w-full p-6 space-y-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="font-extrabold text-foreground text-lg">{selectedUser.name || "Unnamed User"}</h3>
+                <p className="text-xs text-foreground-muted mt-0.5">{selectedUser.email || "No email on file"}</p>
+              </div>
+              <button
+                onClick={() => setSelectedUser(null)}
+                className="p-1.5 text-foreground-muted hover:text-foreground hover:bg-surface-raised rounded-lg transition-colors"
+              >
+                <XCircle className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="bg-surface-raised p-3 rounded-2xl">
+                <span className="block text-[9px] font-bold text-foreground-muted uppercase mb-1">Joined</span>
+                <span className="font-semibold text-foreground">
+                  {selectedUser.createdAt
+                    ? new Date(selectedUser.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
+                    : "Unknown"}
+                </span>
+              </div>
+              <div className="bg-surface-raised p-3 rounded-2xl">
+                <span className="block text-[9px] font-bold text-foreground-muted uppercase mb-1">Location</span>
+                <span className="font-semibold text-foreground">{selectedUser.location || "—"}</span>
+              </div>
+              <div className="bg-surface-raised p-3 rounded-2xl">
+                <span className="block text-[9px] font-bold text-foreground-muted uppercase mb-1">Education</span>
+                <span className="font-semibold text-foreground">{selectedUser.education || "—"}</span>
+              </div>
+              <div className="bg-surface-raised p-3 rounded-2xl">
+                <span className="block text-[9px] font-bold text-foreground-muted uppercase mb-1">Category</span>
+                <span className="font-semibold text-foreground">{selectedUser.category || "—"}</span>
+              </div>
+            </div>
+
+            {selectedUser.bio && (
+              <div>
+                <span className="block text-[9px] font-bold text-foreground-muted uppercase mb-1">Bio</span>
+                <p className="text-xs text-foreground leading-relaxed">{selectedUser.bio}</p>
+              </div>
+            )}
+
+            <div className="pt-3 border-t border-border">
+              <span className="block text-[9px] font-bold text-foreground-muted uppercase mb-2">Access Level</span>
+              <select
+                value={selectedUser.role || "user"}
+                onChange={(e) => handleRoleChange(selectedUser.id, e.target.value as any)}
+                disabled={isAllowedAdminEmail(selectedUser.email)}
+                className="w-full text-xs font-bold p-2.5 bg-surface-raised border border-border rounded-xl outline-none text-foreground focus:border-brand-purple disabled:opacity-50"
+              >
+                <option value="user">User</option>
+                <option value="organization">Organization</option>
+                {selectedUser.role === "admin" && <option value="admin">Admin</option>}
+              </select>
+              {isAllowedAdminEmail(selectedUser.email) && (
+                <p className="text-[10px] text-foreground-muted mt-1.5">
+                  This user's admin access is locked via the hardcoded allowlist and can't be changed here.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
