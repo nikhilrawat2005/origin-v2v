@@ -78,7 +78,6 @@ function ExploreContent() {
 
   // Filter logic
   const filteredOpportunities = opportunities.filter((opp) => {
-    // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       const matchTitle = opp.title.toLowerCase().includes(query);
@@ -87,19 +86,11 @@ function ExploreContent() {
       if (!matchTitle && !matchOrg && !matchDesc) return false;
     }
 
-    // Category filter
     if (selectedCategory && opp.category !== selectedCategory) return false;
-
-    // Degree Level filter
     if (selectedDegree && opp.degreeLevel && opp.degreeLevel !== selectedDegree) return false;
-
-    // Field filter
     if (selectedField && opp.field.toLowerCase() !== selectedField.toLowerCase()) return false;
-
-    // Country filter
     if (selectedCountry && opp.country.toLowerCase() !== selectedCountry.toLowerCase()) return false;
 
-    // Family Income filter
     if (incomeLimit && opp.incomeLimit) {
       const limit = parseInt(incomeLimit);
       if (opp.incomeLimit < limit) return false;
@@ -108,37 +99,39 @@ function ExploreContent() {
     return true;
   });
 
+  const selectClass = "w-full text-xs px-3.5 py-2.5 bg-surface-raised border border-border rounded-xl outline-none focus:bg-surface focus:border-primary text-foreground transition-all";
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Title */}
       <div className="mb-8">
-        <span className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-brand-purple">
+        <span className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-primary">
           <Sparkles className="w-3.5 h-3.5" /> Exploration Hub
         </span>
-        <h1 className="text-3xl font-extrabold text-brand-navy mt-1">Discover Opportunities</h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <h1 className="text-3xl font-extrabold text-foreground mt-1">Discover Opportunities</h1>
+        <p className="text-sm text-foreground-muted mt-1">
           Search and filter verified programs tailored to help women excel in STEM and professional careers.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Left Filters Panel */}
-        <div className="lg:col-span-1 bg-white border border-slate-100 rounded-3xl p-6 shadow-sm h-fit">
-          <div className="flex items-center gap-2 font-bold text-slate-800 mb-6 pb-4 border-b border-slate-100">
-            <Filter className="w-4 h-4 text-brand-purple" />
+        <div className="lg:col-span-1 bg-surface border border-border rounded-3xl p-6 shadow-sm h-fit transition-colors duration-300">
+          <div className="flex items-center gap-2 font-bold text-foreground mb-6 pb-4 border-b border-border">
+            <Filter className="w-4 h-4 text-primary" />
             <span>Filters</span>
           </div>
 
           <div className="space-y-5">
             {/* Category Select */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                 Category
               </label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-brand-purple transition-all"
+                className={selectClass}
               >
                 <option value="">All Categories</option>
                 <option value="Scholarships">Scholarships</option>
@@ -152,13 +145,13 @@ function ExploreContent() {
 
             {/* Degree Select */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                 Degree Level
               </label>
               <select
                 value={selectedDegree}
                 onChange={(e) => setSelectedDegree(e.target.value)}
-                className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-brand-purple transition-all"
+                className={selectClass}
               >
                 <option value="">All Levels</option>
                 <option value="Bachelor">Bachelor</option>
@@ -169,13 +162,13 @@ function ExploreContent() {
 
             {/* Field Select */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                 Field of Study
               </label>
               <select
                 value={selectedField}
                 onChange={(e) => setSelectedField(e.target.value)}
-                className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-brand-purple transition-all"
+                className={selectClass}
               >
                 <option value="">All Fields</option>
                 <option value="Computer Science">Computer Science</option>
@@ -187,13 +180,13 @@ function ExploreContent() {
 
             {/* Country Select */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                 Country
               </label>
               <select
                 value={selectedCountry}
                 onChange={(e) => setSelectedCountry(e.target.value)}
-                className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-brand-purple transition-all"
+                className={selectClass}
               >
                 <option value="">Global / All Countries</option>
                 <option value="United States">United States</option>
@@ -205,13 +198,13 @@ function ExploreContent() {
 
             {/* Income Bracket Limit */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-foreground-muted mb-2">
                 Family Income Bracket ($)
               </label>
               <select
                 value={incomeLimit}
                 onChange={(e) => setIncomeLimit(e.target.value)}
-                className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-brand-purple transition-all"
+                className={selectClass}
               >
                 <option value="">No Income Restriction</option>
                 <option value="50000">Under $50,000</option>
@@ -230,7 +223,7 @@ function ExploreContent() {
                 setSelectedCountry("");
                 setIncomeLimit("");
               }}
-              className="w-full text-xs text-center border border-slate-200 hover:border-brand-purple hover:text-brand-purple py-2.5 rounded-xl transition-all font-semibold text-slate-500"
+              className="w-full text-xs text-center border border-border hover:border-primary hover:text-primary py-2.5 rounded-xl transition-all font-semibold text-foreground-muted hover:bg-primary/5"
             >
               Reset Filters
             </button>
@@ -240,21 +233,21 @@ function ExploreContent() {
         {/* Right Opportunities Grid */}
         <div className="lg:col-span-3 space-y-6">
           {/* Universal Search input */}
-          <div className="flex bg-white rounded-2xl shadow-sm border border-slate-100 p-2">
+          <div className="flex bg-surface rounded-2xl shadow-sm border border-border p-2 transition-colors duration-300">
             <div className="flex items-center flex-grow pl-3">
-              <Search className="text-slate-400 w-4 h-4 mr-2" />
+              <Search className="text-foreground-muted w-4 h-4 mr-2 flex-shrink-0" />
               <input
                 type="text"
                 placeholder="Search by keywords (e.g. Google, Fellowship, Science)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full text-xs outline-none text-slate-700 bg-transparent"
+                className="w-full text-xs outline-none text-foreground bg-transparent placeholder-foreground-muted"
               />
             </div>
           </div>
 
           {/* Results Summary */}
-          <div className="text-slate-500 text-xs font-medium">
+          <div className="text-foreground-muted text-xs font-medium">
             {oppsLoading
               ? "Loading opportunities..."
               : `Showing ${filteredOpportunities.length} opportunities matching your criteria.`}
@@ -267,20 +260,20 @@ function ExploreContent() {
               return (
                 <div
                   key={opp.id}
-                  className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                  className="bg-surface border border-border rounded-3xl p-6 shadow-sm hover:shadow-md dark:hover:shadow-[0_4px_20px_rgba(255,60,110,0.12)] hover:border-primary/25 transition-all flex flex-col justify-between card-hover"
                 >
                   <div>
                     {/* Header: Organization & Bookmark */}
                     <div className="flex items-center justify-between gap-4 mb-4">
-                      <span className="text-[10px] font-bold uppercase tracking-wider bg-brand-purple/10 text-brand-purple px-2.5 py-1 rounded-full">
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary px-2.5 py-1 rounded-full">
                         {opp.category}
                       </span>
                       <button
                         onClick={() => toggleBookmark(opp.id)}
                         className={`p-1.5 rounded-full transition-colors ${
                           isSaved
-                            ? "bg-brand-purple/10 text-brand-purple"
-                            : "bg-slate-50 text-slate-400 hover:text-brand-purple"
+                            ? "bg-primary/10 text-primary"
+                            : "bg-surface-raised text-foreground-muted hover:text-primary hover:bg-primary/8"
                         }`}
                       >
                         {isSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
@@ -288,33 +281,33 @@ function ExploreContent() {
                     </div>
 
                     {/* Title */}
-                    <h3 className="font-bold text-slate-800 text-base leading-snug hover:text-brand-purple transition-colors">
+                    <h3 className="font-bold text-foreground text-base leading-snug hover:text-primary transition-colors">
                       <Link href={`/opportunity/${opp.id}`}>{opp.title}</Link>
                     </h3>
-                    <p className="text-slate-500 text-xs mt-1 font-medium">{opp.organization}</p>
+                    <p className="text-foreground-muted text-xs mt-1 font-medium">{opp.organization}</p>
 
                     {/* Description excerpt */}
-                    <p className="text-slate-600 text-xs mt-4 leading-relaxed line-clamp-3">
+                    <p className="text-foreground-muted text-xs mt-4 leading-relaxed line-clamp-3">
                       {opp.description}
                     </p>
                   </div>
 
                   {/* Metadata & Footer link */}
-                  <div className="border-t border-slate-50 mt-6 pt-4 flex items-center justify-between text-[11px] text-slate-500">
+                  <div className="border-t border-border mt-6 pt-4 flex items-center justify-between text-[11px] text-foreground-muted">
                     <div className="flex items-center gap-4">
                       <span className="flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                        <MapPin className="w-3.5 h-3.5 text-foreground-muted" />
                         {opp.country}
                       </span>
                       <span className="flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                        <Calendar className="w-3.5 h-3.5 text-foreground-muted" />
                         {formatDeadline(opp.deadline)}
                       </span>
                     </div>
 
                     <Link
                       href={`/opportunity/${opp.id}`}
-                      className="flex items-center gap-0.5 text-brand-purple font-semibold hover:translate-x-0.5 transition-transform"
+                      className="flex items-center gap-0.5 text-primary font-semibold hover:translate-x-0.5 transition-transform"
                     >
                       Details <ChevronRight className="w-3.5 h-3.5" />
                     </Link>
@@ -325,10 +318,10 @@ function ExploreContent() {
           </div>
 
           {filteredOpportunities.length === 0 && (
-            <div className="text-center py-20 bg-white border border-slate-100 rounded-3xl">
-              <Compass className="w-12 h-12 text-slate-350 mx-auto mb-4" />
-              <h4 className="text-slate-800 font-bold mb-1">No opportunities found</h4>
-              <p className="text-slate-500 text-xs">Try resetting or loosening your search query.</p>
+            <div className="text-center py-20 bg-surface border border-border rounded-3xl transition-colors">
+              <Compass className="w-12 h-12 text-foreground-muted mx-auto mb-4 opacity-50" />
+              <h4 className="text-foreground font-bold mb-1">No opportunities found</h4>
+              <p className="text-foreground-muted text-xs">Try resetting or loosening your search query.</p>
             </div>
           )}
         </div>
@@ -341,10 +334,10 @@ export default function Explore() {
   return (
     <>
       <Navbar />
-      <main className="flex-grow bg-slate-50 min-h-screen">
+      <main className="flex-grow bg-background min-h-screen transition-colors duration-300">
         <Suspense fallback={
-          <div className="min-h-screen flex items-center justify-center bg-slate-50">
-            <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
+          <div className="min-h-screen flex items-center justify-center bg-background">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
           </div>
         }>
           <ExploreContent />

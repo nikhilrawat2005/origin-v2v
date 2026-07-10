@@ -3,18 +3,18 @@ import { Sparkles, Heart } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-brand-navy text-slate-400 border-t border-slate-800">
+    <footer className="bg-surface-footer text-foreground-muted border-t border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo & Description */}
           <div className="md:col-span-2 space-y-4">
             <Link href="/" className="flex items-center gap-2 text-xl font-bold text-white">
-              <span className="p-1.5 bg-brand-purple text-white rounded-lg">
+              <span className="p-1.5 bg-primary text-white rounded-lg">
                 <Sparkles className="w-5 h-5" />
               </span>
               <span>Bloom</span>
             </Link>
-            <p className="text-sm max-w-sm">
+            <p className="text-sm max-w-sm leading-relaxed">
               Empowering women worldwide to access funded academic scholarship schemes, professional fellowships, hackathons, and STEM programs in one unified environment.
             </p>
           </div>
@@ -42,10 +42,10 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-slate-850 mt-12 pt-6 text-center text-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="border-t border-white/10 mt-12 pt-6 text-center text-xs flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>© 2026 Bloom Platform. All rights reserved.</p>
           <p className="flex items-center gap-1">
-            Made with <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" /> for women in technology
+            Made with <Heart className="w-3.5 h-3.5 text-primary fill-primary" /> for women in technology
           </p>
         </div>
       </div>

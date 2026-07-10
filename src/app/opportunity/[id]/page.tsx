@@ -39,7 +39,7 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
   const { id } = use(params);
   const { currentUser } = useAuth();
   const { opportunities, loading: oppsLoading } = useOpportunities();
-  
+
   const [opp, setOpp] = useState<Opportunity | null>(null);
   const [isSaved, setIsSaved] = useState(false);
   const [shareSuccess, setShareSuccess] = useState(false);
@@ -47,7 +47,6 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
   const [reminderLoading, setReminderLoading] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Load opportunity & bookmark status
   useEffect(() => {
     const fetchOpp = async () => {
       const match = opportunities.find((o) => o.id === id);
@@ -58,14 +57,12 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
       setOpp(match);
 
       if (currentUser) {
-        // Bookmarks fetch
         const snap = await getDoc(doc(db, "bookmarks", currentUser.uid));
         if (snap.exists()) {
           const ids = snap.data().opportunityIds || [];
           setIsSaved(ids.includes(id));
         }
 
-        // Reminders fetch to check if set
         const remSnap = await getDoc(doc(db, "reminders", `${currentUser.uid}_${id}`));
         if (remSnap.exists()) {
           setReminderSaved(true);
@@ -132,8 +129,8 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader2 className="w-8 h-8 text-brand-purple animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-background transition-colors duration-300">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
   }
@@ -143,14 +140,14 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
       <>
         <Navbar />
         <div className="max-w-xl mx-auto py-20 text-center px-4">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-slate-800">Opportunity not found</h2>
-          <p className="text-slate-500 text-sm mt-1">
+          <AlertCircle className="w-12 h-12 text-danger mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-foreground">Opportunity not found</h2>
+          <p className="text-foreground-muted text-sm mt-1">
             The link may be broken or the opportunity has been archived.
           </p>
           <Link
             href="/explore"
-            className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-purple hover:underline"
+            className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Explore
           </Link>
@@ -164,20 +161,20 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
     <>
       <Navbar />
 
-      <main className="flex-grow bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+      <main className="flex-grow bg-background py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
         <div className="max-w-4xl mx-auto">
           {/* Back btn */}
           <Link
             href="/explore"
-            className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-900 mb-6 transition-colors"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-foreground-muted hover:text-foreground mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> Back to explore
           </Link>
 
-          <div className="bg-white border border-slate-100 shadow-xl rounded-3xl overflow-hidden p-8 md:p-10">
+          <div className="bg-surface border border-border shadow-xl dark:shadow-[0_8px_40px_rgba(255,60,110,0.08)] rounded-3xl overflow-hidden p-8 md:p-10 transition-colors duration-300">
             {/* Top Bar actions */}
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-              <span className="text-xs font-bold uppercase tracking-wider bg-brand-purple/10 text-brand-purple px-3.5 py-1.5 rounded-full">
+              <span className="text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary px-3.5 py-1.5 rounded-full">
                 {opp.category}
               </span>
 
@@ -187,25 +184,21 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
                   onClick={toggleBookmark}
                   className={`p-2.5 rounded-xl border transition-all flex items-center gap-1.5 text-xs font-semibold ${
                     isSaved
-                      ? "bg-brand-purple/10 text-brand-purple border-brand-purple/20"
-                      : "bg-white text-slate-500 border-slate-200 hover:border-slate-350"
+                      ? "bg-primary/10 text-primary border-primary/20"
+                      : "bg-surface-raised text-foreground-muted border-border hover:border-primary/30 hover:text-primary"
                   }`}
                 >
                   {isSaved ? (
-                    <>
-                      <BookmarkCheck className="w-4 h-4" /> Bookmarked
-                    </>
+                    <><BookmarkCheck className="w-4 h-4" /> Bookmarked</>
                   ) : (
-                    <>
-                      <Bookmark className="w-4 h-4" /> Bookmark
-                    </>
+                    <><Bookmark className="w-4 h-4" /> Bookmark</>
                   )}
                 </button>
 
                 {/* Share */}
                 <button
                   onClick={handleShare}
-                  className="p-2.5 rounded-xl border border-slate-200 bg-white text-slate-500 hover:border-slate-350 transition-all flex items-center gap-1.5 text-xs font-semibold"
+                  className="p-2.5 rounded-xl border border-border bg-surface-raised text-foreground-muted hover:border-primary/30 hover:text-primary transition-all flex items-center gap-1.5 text-xs font-semibold"
                 >
                   <Share2 className="w-4 h-4" />
                   {shareSuccess ? "Copied Link!" : "Share"}
@@ -215,37 +208,37 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
 
             {/* Title / Org info */}
             <div className="mb-8">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-brand-navy leading-tight">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight">
                 {opp.title}
               </h1>
-              <p className="text-sm font-semibold text-brand-purple mt-2">{opp.organization}</p>
+              <p className="text-sm font-semibold text-primary mt-2">{opp.organization}</p>
             </div>
 
             {/* Quick Metadata highlights */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 p-6 bg-slate-50 border border-slate-100 rounded-2xl mb-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 p-6 bg-surface-raised border border-border rounded-2xl mb-8">
               <div>
-                <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">
+                <span className="block text-[10px] uppercase font-bold text-foreground-muted tracking-wider mb-1">
                   Location
                 </span>
-                <span className="flex items-center gap-1 text-xs font-bold text-slate-700">
-                  <MapPin className="w-4 h-4 text-slate-400" />
+                <span className="flex items-center gap-1 text-xs font-bold text-foreground">
+                  <MapPin className="w-4 h-4 text-foreground-muted" />
                   {opp.country}
                 </span>
               </div>
               <div>
-                <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">
+                <span className="block text-[10px] uppercase font-bold text-foreground-muted tracking-wider mb-1">
                   Deadline
                 </span>
-                <span className="flex items-center gap-1 text-xs font-bold text-slate-700">
-                  <Calendar className="w-4 h-4 text-slate-400" />
+                <span className="flex items-center gap-1 text-xs font-bold text-foreground">
+                  <Calendar className="w-4 h-4 text-foreground-muted" />
                   {formatDeadline(opp.deadline)}
                 </span>
               </div>
               <div className="col-span-2 sm:col-span-1">
-                <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">
+                <span className="block text-[10px] uppercase font-bold text-foreground-muted tracking-wider mb-1">
                   Target Field
                 </span>
-                <span className="text-xs font-bold text-slate-700">{opp.field}</span>
+                <span className="text-xs font-bold text-foreground">{opp.field}</span>
               </div>
             </div>
 
@@ -254,20 +247,20 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
               <div className="md:col-span-2 space-y-8">
                 {/* Description */}
                 <div>
-                  <h3 className="text-base font-bold text-slate-800 border-b border-slate-100 pb-2 mb-3">
+                  <h3 className="text-base font-bold text-foreground border-b border-border pb-2 mb-3">
                     Program Description
                   </h3>
-                  <p className="text-slate-650 text-sm leading-relaxed whitespace-pre-line">
+                  <p className="text-foreground-muted text-sm leading-relaxed whitespace-pre-line">
                     {opp.description}
                   </p>
                 </div>
 
                 {/* Eligibility */}
                 <div>
-                  <h3 className="text-base font-bold text-slate-800 border-b border-slate-100 pb-2 mb-3">
+                  <h3 className="text-base font-bold text-foreground border-b border-border pb-2 mb-3">
                     Eligibility Criteria
                   </h3>
-                  <p className="text-slate-650 text-sm leading-relaxed whitespace-pre-line bg-slate-50 border border-slate-100 p-4 rounded-xl">
+                  <p className="text-foreground-muted text-sm leading-relaxed whitespace-pre-line bg-surface-raised border border-border p-4 rounded-xl">
                     {opp.eligibility}
                   </p>
                 </div>
@@ -276,26 +269,26 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
               {/* Sidebar Checklist */}
               <div className="space-y-6">
                 {/* Required Documents */}
-                <div className="p-6 bg-slate-50 border border-slate-100 rounded-2xl">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-1.5">
-                    <FileText className="w-4 h-4 text-slate-400" /> Required Documents
+                <div className="p-6 bg-surface-raised border border-border rounded-2xl">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-foreground-muted mb-4 flex items-center gap-1.5">
+                    <FileText className="w-4 h-4" /> Required Documents
                   </h4>
                   <ul className="space-y-2.5">
                     {opp.requiredDocuments.map((docName) => (
-                      <li key={docName} className="flex items-start gap-2 text-xs text-slate-600">
-                        <Check className="w-3.5 h-3.5 text-brand-purple mt-0.5" />
+                      <li key={docName} className="flex items-start gap-2 text-xs text-foreground-muted">
+                        <Check className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
                         <span>{docName}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                {/* Reminders triggering */}
-                <div className="p-6 border border-brand-purple/10 bg-brand-purple/5 rounded-2xl">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-brand-purple mb-2 flex items-center gap-1.5">
-                    <Bell className="w-4 h-4 text-brand-purple" /> Deadline Alert
+                {/* Reminders */}
+                <div className="p-6 border border-primary/20 bg-primary/5 rounded-2xl">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-primary mb-2 flex items-center gap-1.5">
+                    <Bell className="w-4 h-4 text-primary" /> Deadline Alert
                   </h4>
-                  <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                  <p className="text-xs text-foreground-muted leading-relaxed mb-4">
                     Receive a priority reminder on your dashboard before applications close.
                   </p>
 
@@ -304,16 +297,14 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
                     disabled={reminderSaved || reminderLoading}
                     className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                       reminderSaved
-                        ? "bg-green-600 text-white cursor-default"
-                        : "bg-brand-purple hover:bg-brand-indigo text-white shadow-sm hover:shadow-md disabled:opacity-60"
+                        ? "bg-success text-white cursor-default"
+                        : "bg-primary hover:bg-primary-hover text-white shadow-sm hover:shadow-md dark:shadow-[0_4px_12px_rgba(255,60,110,0.25)] disabled:opacity-60"
                     }`}
                   >
                     {reminderLoading ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     ) : reminderSaved ? (
-                      <>
-                        <Check className="w-3.5 h-3.5" /> Saved Reminder
-                      </>
+                      <><Check className="w-3.5 h-3.5" /> Saved Reminder</>
                     ) : (
                       "Set Reminder"
                     )}
@@ -323,15 +314,15 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
             </div>
 
             {/* Official Apply Footer */}
-            <div className="border-t border-slate-100 mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-xs text-slate-500 max-w-sm text-center sm:text-left">
+            <div className="border-t border-border mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p className="text-xs text-foreground-muted max-w-sm text-center sm:text-left">
                 Ensure you have all required documents updated on your Bloom profile before applying.
               </p>
               <a
                 href={opp.applyLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-8 py-4 bg-brand-navy hover:bg-slate-800 text-white font-semibold text-sm rounded-2xl shadow-md transition-all group"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-8 py-4 bg-foreground hover:opacity-90 text-background font-semibold text-sm rounded-2xl shadow-md transition-all group"
               >
                 Apply On Official Site
                 <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

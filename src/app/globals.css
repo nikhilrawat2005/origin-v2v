@@ -1,51 +1,216 @@
 @import "tailwindcss";
 
+/* Dark mode variant: toggled via .dark class on <html> */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ============================================================
+   LIGHT THEME (default)
+   ============================================================ */
 :root {
-  --background: #fdf8f9; /* Soft pale blush white */
-  --foreground: #2d1e2f; /* Deep plum/navy */
-  
-  --primary: #e5829b; /* Soft warm rose */
-  --primary-hover: #d16b84;
+  /* Backgrounds */
+  --background: #fdf8f9;        /* Soft pale blush white */
+  --surface: #ffffff;           /* Cards, panels */
+  --surface-raised: #fff7f8;    /* Modals, dropdowns */
+  --surface-footer: #2d1e2f;   /* Footer always stays dark */
+
+  /* Text */
+  --foreground: #2d1e2f;        /* Deep plum — primary text */
+  --foreground-muted: #6b5b6e;  /* Secondary / muted text */
+
+  /* Borders */
+  --border: #f0dde3;            /* Subtle rose-tinted border */
+  --border-strong: #e2c8d0;     /* Stronger border variant */
+
+  /* Brand / Accent */
+  --primary: #e5829b;           /* Soft warm rose */
+  --primary-hover: #d16b84;     /* Darker rose on hover */
+  --primary-foreground: #ffffff; /* White text on primary */
+
+  /* Semantic */
+  --accent-glow: rgba(229, 130, 155, 0.12);
+  --danger: #c93a3a;
+  --danger-surface: #fff0f0;
+  --success: #2a8f54;
+  --success-surface: #f0fdf4;
+  --warning: #b45309;
+  --warning-surface: #fffbeb;
+
+  /* Legacy aliases (kept for gradual migration) */
   --navy: #2d1e2f;
   --purple: #e5829b;
 }
 
-@theme inline {
-  --font-sans: var(--font-sans);
-  --color-brand-purple: #e5829b;
-  --color-brand-navy: #2d1e2f;
-  --color-brand-indigo: #c896b0;
-  --color-brand-lilac: #fff0f5;
+/* ============================================================
+   DARK THEME — "Neon Rose on Black"
+   Near-black canvas + hot pink/crimson glow accents
+   NO grey as the mood color.
+   ============================================================ */
+.dark {
+  /* Backgrounds */
+  --background: #0b090c;        /* Near-black, faint violet cast */
+  --surface: #15101a;           /* Cards — dark violet-black */
+  --surface-raised: #1e1524;    /* Modals, dropdowns */
+  --surface-footer: #0f0b10;    /* Footer — deepest black */
+
+  /* Text */
+  --foreground: #f5e8ec;        /* Warm off-white, not stark white */
+  --foreground-muted: #b899a4;  /* Dusty rose-grey — NOT neutral grey */
+
+  /* Borders — pink-tinted, not grey */
+  --border: rgba(255, 92, 134, 0.15);
+  --border-strong: rgba(255, 92, 134, 0.28);
+
+  /* Brand / Accent — hot pink / crimson */
+  --primary: #ff5c86;           /* Hot pink */
+  --primary-hover: #ff7d9e;     /* Brighter pink on hover */
+  --primary-foreground: #ffffff;
+
+  /* Semantic */
+  --accent-glow: rgba(255, 60, 110, 0.18);
+  --danger: #ff5c5c;
+  --danger-surface: rgba(255, 92, 92, 0.1);
+  --success: #4ade80;
+  --success-surface: rgba(74, 222, 128, 0.1);
+  --warning: #fbbf24;
+  --warning-surface: rgba(251, 191, 36, 0.1);
+
+  /* Legacy aliases */
+  --navy: #f5e8ec;
+  --purple: #ff5c86;
 }
 
+/* ============================================================
+   TAILWIND V4 TOKEN MAP
+   Maps CSS variables → Tailwind utility classes
+   e.g. bg-background, text-foreground, border-border, etc.
+   ============================================================ */
+@theme inline {
+  /* Semantic color tokens */
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-footer: var(--surface-footer);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-danger: var(--danger);
+  --color-danger-surface: var(--danger-surface);
+  --color-success: var(--success);
+  --color-success-surface: var(--success-surface);
+  --color-warning: var(--warning);
+  --color-warning-surface: var(--warning-surface);
+
+  /* Brand aliases (used in existing codebase) */
+  --color-brand-purple: var(--primary);
+  --color-brand-navy: var(--foreground);
+  --color-brand-indigo: var(--primary-hover);
+  --color-brand-lilac: var(--surface-raised);
+
+  /* Font */
+  --font-sans: var(--font-sans);
+
+  /* Non-standard Tailwind slate tokens used in this codebase */
+  /* These fill in the gaps between Tailwind's official 100-step scale */
+  --color-slate-350: #b2bfcc;
+  --color-slate-450: #748494;
+  --color-slate-550: #5a6b7a;
+  --color-slate-650: #3d4e5c;
+  --color-slate-750: #2d3b48;
+  --color-slate-850: #1a2530;
+  --color-slate-950: #0c1520;
+}
+
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), sans-serif;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Custom scrollbar */
+/* ============================================================
+   GLASS PANEL — Theme-aware
+   ============================================================ */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.dark .glass-panel {
+  background: rgba(21, 16, 26, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 92, 134, 0.12);
+}
+
+/* ============================================================
+   SCROLLBAR — Theme-aware
+   ============================================================ */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--border-strong);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--primary);
 }
 
-/* Custom styles for glowing details */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+/* ============================================================
+   DARK MODE GLOW EFFECTS
+   ============================================================ */
+
+/* Card hover glow — pink tint in dark mode */
+.dark .card-hover:hover {
+  box-shadow:
+    0 0 0 1px rgba(255, 92, 134, 0.2),
+    0 8px 24px rgba(255, 60, 110, 0.15);
+}
+
+/* Button glow — used on primary CTAs in dark mode */
+.dark .btn-glow {
+  box-shadow: 0 0 16px rgba(255, 60, 110, 0.35);
+}
+.dark .btn-glow:hover {
+  box-shadow: 0 0 24px rgba(255, 60, 110, 0.5);
+}
+
+/* Hero radial glow — dark mode only */
+.dark .hero-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 50% at 50% -10%,
+    rgba(255, 60, 110, 0.12) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* Form inputs — dark mode focus ring */
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  outline: none;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(255, 92, 134, 0.15);
+}
+
+/* Focus ring utility for accessibility */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
