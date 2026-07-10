@@ -283,7 +283,7 @@ export default function Home() {
             </motion.div>
 
             <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 gap-8"
+              className="grid grid-cols-1 md:grid-cols-3 gap-6"
               variants={containerStagger}
               initial="hidden"
               whileInView="show"
@@ -291,14 +291,19 @@ export default function Home() {
             >
               {[
                 {
-                  quote: "Thanks to this platform, I discovered the Google Generation Scholarship. The search criteria were so clear that I saved hours of lookup time and successfully landed the grant!",
-                  name: "Priya Sharma",
-                  title: "CS Student at IIT Delhi",
+                  quote: "Usually, finding active, open-source programs and hackathons takes forever because of outdated sites. Having them curated here with direct links saved me so much lookup time.",
+                  name: "Anjali Mehta",
+                  title: "CS Student, MAIT Delhi",
                 },
                 {
-                  quote: "I had struggled to find international fellowships for research. Bloom simplified my search. I got bookmarked notifications for Grace Hopper and got selected.",
-                  name: "Jessica Miller",
-                  title: "PhD Fellow in AI, Stanford University",
+                  quote: "The Kanban board (Opportunity Tracker) is a lifesaver. I used to track my applications in messy Notion sheets, but syncing bookmarks to stages directly is way cleaner.",
+                  name: "Sneha Iyer",
+                  title: "ECE Student, VIT Vellore",
+                },
+                {
+                  quote: "I tried the AI resume audit tool in the Wallet and it gave me very practical pointers on fixing my bullet points. It's actually useful for college students preparing for internships.",
+                  name: "Kirti Sharma",
+                  title: "B.Tech, IGDTUW Delhi",
                 },
               ].map((t) => (
                 <motion.div
@@ -306,7 +311,7 @@ export default function Home() {
                   variants={fadeUpItem}
                   whileHover={{ y: -4, scale: 1.01 }}
                   transition={{ type: "spring", stiffness: 250, damping: 20 }}
-                  className="p-8 bg-background rounded-3xl border border-border hover:border-secondary/30 card-hover relative overflow-hidden"
+                  className="p-6 bg-background rounded-3xl border border-border hover:border-secondary/30 card-hover relative overflow-hidden"
                 >
                   <div className="absolute top-0 left-0 w-1.5 h-full bg-secondary/60" />
                   <div className="flex gap-1 mb-4 text-accent-gold">
@@ -322,12 +327,12 @@ export default function Home() {
                       </motion.div>
                     ))}
                   </div>
-                  <p className="text-foreground-muted italic text-sm leading-relaxed mb-6">
+                  <p className="text-foreground-muted italic text-xs leading-relaxed mb-6">
                     &ldquo;{t.quote}&rdquo;
                   </p>
                   <div>
-                    <h5 className="font-bold text-foreground text-sm">{t.name}</h5>
-                    <span className="text-foreground-muted text-xs">{t.title}</span>
+                    <h5 className="font-bold text-foreground text-xs">{t.name}</h5>
+                    <span className="text-foreground-muted text-[10px]">{t.title}</span>
                   </div>
                 </motion.div>
               ))}
