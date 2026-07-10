@@ -16,6 +16,7 @@ import {
   Trash2,
   Inbox,
   Loader2,
+  ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -116,7 +117,7 @@ export default function NotificationsPage() {
           <h1 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
             <Bell className="w-6 h-6 text-primary" /> Notification Center
           </h1>
-          <p className="text-slate-500 text-sm mt-1">
+          <p className="text-foreground-muted text-sm mt-1">
             Stay updated with deadline alerts, status updates, and personalized AI suggestions.
           </p>
         </div>
@@ -125,13 +126,13 @@ export default function NotificationsPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={markAllRead}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-semibold text-slate-700 transition-all shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-surface border border-border hover:bg-surface-raised rounded-xl text-xs font-semibold text-foreground transition-all shadow-sm"
             >
               <CheckSquare className="w-3.5 h-3.5" /> Mark all read
             </button>
             <button
               onClick={clearAll}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 rounded-xl text-xs font-semibold text-red-650 transition-all border border-red-100"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-surface border border-red-500/30 hover:bg-red-500/10 rounded-xl text-xs font-semibold text-red-500 transition-all"
             >
               <Trash2 className="w-3.5 h-3.5" /> Clear all
             </button>
@@ -155,7 +156,7 @@ export default function NotificationsPage() {
             className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all border ${
               filter === tab.key
                 ? "bg-primary border-primary text-white shadow-sm"
-                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                : "bg-surface border-border text-foreground hover:bg-surface-raised"
             }`}
           >
             {tab.label}
@@ -164,28 +165,28 @@ export default function NotificationsPage() {
       </div>
 
       {/* Notification items */}
-      <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
+      <div className="bg-surface border border-border rounded-3xl p-6 shadow-sm space-y-4">
         {filtered.map((item) => (
           <div
             key={item.id}
             className={`p-4 rounded-2xl border transition-all flex items-start gap-4 ${
               item.isRead
-                ? "bg-white border-slate-100 opacity-75"
-                : "bg-gradient-to-r from-primary/5 to-white border-primary/10 shadow-sm"
+                ? "bg-surface border-border opacity-75"
+                : "bg-gradient-to-r from-primary/5 to-surface border-primary/10 shadow-sm"
             }`}
           >
-            <div className={`p-2.5 rounded-xl ${item.isRead ? "bg-slate-50" : "bg-primary/10"}`}>
+            <div className={`p-2.5 rounded-xl ${item.isRead ? "bg-surface-raised" : "bg-primary/10"}`}>
               {getCategoryIcon(item.category)}
             </div>
 
             <div className="flex-1 space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                  item.isRead ? "bg-slate-100 text-slate-500" : "bg-primary/15 text-primary"
+                  item.isRead ? "bg-surface-raised text-foreground-muted" : "bg-primary/15 text-primary"
                 }`}>
                   {getCategoryLabel(item.category)}
                 </span>
-                <span className="text-[10px] text-slate-400 font-medium">
+                <span className="text-[10px] text-foreground-muted font-medium">
                   {new Date(item.createdAt).toLocaleDateString(undefined, {
                     month: "short",
                     day: "numeric",
@@ -194,10 +195,10 @@ export default function NotificationsPage() {
                   })}
                 </span>
               </div>
-              <h4 className={`text-sm font-bold text-slate-800 ${!item.isRead ? "text-primary" : ""}`}>
+              <h4 className={`text-sm font-bold text-foreground ${!item.isRead ? "text-primary" : ""}`}>
                 {item.title}
               </h4>
-              <p className="text-slate-605 text-xs leading-relaxed">{item.message}</p>
+              <p className="text-foreground-muted text-xs leading-relaxed">{item.message}</p>
 
               {item.linkedRoute && (
                 <div className="pt-2">
@@ -205,7 +206,7 @@ export default function NotificationsPage() {
                     href={item.linkedRoute}
                     className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline"
                   >
-                    View Details
+                    View Details <ChevronRight className="w-3 h-3" />
                   </Link>
                 </div>
               )}
@@ -223,7 +224,7 @@ export default function NotificationsPage() {
               )}
               <button
                 onClick={() => deleteNotification(item.id)}
-                className="p-1.5 rounded-full text-slate-400 hover:text-red-500 hover:bg-slate-50"
+                className="p-1.5 rounded-full text-foreground-muted hover:text-red-500 hover:bg-surface-raised"
                 title="Delete alert"
               >
                 <Trash2 className="w-4 h-4" />
@@ -234,11 +235,11 @@ export default function NotificationsPage() {
 
         {filtered.length === 0 && (
           <div className="text-center py-16">
-            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Inbox className="w-8 h-8 text-slate-400" />
+            <div className="w-16 h-16 bg-surface-raised rounded-full flex items-center justify-center mx-auto mb-4">
+              <Inbox className="w-8 h-8 text-foreground-muted" />
             </div>
-            <h3 className="font-bold text-slate-700 text-base">Inbox is empty</h3>
-            <p className="text-slate-600 text-xs max-w-xs mx-auto mt-1">
+            <h3 className="font-bold text-foreground text-base">Inbox is empty</h3>
+            <p className="text-foreground-muted text-xs max-w-xs mx-auto mt-1">
               {filter === "all"
                 ? "No alerts generated yet."
                 : `No alerts match the category: "${filter}".`}

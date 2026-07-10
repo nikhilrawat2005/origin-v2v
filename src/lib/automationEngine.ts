@@ -125,7 +125,7 @@ export async function notifyApplicationUpdate(
       "Application Status Updated",
       `Your application for "${opportunityTitle}" has been updated to: ${newStatus}.`,
       "application_update",
-      "/tracker"
+      "/dashboard/tracker"
     );
   } catch (err) {
     console.error("AutomationEngine.notifyApplicationUpdate error:", err);

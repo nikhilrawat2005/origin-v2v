@@ -14,6 +14,8 @@ import {
   ChevronRight,
   ChevronLeft,
   X,
+  FileText,
+  ExternalLink,
 } from "lucide-react";
 import type { ApplicationEntry, ApplicationStatus } from "@/lib/types";
 import { useOpportunities } from "@/hooks/useOpportunities";
@@ -98,7 +100,11 @@ export default function TrackerPage() {
   const [title, setTitle] = useState("");
   const [orgName, setOrgName] = useState("");
   const [deadline, setDeadline] = useState("");
+  const [applyLink, setApplyLink] = useState("");
   const [notes, setNotes] = useState("");
+
+  // Card detail modal
+  const [selectedApp, setSelectedApp] = useState<ApplicationEntry | null>(null);
 
   const stages: ApplicationStatus[] = [
     "Applied",
@@ -143,6 +149,7 @@ export default function TrackerPage() {
         opportunityTitle: title.trim(),
         organization: orgName.trim(),
         deadline: deadline || new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0],
+        applyLink: applyLink.trim() || null,
         status: "Applied" as ApplicationStatus,
         notes: notes.trim(),
         createdAt: new Date().toISOString(),
@@ -153,6 +160,7 @@ export default function TrackerPage() {
       setTitle("");
       setOrgName("");
       setDeadline("");
+      setApplyLink("");
       setNotes("");
       setShowAddForm(false);
     } catch (err) {
@@ -371,6 +379,18 @@ export default function TrackerPage() {
                 </div>
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">
+                    Apply Link (Optional)
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://careers.google.com"
+                    value={applyLink}
+                    onChange={(e) => setApplyLink(e.target.value)}
+                    className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-primary bg-background text-foreground placeholder:text-foreground-muted transition-all"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">
                     Notes
                   </label>
                   <input
@@ -447,14 +467,15 @@ export default function TrackerPage() {
                         y: -2,
                       }}
                       transition={{ layout: { type: "spring", stiffness: 300, damping: 26 } }}
-                      className="p-4 bg-surface border border-border rounded-xl shadow-sm space-y-2 group cursor-default"
+                      className="p-4 bg-surface border border-border rounded-xl shadow-sm space-y-2 group cursor-pointer"
+                      onClick={() => setSelectedApp(app)}
                     >
                       <div className="space-y-0.5">
-                        <h5 className="font-bold text-foreground text-xs leading-snug">
+                        <h5 className="font-bold text-foreground text-xs leading-snug line-clamp-2">
                           {app.opportunityTitle}
                         </h5>
                         <p className="text-[10px] text-foreground-muted flex items-center gap-1 font-semibold">
-                          <Building className="w-3 h-3" /> {app.organization}
+                          <Building className="w-3 h-3 flex-shrink-0" /> {app.organization}
                         </p>
                       </div>
 
@@ -473,6 +494,7 @@ export default function TrackerPage() {
                           {new Date(app.deadline).toLocaleDateString(undefined, {
                             month: "short",
                             day: "numeric",
+                            year: "numeric",
                           })}
                         </span>
                       </div>
@@ -483,29 +505,37 @@ export default function TrackerPage() {
                         </p>
                       )}
 
-                      {/* Column controls */}
-                      <div className="flex justify-between items-center pt-2 border-t border-border">
+                      {/* Column controls — stop propagation so click doesn't open modal */}
+                      <div
+                        className="flex justify-between items-center pt-2 border-t border-border"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <motion.button
-                          onClick={() =>
-                            moveStatus(app.id, app.opportunityTitle, app.status, "prev")
-                          }
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            moveStatus(app.id, app.opportunityTitle, app.status, "prev");
+                          }}
                           disabled={stage === "Applied"}
                           whileHover={stage !== "Applied" ? { scale: 1.15 } : {}}
                           whileTap={stage !== "Applied" ? { scale: 0.85 } : {}}
                           transition={{ type: "spring", stiffness: 400, damping: 18 }}
                           className="p-1 hover:bg-surface-raised rounded text-foreground-muted hover:text-primary disabled:opacity-30 transition-all"
+                          title="Move to previous stage"
                         >
                           <ChevronLeft className="w-3.5 h-3.5" />
                         </motion.button>
+                        <span className="text-[8px] text-foreground-muted font-medium">tap card for details</span>
                         <motion.button
-                          onClick={() =>
-                            moveStatus(app.id, app.opportunityTitle, app.status, "next")
-                          }
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            moveStatus(app.id, app.opportunityTitle, app.status, "next");
+                          }}
                           disabled={stage === "Offer Received"}
                           whileHover={stage !== "Offer Received" ? { scale: 1.15 } : {}}
                           whileTap={stage !== "Offer Received" ? { scale: 0.85 } : {}}
                           transition={{ type: "spring", stiffness: 400, damping: 18 }}
                           className="p-1 hover:bg-surface-raised rounded text-foreground-muted hover:text-primary disabled:opacity-30 transition-all"
+                          title="Move to next stage"
                         >
                           <ChevronRight className="w-3.5 h-3.5" />
                         </motion.button>
@@ -530,6 +560,123 @@ export default function TrackerPage() {
           );
         })}
       </div>
+
+      {/* ── Card Detail Modal ──────────────────────────────── */}
+      <AnimatePresence>
+        {selectedApp && (
+          <motion.div
+            key="modal-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setSelectedApp(null)}
+          >
+            <motion.div
+              key="modal-panel"
+              initial={{ opacity: 0, scale: 0.92, y: 24 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 24 }}
+              transition={{ type: "spring", stiffness: 320, damping: 26 }}
+              className="bg-surface border border-border rounded-3xl shadow-2xl w-full max-w-md p-6 space-y-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <span
+                    className={`inline-flex items-center text-[9px] font-bold px-2 py-0.5 rounded-full border mb-2 ${
+                      STATUS_COLORS[selectedApp.status] ?? "bg-surface-raised text-foreground-muted border-border"
+                    }`}
+                  >
+                    {selectedApp.status}
+                  </span>
+                  <h3 className="font-extrabold text-foreground text-base leading-snug">
+                    {selectedApp.opportunityTitle}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setSelectedApp(null)}
+                  className="p-1.5 rounded-xl hover:bg-surface-raised text-foreground-muted flex-shrink-0 transition-all"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Details */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 p-3 bg-surface-raised rounded-2xl">
+                  <Building className="w-4 h-4 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-[9px] font-bold text-foreground-muted uppercase tracking-wider">Organisation</p>
+                    <p className="text-xs font-semibold text-foreground">{selectedApp.organization}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 bg-surface-raised rounded-2xl">
+                  <Calendar className="w-4 h-4 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-[9px] font-bold text-foreground-muted uppercase tracking-wider">Deadline</p>
+                    <p className="text-xs font-semibold text-foreground">
+                      {new Date(selectedApp.deadline).toLocaleDateString(undefined, {
+                        weekday: "short",
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                </div>
+
+                {selectedApp.notes && (
+                  <div className="flex items-start gap-3 p-3 bg-surface-raised rounded-2xl">
+                    <FileText className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-[9px] font-bold text-foreground-muted uppercase tracking-wider">Notes</p>
+                      <p className="text-xs text-foreground leading-relaxed">{selectedApp.notes}</p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3 p-3 bg-surface-raised rounded-2xl">
+                  <Layers className="w-4 h-4 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-[9px] font-bold text-foreground-muted uppercase tracking-wider">Added On</p>
+                    <p className="text-xs font-semibold text-foreground">
+                      {new Date(selectedApp.createdAt).toLocaleDateString(undefined, {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-2 pt-2 border-t border-border">
+                {selectedApp.applyLink && (
+                  <a
+                    href={selectedApp.applyLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-primary hover:bg-primary-hover text-primary-foreground font-semibold text-xs rounded-2xl shadow-sm transition-all"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" /> Apply Now
+                  </a>
+                )}
+                <button
+                  onClick={() => setSelectedApp(null)}
+                  className="flex-1 px-4 py-2.5 border border-border text-foreground-muted hover:bg-surface-raised font-semibold text-xs rounded-2xl transition-all"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
