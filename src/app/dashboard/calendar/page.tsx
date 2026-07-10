@@ -176,7 +176,7 @@ export default function CalendarPage() {
           <h1 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
             <CalendarDays className="w-6 h-6 text-primary" /> Calendar Hub
           </h1>
-          <p className="text-slate-500 text-sm mt-1">
+          <p className="text-foreground-muted text-sm mt-1">
             Aggregate bookmarked application deadlines, schedule interviews, and custom reminders.
           </p>
         </div>
@@ -185,7 +185,7 @@ export default function CalendarPage() {
           <button
             onClick={triggerGoogleSync}
             disabled={syncing}
-            className="flex items-center gap-1.5 px-4 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-semibold text-slate-700 transition-all shadow-sm disabled:opacity-50"
+            className="flex items-center gap-1.5 px-4 py-2.5 bg-surface border border-border hover:bg-surface-raised rounded-xl text-xs font-semibold text-foreground transition-all shadow-sm disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${syncing ? "animate-spin" : ""}`} />
             Sync Google Calendar
@@ -201,36 +201,36 @@ export default function CalendarPage() {
 
       {/* Add Custom Event Form */}
       {showAddForm && (
-        <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm max-w-xl animate-in fade-in duration-200">
-          <h3 className="font-bold text-slate-800 text-sm mb-4">Book New Calendar Entry</h3>
+        <div className="bg-surface border border-border p-6 rounded-3xl shadow-sm max-w-xl animate-in fade-in duration-200">
+          <h3 className="font-bold text-foreground text-sm mb-4">Book New Calendar Entry</h3>
           <form onSubmit={handleAddEvent} className="space-y-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Event Title</label>
+              <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">Event Title</label>
               <input
                 type="text"
                 placeholder="Interview with Stanford Committee"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-primary"
+                className="w-full text-xs p-3 bg-background border border-border rounded-xl outline-none focus:border-primary text-foreground"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Event Date</label>
+              <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">Event Date</label>
               <input
                 type="date"
                 value={dateStr}
                 onChange={(e) => setDateStr(e.target.value)}
                 required
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-primary"
+                className="w-full text-xs p-3 bg-background border border-border rounded-xl outline-none focus:border-primary text-foreground"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Event Type</label>
+              <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">Event Type</label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as CalendarEventType)}
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none bg-white focus:border-primary"
+                className="w-full text-xs p-3 bg-background border border-border rounded-xl outline-none bg-surface-raised focus:border-primary text-foreground"
               >
                 <option value="reminder">Reminder</option>
                 <option value="interview">Interview Slot</option>
@@ -239,26 +239,26 @@ export default function CalendarPage() {
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Description</label>
+              <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">Description</label>
               <input
                 type="text"
                 placeholder="Google Meet Link / Notes"
                 value={desc}
                 onChange={(e) => setDesc(e.target.value)}
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-primary"
+                className="w-full text-xs p-3 bg-background border border-border rounded-xl outline-none focus:border-primary text-foreground"
               />
             </div>
             <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setShowAddForm(false)}
-                className="px-4 py-2 border border-slate-200 text-slate-700 rounded-xl text-xs font-semibold hover:bg-slate-50"
+                className="px-4 py-2 border border-border text-foreground rounded-xl text-xs font-semibold hover:bg-surface-raised"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-semibold hover:bg-primary-hover shadow-sm"
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-xs font-semibold hover:bg-primary-hover shadow-sm"
               >
                 Create Event
               </button>
@@ -270,28 +270,28 @@ export default function CalendarPage() {
       {/* Calendar & Agenda Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Calendar Grid View */}
-        <div className="lg:col-span-2 bg-white border border-slate-100 p-6 rounded-3xl shadow-sm space-y-6">
+        <div className="lg:col-span-2 bg-surface border border-border p-6 rounded-3xl shadow-sm space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="font-extrabold text-slate-800 text-base">
+            <h3 className="font-extrabold text-foreground text-base">
               {months[currentMonth]} {currentYear}
             </h3>
             <div className="flex gap-1.5">
               <button
                 onClick={prevMonth}
-                className="p-2 border border-slate-200 rounded-xl text-xs font-bold hover:bg-slate-50 text-slate-600"
+                className="p-2 border border-border rounded-xl text-xs font-bold hover:bg-surface-raised text-foreground"
               >
                 &larr; Prev
               </button>
               <button
                 onClick={nextMonth}
-                className="p-2 border border-slate-200 rounded-xl text-xs font-bold hover:bg-slate-50 text-slate-600"
+                className="p-2 border border-border rounded-xl text-xs font-bold hover:bg-surface-raised text-foreground"
               >
                 Next &rarr;
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-7 gap-2 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+          <div className="grid grid-cols-7 gap-2 text-center text-[10px] font-bold text-foreground-muted uppercase tracking-wider">
             <div>Sun</div>
             <div>Mon</div>
             <div>Tue</div>
@@ -316,9 +316,9 @@ export default function CalendarPage() {
               return (
                 <div
                   key={`day-${day}`}
-                  className="h-16 border border-slate-100 rounded-xl p-1.5 flex flex-col justify-between items-start group hover:border-primary/40 hover:bg-slate-50/20 transition-all overflow-hidden"
+                  className="h-16 border border-border rounded-xl p-1.5 flex flex-col justify-between items-start group hover:border-primary/40 hover:bg-surface-raised/40 transition-all overflow-hidden"
                 >
-                  <span className="text-[10px] font-bold text-slate-700">{day}</span>
+                  <span className="text-[10px] font-bold text-foreground">{day}</span>
                   {dayEvents.length > 0 && (
                     <div className="w-full space-y-0.5 max-h-[28px] overflow-hidden">
                       {dayEvents.slice(0, 2).map((de) => (
@@ -326,10 +326,10 @@ export default function CalendarPage() {
                           key={de.id}
                           className={`text-[8px] font-extrabold px-1 rounded truncate leading-tight uppercase ${
                             de.type === "deadline"
-                              ? "bg-red-50 text-red-650"
+                              ? "bg-danger/10 text-danger"
                               : de.type === "interview"
                               ? "bg-primary/10 text-primary"
-                              : "bg-blue-50 text-blue-600"
+                              : "bg-secondary/10 text-secondary"
                           }`}
                           title={de.title}
                         >
@@ -337,7 +337,7 @@ export default function CalendarPage() {
                         </div>
                       ))}
                       {dayEvents.length > 2 && (
-                        <div className="text-[6px] text-slate-400 text-center font-bold">
+                        <div className="text-[6px] text-foreground-muted text-center font-bold">
                           +{dayEvents.length - 2} more
                         </div>
                       )}
@@ -350,8 +350,8 @@ export default function CalendarPage() {
         </div>
 
         {/* Agenda View */}
-        <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm space-y-6">
-          <h3 className="font-extrabold text-slate-800 text-base flex items-center gap-1.5">
+        <div className="bg-surface border border-border p-6 rounded-3xl shadow-sm space-y-6">
+          <h3 className="font-extrabold text-foreground text-base flex items-center gap-1.5">
             <Clock className="w-5 h-5 text-primary" /> Upcoming Agenda
           </h3>
 
@@ -360,9 +360,9 @@ export default function CalendarPage() {
               .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
               .filter((e) => new Date(e.date).getTime() >= new Date().setHours(0, 0, 0, 0))
               .map((e) => (
-                <div key={e.id} className="pb-4 border-b border-slate-50 last:border-0 last:pb-0 flex gap-3">
+                <div key={e.id} className="pb-4 border-b border-border last:border-0 last:pb-0 flex gap-3">
                   <div className="text-center">
-                    <span className="block text-[8px] font-extrabold text-slate-400 uppercase">
+                    <span className="block text-[8px] font-extrabold text-foreground-muted uppercase">
                       {new Date(e.date).toLocaleDateString(undefined, { month: "short" })}
                     </span>
                     <span className="block text-lg font-extrabold text-foreground">
@@ -374,17 +374,17 @@ export default function CalendarPage() {
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded uppercase ${
                         e.type === "deadline"
-                          ? "bg-red-50 text-red-650"
+                          ? "bg-danger/10 text-danger"
                           : e.type === "interview"
                           ? "bg-primary/10 text-primary"
-                          : "bg-blue-50 text-blue-600"
+                          : "bg-secondary/10 text-secondary"
                       }`}>
                         {e.type}
                       </span>
                     </div>
-                    <h5 className="font-bold text-xs text-slate-800">{e.title}</h5>
+                    <h5 className="font-bold text-xs text-foreground">{e.title}</h5>
                     {e.description && (
-                      <p className="text-[10px] text-slate-500 leading-relaxed font-semibold">
+                      <p className="text-[10px] text-foreground-muted leading-relaxed font-semibold">
                         {e.description}
                       </p>
                     )}
@@ -394,9 +394,9 @@ export default function CalendarPage() {
 
             {events.length === 0 && (
               <div className="text-center py-12">
-                <Calendar className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                <h5 className="font-bold text-slate-700 text-xs">No entries scheduled</h5>
-                <p className="text-slate-500 text-[10px] mt-1">
+                <Calendar className="w-8 h-8 text-foreground-muted mx-auto mb-2" />
+                <h5 className="font-bold text-foreground text-xs">No entries scheduled</h5>
+                <p className="text-foreground-muted text-[10px] mt-1">
                   Add deadlines from saved Opportunities, or create custom items using the New Event button.
                 </p>
               </div>

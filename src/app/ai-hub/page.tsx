@@ -53,7 +53,7 @@ export default function AIHub() {
   return (
     <>
       <Navbar />
-      <main className="flex-grow bg-[#fdf8f9] min-h-screen py-10 px-4 sm:px-6 lg:px-8">
+      <main className="flex-grow bg-background min-h-screen py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-10 text-center sm:text-left">
@@ -63,15 +63,15 @@ export default function AIHub() {
             <h1 className="text-3xl sm:text-4xl font-black text-foreground mt-3 tracking-tight">
               Intelligent Career Guidance
             </h1>
-            <p className="text-sm text-slate-500 mt-2 max-w-2xl">
+            <p className="text-sm text-foreground-muted mt-2 max-w-2xl">
               Check eligibility, analyze your resume, generate personalized learning roadmaps, mock-interview with an AI coach, and chat with our career assistant.
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Left Nav menu */}
-            <div className="lg:col-span-1 space-y-2 bg-white/70 backdrop-blur border border-slate-100 p-5 rounded-3xl shadow-sm h-fit">
-              <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-4 px-3">
+            <div className="lg:col-span-1 space-y-2 bg-surface/70 backdrop-blur border border-border p-5 rounded-3xl shadow-sm h-fit">
+              <h4 className="text-[10px] font-bold uppercase tracking-wider text-foreground-muted mb-4 px-3">
                 AI Instruments
               </h4>
               {[
@@ -91,8 +91,8 @@ export default function AIHub() {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold text-left transition-all ${
                       isActive
-                        ? "bg-primary text-white shadow-md shadow-primary/10"
-                        : "text-slate-700 hover:bg-primary/50 hover:text-primary"
+                        ? "bg-primary text-primary-foreground shadow-md shadow-primary/10"
+                        : "text-foreground-muted hover:bg-primary/10 hover:text-primary"
                     }`}
                   >
                     <Icon className="w-4.5 h-4.5" />
@@ -103,7 +103,7 @@ export default function AIHub() {
             </div>
 
             {/* Main Tabs Container */}
-            <div className="lg:col-span-3 bg-white border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-sm">
+            <div className="lg:col-span-3 bg-surface border border-border rounded-3xl p-6 sm:p-8 shadow-sm">
               {activeTab === "eligibility" && <EligibilityCheckerTab />}
               {activeTab === "recommendations" && <RecommendationsTab />}
               {activeTab === "resume" && <ResumeTab />}
@@ -833,12 +833,12 @@ function ChatTab() {
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <MessageSquare className="w-5 h-5 text-primary" /> AI Career Chatbot
         </h2>
-        <p className="text-xs text-slate-500 mt-1">
+        <p className="text-xs text-foreground-muted mt-1">
           Chat with a context-aware assistant loaded with your profile settings. Unrelated questions are filtered.
         </p>
       </div>
 
-      <div className="flex-grow bg-slate-50 border border-slate-100 rounded-3xl p-4 overflow-y-auto space-y-4 flex flex-col justify-between">
+      <div className="flex-grow bg-background border border-border rounded-3xl p-4 overflow-y-auto space-y-4 flex flex-col justify-between">
         <div className="space-y-3 flex-grow overflow-y-auto pr-2">
           {messages.map((m, idx) => (
             <div
@@ -848,8 +848,8 @@ function ChatTab() {
               <div
                 className={`max-w-[80%] rounded-2xl p-4 text-xs leading-relaxed ${
                   m.role === "user"
-                    ? "bg-primary text-white shadow-sm"
-                    : "bg-white border border-slate-100 text-slate-700 shadow-sm"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "bg-surface-raised border border-border text-foreground shadow-sm"
                 }`}
               >
                 {m.text}
@@ -858,7 +858,7 @@ function ChatTab() {
           ))}
           {loading && (
             <div className="flex justify-start">
-              <div className="bg-white border border-slate-100 text-slate-600 rounded-2xl px-4 py-3 text-xs flex items-center gap-2">
+              <div className="bg-surface-raised border border-border text-foreground-muted rounded-2xl px-4 py-3 text-xs flex items-center gap-2">
                 <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
                 <span>Bloom Assistant is typing...</span>
               </div>
@@ -873,12 +873,12 @@ function ChatTab() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={loading}
-            className="flex-grow text-xs px-4 py-3 bg-white border border-slate-200 rounded-2xl outline-none focus:border-primary transition-all"
+            className="flex-grow text-xs px-4 py-3 bg-surface-raised border border-border rounded-2xl outline-none focus:border-primary text-foreground transition-all"
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
-            className="p-3 bg-primary hover:bg-primary-hover text-white rounded-2xl shadow-sm transition-all disabled:opacity-60 flex items-center justify-center"
+            className="p-3 bg-primary hover:bg-primary-hover text-primary-foreground rounded-2xl shadow-sm transition-all disabled:opacity-60 flex items-center justify-center"
           >
             <Send className="w-4 h-4" />
           </button>
