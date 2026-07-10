@@ -83,7 +83,8 @@ export default function OrgDashboardPage() {
         requiredDocuments: ["Resume", "Certificate"],
         status: "pending" as OrgOpportunityStatus,
         applicationCount: 0,
-        viewCount: Math.floor(Math.random() * 50) + 12,
+        viewCount: 0, // real count, incremented on each opportunity detail page view
+        source: "organization",
         createdAt: new Date().toISOString(),
       };
 

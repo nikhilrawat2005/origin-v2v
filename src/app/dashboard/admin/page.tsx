@@ -64,7 +64,8 @@ export default function AdminPage() {
           setOrgOpps(items);
 
           const seededCount = items.filter((o: OrgOpportunity) => (o as any).source === "seed-india-2026").length;
-          const orgPostedCount = items.length - seededCount;
+          const automatedCount = items.filter((o: OrgOpportunity) => o.source === "automated").length;
+          const orgPostedCount = items.length - seededCount - automatedCount;
 
           setStats({
             totalUsers: users.length,
@@ -183,6 +184,11 @@ export default function AdminPage() {
                   <div>
                     <span className="text-[8px] font-extrabold uppercase tracking-wider text-foreground-muted">
                       Posted by {opp.orgName}
+                      {opp.source === "automated" && (
+                        <span className="ml-1.5 text-[7px] font-bold bg-blue-500/10 text-blue-500 px-1.5 py-0.5 rounded border border-blue-500/20 normal-case tracking-normal">
+                          Auto-ingested{opp.sourceType === "scraped" ? " · scraped" : " · trusted feed"}
+                        </span>
+                      )}
                     </span>
                     <h5 className="font-bold text-foreground text-xs mt-1 leading-snug">{opp.title}</h5>
                   </div>

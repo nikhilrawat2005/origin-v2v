@@ -17,7 +17,8 @@ import {
   arrayUnion,
   arrayRemove,
   collection,
-  addDoc
+  addDoc,
+  increment
 } from "firebase/firestore";
 import {
   Calendar,
@@ -55,6 +56,12 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
         return;
       }
       setOpp(match);
+
+      // Real view-count tracking (replaces the old random placeholder number).
+      // Fire-and-forget: a failed increment shouldn't block the page.
+      updateDoc(doc(db, "org_opportunities", id), {
+        viewCount: increment(1),
+      }).catch((err) => console.warn("View count increment failed:", err));
 
       if (currentUser) {
         const snap = await getDoc(doc(db, "bookmarks", currentUser.uid));

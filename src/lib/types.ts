@@ -144,6 +144,16 @@ export interface OrgProfile {
 
 export type OrgOpportunityStatus = "pending" | "approved" | "rejected";
 
+// Where this listing came from. "organization" = posted by a verified org
+// account via the dashboard. "automated" = pulled in by the daily ingestion
+// pipeline (see src/lib/ingestion).
+export type OpportunitySource = "organization" | "automated";
+
+// Only relevant when source === "automated".
+// "trusted-feed" = official RSS/API (Grants.gov, Devpost, etc) — auto-approved.
+// "scraped" = parsed from a web page — always starts as "pending" for review.
+export type OpportunitySourceType = "trusted-feed" | "scraped";
+
 export interface OrgOpportunity {
   id: string;
   postedByUid: string;
@@ -161,6 +171,10 @@ export interface OrgOpportunity {
   applicationCount: number;
   viewCount: number;
   createdAt: string;
+  source?: OpportunitySource;
+  sourceType?: OpportunitySourceType;
+  sourceUrl?: string;
+  ingestedAt?: string;
 }
 
 // ─── ADMIN ─────────────────────────────────────────────────────────────────
