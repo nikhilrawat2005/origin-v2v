@@ -122,45 +122,45 @@ export default function AdminPage() {
     <div className="max-w-6xl mx-auto space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-extrabold text-brand-navy flex items-center gap-2">
+        <h1 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
           <ShieldCheck className="w-6 h-6 text-brand-purple" /> Admin Panel
         </h1>
-        <p className="text-slate-500 text-sm mt-1">
+        <p className="text-foreground-muted text-sm mt-1">
           Moderate organization postings, change user access permissions, and evaluate platform statistics.
         </p>
       </div>
 
       {/* Stats Counters */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-100 p-5 rounded-3xl shadow-sm text-center">
-          <Users className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-          <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Members</span>
-          <span className="text-lg font-extrabold text-slate-800">{stats.totalUsers} users</span>
+        <div className="bg-surface border border-border p-5 rounded-3xl shadow-sm text-center hover:shadow-[0_0_0_1px_rgba(255,92,134,0.15),0_4px_16px_rgba(255,60,110,0.1)] transition-shadow">
+          <Users className="w-6 h-6 text-purple-500 mx-auto mb-2" />
+          <span className="block text-[9px] font-bold text-foreground-muted uppercase tracking-wider">Total Members</span>
+          <span className="text-lg font-extrabold text-foreground">{stats.totalUsers} users</span>
         </div>
-        <div className="bg-white border border-slate-100 p-5 rounded-3xl shadow-sm text-center">
-          <FileText className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-          <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Opportunities</span>
-          <span className="text-lg font-extrabold text-slate-800">{stats.totalOpportunities} active</span>
+        <div className="bg-surface border border-border p-5 rounded-3xl shadow-sm text-center hover:shadow-[0_0_0_1px_rgba(255,92,134,0.15),0_4px_16px_rgba(255,60,110,0.1)] transition-shadow">
+          <FileText className="w-6 h-6 text-blue-500 mx-auto mb-2" />
+          <span className="block text-[9px] font-bold text-foreground-muted uppercase tracking-wider">Opportunities</span>
+          <span className="text-lg font-extrabold text-foreground">{stats.totalOpportunities} active</span>
         </div>
-        <div className="bg-white border border-slate-100 p-5 rounded-3xl shadow-sm text-center">
-          <FileSpreadsheet className="w-6 h-6 text-emerald-600 mx-auto mb-2" />
-          <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Applications</span>
-          <span className="text-lg font-extrabold text-slate-800">{stats.totalApplications} tracks</span>
+        <div className="bg-surface border border-border p-5 rounded-3xl shadow-sm text-center hover:shadow-[0_0_0_1px_rgba(255,92,134,0.15),0_4px_16px_rgba(255,60,110,0.1)] transition-shadow">
+          <FileSpreadsheet className="w-6 h-6 text-emerald-500 mx-auto mb-2" />
+          <span className="block text-[9px] font-bold text-foreground-muted uppercase tracking-wider">Applications</span>
+          <span className="text-lg font-extrabold text-foreground">{stats.totalApplications} tracks</span>
         </div>
-        <div className="bg-white border border-slate-100 p-5 rounded-3xl shadow-sm text-center">
-          <MessageSquare className="w-6 h-6 text-amber-600 mx-auto mb-2" />
-          <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Forum Posts</span>
-          <span className="text-lg font-extrabold text-slate-800">{stats.totalCommunityPosts} posts</span>
+        <div className="bg-surface border border-border p-5 rounded-3xl shadow-sm text-center hover:shadow-[0_0_0_1px_rgba(255,92,134,0.15),0_4px_16px_rgba(255,60,110,0.1)] transition-shadow">
+          <MessageSquare className="w-6 h-6 text-amber-500 mx-auto mb-2" />
+          <span className="block text-[9px] font-bold text-foreground-muted uppercase tracking-wider">Forum Posts</span>
+          <span className="text-lg font-extrabold text-foreground">{stats.totalCommunityPosts} posts</span>
         </div>
       </div>
 
       {/* Moderate Opportunities */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm space-y-6">
-          <h3 className="font-extrabold text-slate-800 text-sm flex items-center justify-between">
+        <div className="bg-surface border border-border p-6 rounded-3xl shadow-sm space-y-6">
+          <h3 className="font-extrabold text-foreground text-sm flex items-center justify-between">
             <span>Moderate org opportunities</span>
             {pendingCount > 0 && (
-              <span className="text-[9px] font-bold bg-amber-50 text-amber-650 px-2 py-0.5 rounded">
+              <span className="text-[9px] font-bold bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded border border-amber-500/20">
                 {pendingCount} Pending Approval
               </span>
             )}
@@ -168,38 +168,38 @@ export default function AdminPage() {
 
           <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
             {orgOpps.map((opp) => (
-              <div key={opp.id} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl space-y-3">
+              <div key={opp.id} className="p-4 bg-surface-raised border border-border rounded-2xl space-y-3">
                 <div className="flex justify-between items-start gap-4">
                   <div>
-                    <span className="text-[8px] font-extrabold uppercase tracking-wider text-slate-400">
+                    <span className="text-[8px] font-extrabold uppercase tracking-wider text-foreground-muted">
                       Posted by {opp.orgName}
                     </span>
-                    <h5 className="font-bold text-slate-800 text-xs mt-1 leading-snug">{opp.title}</h5>
+                    <h5 className="font-bold text-foreground text-xs mt-1 leading-snug">{opp.title}</h5>
                   </div>
-                  <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                  <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded border ${
                     opp.status === "approved"
-                      ? "bg-emerald-50 text-emerald-650"
+                      ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
                       : opp.status === "rejected"
-                      ? "bg-red-50 text-red-650"
-                      : "bg-amber-50 text-amber-650"
+                      ? "bg-red-500/10 text-red-500 border-red-500/20"
+                      : "bg-amber-500/10 text-amber-500 border-amber-500/20"
                   }`}>
                     {opp.status}
                   </span>
                 </div>
 
-                <p className="text-[11px] text-slate-550 line-clamp-2 leading-relaxed">{opp.description}</p>
+                <p className="text-[11px] text-foreground-muted line-clamp-2 leading-relaxed">{opp.description}</p>
 
                 {opp.status === "pending" && (
-                  <div className="flex gap-2 justify-end pt-2 border-t border-slate-200/50">
+                  <div className="flex gap-2 justify-end pt-2 border-t border-border">
                     <button
                       onClick={() => updateOppStatus(opp.id, "approved")}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-650 rounded-xl text-[10px] font-bold transition-all border border-emerald-100"
+                      className="flex items-center gap-1 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 rounded-xl text-[10px] font-bold transition-all border border-emerald-500/20"
                     >
                       <CheckCircle className="w-3.5 h-3.5" /> Approve
                     </button>
                     <button
                       onClick={() => updateOppStatus(opp.id, "rejected")}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-650 rounded-xl text-[10px] font-bold transition-all border border-red-100"
+                      className="flex items-center gap-1 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl text-[10px] font-bold transition-all border border-red-500/20"
                     >
                       <XCircle className="w-3.5 h-3.5" /> Reject
                     </button>
@@ -210,9 +210,9 @@ export default function AdminPage() {
 
             {orgOpps.length === 0 && (
               <div className="text-center py-12">
-                <Building className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                <h5 className="font-bold text-slate-700 text-xs">No programs to review</h5>
-                <p className="text-slate-450 text-[10px] mt-1">
+                <Building className="w-8 h-8 text-foreground-muted mx-auto mb-2" />
+                <h5 className="font-bold text-foreground text-xs">No programs to review</h5>
+                <p className="text-foreground-muted text-[10px] mt-1">
                   Once organizations publish opportunities, they will list here for approval.
                 </p>
               </div>
@@ -221,23 +221,23 @@ export default function AdminPage() {
         </div>
 
         {/* User permissions moderator */}
-        <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm space-y-6">
-          <h3 className="font-extrabold text-slate-800 text-sm">Manage Member Roles</h3>
+        <div className="bg-surface border border-border p-6 rounded-3xl shadow-sm space-y-6">
+          <h3 className="font-extrabold text-foreground text-sm">Manage Member Roles</h3>
 
           <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
             {usersList.map((usr) => (
-              <div key={usr.id} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between gap-4">
+              <div key={usr.id} className="p-4 bg-surface-raised border border-border rounded-2xl flex items-center justify-between gap-4">
                 <div>
-                  <h5 className="font-bold text-slate-800 text-xs">{usr.name}</h5>
-                  <span className="text-[10px] text-slate-450">{usr.email}</span>
+                  <h5 className="font-bold text-foreground text-xs">{usr.name}</h5>
+                  <span className="text-[10px] text-foreground-muted">{usr.email}</span>
                 </div>
 
                 <div className="space-y-1">
-                  <span className="block text-[8px] font-bold text-slate-400 uppercase text-right">Access Level</span>
+                  <span className="block text-[8px] font-bold text-foreground-muted uppercase text-right">Access Level</span>
                   <select
                     value={usr.role || "user"}
                     onChange={(e) => handleRoleChange(usr.id, e.target.value as any)}
-                    className="text-[10px] font-bold p-1.5 bg-white border border-slate-200 rounded-lg outline-none"
+                    className="text-[10px] font-bold p-1.5 bg-background border border-border rounded-lg outline-none text-foreground focus:border-brand-purple"
                   >
                     <option value="user">User</option>
                     <option value="organization">Organization</option>

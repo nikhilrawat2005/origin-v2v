@@ -154,40 +154,40 @@ export default function WalletPage() {
     <div className="max-w-5xl mx-auto space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-extrabold text-brand-navy flex items-center gap-2">
+        <h1 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
           <Wallet className="w-6 h-6 text-brand-purple" /> Opportunity Wallet
         </h1>
-        <p className="text-slate-500 text-sm mt-1">
+        <p className="text-foreground-muted text-sm mt-1">
           Store your career documents, achievements, and credentials in a secure sandbox. Use AI to scan resumes and auto-verify certificates.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Upload Panel */}
-        <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm space-y-4 h-fit">
-          <h3 className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+        <div className="bg-surface border border-border p-6 rounded-3xl shadow-sm space-y-4 h-fit">
+          <h3 className="font-bold text-foreground text-sm flex items-center gap-1.5">
             <UploadCloud className="w-4 h-4 text-brand-purple" /> Upload Document
           </h3>
 
           <form onSubmit={handleUpload} className="space-y-4">
             <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Document Name</label>
+              <label className="text-xs font-bold text-foreground-muted uppercase tracking-wider">Document Name</label>
               <input
                 type="text"
                 placeholder="e.g. Software Engineering Resume 2026"
                 value={docName}
                 onChange={(e) => setDocName(e.target.value)}
                 required
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-brand-purple bg-background text-foreground placeholder:text-foreground-muted"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Asset Category</label>
+              <label className="text-xs font-bold text-foreground-muted uppercase tracking-wider">Asset Category</label>
               <select
                 value={docCategory}
                 onChange={(e) => setDocCategory(e.target.value as WalletCategory)}
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none bg-white focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-border rounded-xl outline-none bg-background text-foreground focus:border-brand-purple"
               >
                 {categories.slice(1).map((cat) => (
                   <option key={cat} value={cat}>
@@ -198,7 +198,7 @@ export default function WalletPage() {
             </div>
 
             {/* Mock Drag & Drop Box */}
-            <div className="border border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:bg-slate-50 transition-colors">
+            <div className="border border-dashed border-border rounded-xl p-4 text-center cursor-pointer hover:bg-surface-raised transition-colors">
               <input
                 type="file"
                 id="file-upload"
@@ -211,11 +211,11 @@ export default function WalletPage() {
                 }}
               />
               <label htmlFor="file-upload" className="cursor-pointer space-y-1 block">
-                <UploadCloud className="w-8 h-8 text-slate-400 mx-auto" />
-                <p className="text-[10px] font-semibold text-slate-650">
+                <UploadCloud className="w-8 h-8 text-foreground-muted mx-auto" />
+                <p className="text-[10px] font-semibold text-foreground-muted">
                   {selectedFile ? selectedFile.name : "Select or drag file to mock upload"}
                 </p>
-                <p className="text-[8px] text-slate-400">PDF, PNG, JPG up to 10MB</p>
+                <p className="text-[8px] text-foreground-muted">PDF, PNG, JPG up to 10MB</p>
               </label>
             </div>
 
@@ -238,7 +238,7 @@ export default function WalletPage() {
         {/* Documents Grid */}
         <div className="lg:col-span-2 space-y-6">
           {/* Tab Navigation */}
-          <div className="flex gap-2 overflow-x-auto pb-1 border-b border-slate-100">
+          <div className="flex gap-2 overflow-x-auto pb-1 border-b border-border">
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -246,7 +246,7 @@ export default function WalletPage() {
                 className={`pb-3 px-1 text-xs font-semibold whitespace-nowrap border-b-2 transition-all ${
                   activeTab === cat
                     ? "border-brand-purple text-brand-purple"
-                    : "border-transparent text-slate-450 hover:text-slate-700"
+                    : "border-transparent text-foreground-muted hover:text-foreground"
                 }`}
               >
                 {cat}
@@ -259,16 +259,16 @@ export default function WalletPage() {
             {filteredDocs.map((doc) => (
               <div
                 key={doc.id}
-                className="p-5 bg-white border border-slate-100 rounded-3xl shadow-sm flex flex-col gap-4"
+                className="p-5 bg-surface border border-border rounded-3xl shadow-sm flex flex-col gap-4 hover:shadow-[0_0_0_1px_rgba(255,92,134,0.2),0_8px_24px_rgba(255,60,110,0.12)] transition-shadow"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3">
-                    <div className="p-3 bg-purple-50 text-brand-purple rounded-2xl">
+                    <div className="p-3 bg-brand-purple/10 text-brand-purple rounded-2xl">
                       <FileText className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-800 text-sm leading-snug">{doc.name}</h4>
-                      <p className="text-[10px] text-slate-450 font-semibold uppercase tracking-wider mt-0.5">
+                      <h4 className="font-bold text-foreground text-sm leading-snug">{doc.name}</h4>
+                      <p className="text-[10px] text-foreground-muted font-semibold uppercase tracking-wider mt-0.5">
                         {doc.category} • {(doc.sizeBytes / 1024).toFixed(0)} KB
                       </p>
                     </div>
@@ -278,7 +278,7 @@ export default function WalletPage() {
                     <button
                       onClick={() => handleAIVerify(doc.id, doc.name, doc.category)}
                       disabled={analyzingId === doc.id}
-                      className="p-2 text-brand-purple hover:bg-purple-50 rounded-xl transition-all"
+                      className="p-2 text-brand-purple hover:bg-brand-purple/10 rounded-xl transition-all"
                       title="AI Audit"
                     >
                       {analyzingId === doc.id ? (
@@ -291,14 +291,14 @@ export default function WalletPage() {
                       href={doc.downloadURL}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 text-slate-450 hover:text-slate-800 hover:bg-slate-50 rounded-xl transition-all"
+                      className="p-2 text-foreground-muted hover:text-foreground hover:bg-surface-raised rounded-xl transition-all"
                       title="Download document"
                     >
                       <Download className="w-4 h-4" />
                     </a>
                     <button
                       onClick={() => handleDelete(doc.id)}
-                      className="p-2 text-slate-400 hover:text-red-500 hover:bg-slate-50 rounded-xl transition-all"
+                      className="p-2 text-foreground-muted hover:text-red-500 hover:bg-surface-raised rounded-xl transition-all"
                       title="Delete"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -308,11 +308,11 @@ export default function WalletPage() {
 
                 {/* Render AI audit report if active */}
                 {aiReport[doc.id] && (
-                  <div className="bg-slate-50 border border-slate-100 p-4 rounded-2xl text-xs space-y-2 relative overflow-hidden">
+                  <div className="bg-surface-raised border border-border p-4 rounded-2xl text-xs space-y-2 relative overflow-hidden">
                     <div className="absolute top-2 right-2 flex items-center gap-1 bg-brand-purple/10 text-brand-purple px-2 py-0.5 rounded text-[8px] font-bold">
                       <Sparkles className="w-2.5 h-2.5" /> AI Evaluated
                     </div>
-                    <div className="text-slate-700 whitespace-pre-line font-medium leading-relaxed">
+                    <div className="text-foreground whitespace-pre-line font-medium leading-relaxed">
                       {aiReport[doc.id]}
                     </div>
                   </div>
@@ -321,10 +321,10 @@ export default function WalletPage() {
             ))}
 
             {filteredDocs.length === 0 && (
-              <div className="text-center py-16 bg-white border border-slate-100 rounded-3xl">
-                <FileText className="w-12 h-12 text-slate-300 mx-auto mb-2" />
-                <h4 className="font-bold text-slate-805 text-sm">No documents found</h4>
-                <p className="text-slate-450 text-xs mt-1">
+              <div className="text-center py-16 bg-surface border border-border rounded-3xl">
+                <FileText className="w-12 h-12 text-foreground-muted mx-auto mb-2" />
+                <h4 className="font-bold text-foreground text-sm">No documents found</h4>
+                <p className="text-foreground-muted text-xs mt-1">
                   Click the upload box on the left to add items to your Opportunity Wallet.
                 </p>
               </div>

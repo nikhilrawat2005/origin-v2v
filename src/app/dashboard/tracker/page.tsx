@@ -166,10 +166,10 @@ export default function TrackerPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-brand-navy flex items-center gap-2">
+          <h1 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
             <Layers className="w-6 h-6 text-brand-purple" /> Application Tracker
           </h1>
-          <p className="text-slate-500 text-sm mt-1">
+          <p className="text-foreground-muted text-sm mt-1">
             Track and update your opportunity stages. Progress changes trigger real-time AI suggestions and status alert notifications.
           </p>
         </div>
@@ -184,8 +184,8 @@ export default function TrackerPage() {
 
       {/* Quick Add bookmarks row */}
       {bookmarks.length > 0 && (
-        <div className="bg-white border border-slate-100 p-4 rounded-3xl space-y-2.5">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Quick Import From Bookmarks</span>
+        <div className="bg-surface border border-border p-4 rounded-3xl space-y-2.5">
+          <span className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">Quick Import From Bookmarks</span>
           <div className="flex gap-2 overflow-x-auto pb-1">
             {opportunities
               .filter((opp) => bookmarks.includes(opp.id))
@@ -198,8 +198,8 @@ export default function TrackerPage() {
                     onClick={() => addFromBookmark(opp.id)}
                     className={`flex items-center gap-1 px-3 py-1.5 rounded-xl border text-[11px] font-bold whitespace-nowrap transition-all ${
                       alreadyAdded
-                        ? "bg-slate-50 border-slate-100 text-slate-400 cursor-not-allowed"
-                        : "bg-white border-purple-100 text-brand-purple hover:bg-purple-50"
+                        ? "bg-surface-raised border-border text-foreground-muted cursor-not-allowed"
+                        : "bg-surface border-border text-brand-purple hover:bg-brand-purple/10"
                     }`}
                   >
                     {opp.title.slice(0, 22)}... {alreadyAdded ? "(Added)" : "+"}
@@ -212,55 +212,55 @@ export default function TrackerPage() {
 
       {/* Add New Application Form overlay */}
       {showAddForm && (
-        <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-md max-w-xl animate-in fade-in duration-200">
-          <h3 className="font-bold text-slate-800 text-sm mb-4">New Tracking Card</h3>
+        <div className="bg-surface border border-border p-6 rounded-3xl shadow-md max-w-xl animate-in fade-in duration-200">
+          <h3 className="font-bold text-foreground text-sm mb-4">New Tracking Card</h3>
           <form onSubmit={handleCreateApplication} className="space-y-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Title</label>
+              <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">Title</label>
               <input
                 type="text"
                 placeholder="Google Generation Scholarship"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-brand-purple bg-background text-foreground placeholder:text-foreground-muted"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Company / Org</label>
+              <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">Company / Org</label>
               <input
                 type="text"
                 placeholder="Google"
                 value={orgName}
                 onChange={(e) => setOrgName(e.target.value)}
                 required
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-brand-purple bg-background text-foreground placeholder:text-foreground-muted"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Deadline</label>
+              <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">Deadline</label>
               <input
                 type="date"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-brand-purple bg-background text-foreground"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Notes</label>
+              <label className="text-[10px] font-bold text-foreground-muted uppercase tracking-wider">Notes</label>
               <input
                 type="text"
                 placeholder="Need to finish essay & recommendation"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full text-xs p-3 border border-slate-200 rounded-xl outline-none focus:border-brand-purple"
+                className="w-full text-xs p-3 border border-border rounded-xl outline-none focus:border-brand-purple bg-background text-foreground placeholder:text-foreground-muted"
               />
             </div>
             <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setShowAddForm(false)}
-                className="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50"
+                className="px-4 py-2 border border-border text-foreground-muted rounded-xl text-xs font-semibold hover:bg-surface-raised"
               >
                 Cancel
               </button>
@@ -281,11 +281,11 @@ export default function TrackerPage() {
           const filtered = applications.filter((app) => app.status === stage);
 
           return (
-            <div key={stage} className="bg-slate-100/60 p-4 rounded-2xl flex flex-col space-y-3 min-w-[200px]">
+            <div key={stage} className="bg-surface-raised border border-border p-4 rounded-2xl flex flex-col space-y-3 min-w-[200px]">
               {/* Column Header */}
               <div className="flex items-center justify-between pb-1">
-                <h4 className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">{stage}</h4>
-                <span className="text-[10px] font-extrabold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">
+                <h4 className="text-xs font-extrabold text-foreground uppercase tracking-wider">{stage}</h4>
+                <span className="text-[10px] font-extrabold bg-background text-foreground-muted px-2 py-0.5 rounded-full border border-border">
                   {filtered.length}
                 </span>
               </div>
@@ -295,39 +295,39 @@ export default function TrackerPage() {
                 {filtered.map((app) => (
                   <div
                     key={app.id}
-                    className="p-4 bg-white border border-slate-200/60 rounded-xl shadow-sm hover:shadow-md transition-shadow space-y-2 group"
+                    className="p-4 bg-surface border border-border rounded-xl shadow-sm hover:shadow-[0_0_0_1px_rgba(255,92,134,0.2),0_8px_24px_rgba(255,60,110,0.12)] transition-shadow space-y-2 group"
                   >
                     <div className="space-y-0.5">
-                      <h5 className="font-bold text-slate-800 text-xs leading-snug">{app.opportunityTitle}</h5>
-                      <p className="text-[10px] text-slate-550 flex items-center gap-1 font-semibold">
-                        <Building className="w-3 h-3 text-slate-400" /> {app.organization}
+                      <h5 className="font-bold text-foreground text-xs leading-snug">{app.opportunityTitle}</h5>
+                      <p className="text-[10px] text-foreground-muted flex items-center gap-1 font-semibold">
+                        <Building className="w-3 h-3" /> {app.organization}
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-1 text-[9px] text-slate-500 font-semibold">
-                      <Calendar className="w-3 h-3 text-slate-450" />
+                    <div className="flex items-center gap-1 text-[9px] text-foreground-muted font-semibold">
+                      <Calendar className="w-3 h-3" />
                       <span>{new Date(app.deadline).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
                     </div>
 
                     {app.notes && (
-                      <p className="text-[10px] text-slate-400 italic line-clamp-1 border-t border-slate-50 pt-1.5">
+                      <p className="text-[10px] text-foreground-muted italic line-clamp-1 border-t border-border pt-1.5">
                         {app.notes}
                       </p>
                     )}
 
                     {/* Column controls */}
-                    <div className="flex justify-between items-center pt-2 border-t border-slate-50">
+                    <div className="flex justify-between items-center pt-2 border-t border-border">
                       <button
                         onClick={() => moveStatus(app.id, app.opportunityTitle, app.status, "prev")}
                         disabled={stage === "Applied"}
-                        className="p-1 hover:bg-slate-50 rounded text-slate-405 hover:text-brand-purple disabled:opacity-30"
+                        className="p-1 hover:bg-surface-raised rounded text-foreground-muted hover:text-brand-purple disabled:opacity-30"
                       >
                         <ChevronLeft className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => moveStatus(app.id, app.opportunityTitle, app.status, "next")}
                         disabled={stage === "Offer Received"}
-                        className="p-1 hover:bg-slate-50 rounded text-slate-405 hover:text-brand-purple disabled:opacity-30"
+                        className="p-1 hover:bg-surface-raised rounded text-foreground-muted hover:text-brand-purple disabled:opacity-30"
                       >
                         <ChevronRight className="w-3.5 h-3.5" />
                       </button>
@@ -336,7 +336,7 @@ export default function TrackerPage() {
                 ))}
 
                 {filtered.length === 0 && (
-                  <div className="border-2 border-dashed border-slate-200 rounded-xl py-12 text-center text-slate-400">
+                  <div className="border-2 border-dashed border-border rounded-xl py-12 text-center text-foreground-muted">
                     <p className="text-[10px] font-medium">Drag items here</p>
                   </div>
                 )}
